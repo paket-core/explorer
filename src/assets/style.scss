@@ -1,0 +1,45 @@
+body {
+	font-family: 'Roboto', sans-serif;
+}
+#app {
+  /*font-family: 'Avenir', Helvetica, Arial, sans-serif;*/
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+#nav {
+  padding: 30px;
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+.go-line {margin-top: 20px;}
+.ul-line {
+  .table>tbody>tr>td,
+  .table>tbody>tr>th,
+  .table>tfoot>tr>td,
+  .table>tfoot>tr>th,
+  .table>thead>tr>td, 
+  .table>thead>tr>th {
+    line-height: 1.42857143;
+    vertical-align: middle;
+    max-width: 200px;
+    text-align: center;
+  }
+  tr {
+    td {
+      span {
+        float: left;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
