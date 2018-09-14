@@ -119,6 +119,9 @@
                                 class="panel-group"
                                 id="accordion"
                             >
+                                <figure class="highlight">
+                                    <pre>User name: <span id="userName"></span><br>PrivateKey: <span id="privateKey"></span></pre>
+                                </figure>
                                 <div class="panel panel-success">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
@@ -159,7 +162,7 @@
                                                             type="text"
                                                             class="form-control"
                                                             id="inputDefault"
-                                                            value="51.80357235243076,-0.37716353081054876"
+                                                            value="51.803523,-0.37716353"
                                                         >
                                                     </div>
                                                     <div class="form-group">
@@ -172,6 +175,16 @@
                                                                 Try it out!
                                                             </a>
                                                         </div>
+                                                    </div>
+                                                    <div
+                                                        id="addEventResponseFormGroup"
+                                                        class="form-group"
+                                                        style="display: none;"
+                                                    >
+                                                        <p>Response Body</p>
+                                                        <figure class="highlight">
+                                                            <pre id="addEventResponse"></pre>
+                                                        </figure>
                                                     </div>
                                                 </form>
                                             </div>

@@ -8,7 +8,7 @@ $('#applyCustomerData').click(function() {
   customerData = JSON.parse(json)
 
   // the first user is selected by default
-  selectUser = customerData[0]
+  setUser(customerData[0])
 
   customerData.forEach(function(element, index) {
     $('#dropdownUsers').append(
@@ -16,13 +16,25 @@ $('#applyCustomerData').click(function() {
     )
 
     $('#dropdownUsers li a:eq(' + index + ')').click(element, function(event) {
-      selectUser = event.data
+      setUser(event.data)
     })
   })
 
   $('#panelCustomerData').hide()
   $('#panelRequests').show()
 })
+
+function setUser(newUser) {
+  selectUser = newUser
+
+  $('#userName')
+    .empty()
+    .append(newUser.name)
+
+  $('#privateKey')
+    .empty()
+    .append(newUser.privateKey)
+}
 
 $('#tryAddEvent').click(function() {
   var newEvent = {
@@ -36,10 +48,14 @@ $('#tryAddEvent').click(function() {
   var fingerprint = generateFingerprint(uri, newEvent)
   var signature = signFingerprint(fingerprint, keypair.secret())
 
+  var formData = new FormData()
+  formData.append('event_type', newEvent.event_type)
+  formData.append('location', newEvent.location)
+
   $.ajax({
     type: 'POST',
     url: uri,
-    data: newEvent,
+    data: formData,
     dataType: 'json',
     processData: false,
     contentType: false,
@@ -51,7 +67,6 @@ $('#tryAddEvent').click(function() {
     success: function(data) {
       console.log('success')
       console.log(data)
-      alert('Open the Developer Console in your browser.')
     },
     error: function(data) {
       console.log('error')
@@ -61,6 +76,13 @@ $('#tryAddEvent').click(function() {
   }).done(function(response) {
     console.log('done')
     console.log(response)
+
+    $('#addEventResponseFormGroup').hide()
+    $('#addEventResponseFormGroup').show()
+
+    $('#addEventResponse')
+      .empty()
+      .append(JSON.stringify(response))
   })
 })
 
