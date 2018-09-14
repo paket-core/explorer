@@ -1,0 +1,41 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    color: #959595;
+    letter-spacing: 1px;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Lato', sans-serif;
+    color: #3d3d3d;
+}
+
+.d-none {
+    display: none;
+}
+
+* {
+    outline: none;
+}
+
+input:focus, select:focus, textarea:focus, input:active, select:active, textarea:active {
+    border: 1px solid transparent;
+}
+
+#page-wrapper {
+    margin: 0;
+    padding: 30px;
+}
+
+#accordion .panel-heading {
+    padding: 0;
+}
+
+#accordion .panel-title a {
+    width: 100%;
+    display: inline-block;
+    padding: 15px 30px;
+}
