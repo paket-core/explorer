@@ -1,5 +1,6 @@
 var customerData = []
 var selectUser = {}
+var baseUrl = 'http://itd.pub:11250'
 
 $(document).ready(function() {})
 
@@ -42,7 +43,7 @@ $('#tryAddEvent').click(function() {
     location: $('#addEventLocation').val(),
   }
 
-  var uri = 'http://itd.pub:11250/v3/add_event'
+  var uri = baseUrl + '/v3/add_event'
 
   var keypair = StellarBase.Keypair.fromSecret(selectUser.privateKey)
   var fingerprint = generateFingerprint(uri, newEvent)
@@ -77,14 +78,137 @@ $('#tryAddEvent').click(function() {
     console.log('done')
     console.log(response)
 
-    $('#addEventResponseFormGroup').hide()
-    $('#addEventResponseFormGroup').show()
-
-    $('#addEventResponse')
-      .empty()
-      .append(JSON.stringify(response))
+    printResponse(
+      $('#addEventResponseFormGroup'),
+      $('#addEventResponse'),
+      response
+    )
   })
 })
+
+$('#tryAcceptPackage').click(function() {
+  var newAcceptPackage = {
+    escrow_pubkey: $('#acceptPackageEscrowPubkey').val(),
+    location: $('#acceptPackageLocation').val(),
+  }
+
+  var uri = baseUrl + '/v3/accept_package'
+
+  var keypair = StellarBase.Keypair.fromSecret(selectUser.privateKey)
+  var fingerprint = generateFingerprint(uri, newAcceptPackage)
+  var signature = signFingerprint(fingerprint, keypair.secret())
+
+  var formData = new FormData()
+  formData.append('event_type', newAcceptPackage.escrow_pubkey)
+  formData.append('location', newAcceptPackage.location)
+
+  $.ajax({
+    type: 'POST',
+    url: uri,
+    data: formData,
+    dataType: 'json',
+    processData: false,
+    contentType: false,
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Pubkey', keypair.publicKey())
+      xhr.setRequestHeader('Fingerprint', fingerprint)
+      xhr.setRequestHeader('Signature', signature)
+    },
+    success: function(response) {
+      printResponse(
+        $('#acceptPackageResponseFormGroup'),
+        $('#acceptPackageResponse'),
+        response
+      )
+    },
+    error: function(response) {
+      printResponse(
+        $('#acceptPackageResponseFormGroup'),
+        $('#acceptPackageResponse'),
+        response
+      )
+    },
+  })
+})
+
+$('#tryCreatePackage').click(function() {
+  var newCreatePackage = {
+    escrow_pubkey: $('#createPackageEscrowPubkey').val(),
+    recipient_pubkey: $('#createPackageRecipientPubkey').val(),
+    launcher_phone_number: $('#createPackageLauncherPhoneNumber').val(),
+    recipient_phone_number: $('#createPackageRecipientPhoneNumber').val(),
+    payment_buls: $('#createPackagePaymentBuls').val(),
+    collateral_buls: $('#createPackageCollateralBuls').val(),
+    deadline_timestamp: $('#createPackageDeadlineTimestamp').val(),
+    description: $('#createPackageDescription').val(),
+    from_location: $('#createPackageFromLocation').val(),
+    to_location: $('#createPackageToLocation').val(),
+    from_address: $('#createPackageFromAddress').val(),
+    to_address: $('#createPackageToAddress').val(),
+    event_location: $('#createPackageEventLocation').val(),
+  }
+
+  var uri = baseUrl + '/v3/create_package'
+
+  var keypair = StellarBase.Keypair.fromSecret(selectUser.privateKey)
+  var fingerprint = generateFingerprint(uri, newCreatePackage)
+  var signature = signFingerprint(fingerprint, keypair.secret())
+
+  var formData = new FormData()
+  formData.append('escrow_pubkey', newCreatePackage.escrow_pubkey)
+  formData.append('recipient_pubkey', newCreatePackage.recipient_pubkey)
+  formData.append(
+    'launcher_phone_number',
+    newCreatePackage.launcher_phone_number
+  )
+  formData.append(
+    'recipient_phone_number',
+    newCreatePackage.recipient_phone_number
+  )
+  formData.append('payment_buls', newCreatePackage.payment_buls)
+  formData.append('collateral_buls', newCreatePackage.collateral_buls)
+  formData.append('deadline_timestamp', newCreatePackage.deadline_timestamp)
+  formData.append('description', newCreatePackage.description)
+  formData.append('from_location', newCreatePackage.from_location)
+  formData.append('to_location', newCreatePackage.to_location)
+  formData.append('from_address', newCreatePackage.from_address)
+  formData.append('to_address', newCreatePackage.to_address)
+  formData.append('event_location', newCreatePackage.event_location)
+
+  $.ajax({
+    type: 'POST',
+    url: uri,
+    data: formData,
+    dataType: 'json',
+    processData: false,
+    contentType: false,
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Pubkey', keypair.publicKey())
+      xhr.setRequestHeader('Fingerprint', fingerprint)
+      xhr.setRequestHeader('Signature', signature)
+    },
+    success: function(response) {
+      printResponse(
+        $('#createPackageResponseFormGroup'),
+        $('#createPackageResponse'),
+        response
+      )
+    },
+    error: function(response) {
+      printResponse(
+        $('#createPackageResponseFormGroup'),
+        $('#createPackageResponse'),
+        response
+      )
+    },
+  })
+})
+
+function printResponse(elementFormGroup, elementResponse, response) {
+  elementFormGroup.show()
+
+  elementResponse.empty().append(JSON.stringify(response))
+}
 
 function generateFingerprint(uri, kwargs = null) {
   if (kwargs == null) {

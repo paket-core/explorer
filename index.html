@@ -75,6 +75,10 @@
     { 
         "name": "Aaron Johnson",
         "privateKey": "SAGMKB4K5FB3K2WJ4GCMLJJE5UUVV45ZF7IWKB53WO7LPBJD4CPEWU5J"
+    },
+    { 
+        "name": "Test",
+        "privateKey": "123-Test"
     }
 ]</textarea>
                         </div>
@@ -113,15 +117,19 @@
                                 </ul>
                             </div>
                         </div>
+
+                        <div class="panel-body">
+                            <figure class="highlight">
+                                <pre>User name: <span id="userName"></span><br>PrivateKey: <span id="privateKey"></span></pre>
+                            </figure>
+                        </div>
+
                         <!-- .panel-heading -->
                         <div class="panel-body">
                             <div
                                 class="panel-group"
                                 id="accordion"
                             >
-                                <figure class="highlight">
-                                    <pre>User name: <span id="userName"></span><br>PrivateKey: <span id="privateKey"></span></pre>
-                                </figure>
                                 <div class="panel panel-success">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
@@ -167,13 +175,12 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <div class="input-group">
-                                                            <a
+                                                            <button
                                                                 id="tryAddEvent"
-                                                                href="#"
                                                                 class="btn btn-success"
                                                             >
                                                                 Try it out!
-                                                            </a>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                     <div
@@ -183,7 +190,7 @@
                                                     >
                                                         <p>Response Body</p>
                                                         <figure class="highlight">
-                                                            <pre id="addEventResponse"></pre>
+                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="addEventResponse"></code></pre>
                                                         </figure>
                                                     </div>
                                                 </form>
@@ -191,6 +198,288 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a
+                                                data-toggle="collapse"
+                                                data-parent="#accordion"
+                                                href="#collapseTwo"
+                                            >Accept Package</a>
+                                        </h4>
+                                    </div>
+                                    <div
+                                        id="collapseTwo"
+                                        class="panel-collapse collapse"
+                                    >
+                                        <div class="panel-body">
+                                            <div class="col-lg-6">
+                                                <form class="bs-component">
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Escrow pubkey</label>
+                                                        <input
+                                                            id="acceptPackageEscrowPubkey"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Location</label>
+                                                        <input
+                                                            id="acceptPackageLocation"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <button
+                                                                id="tryAcceptPackage"
+                                                                class="btn btn-success"
+                                                            >
+                                                                Try it out!
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        id="acceptPackageResponseFormGroup"
+                                                        class="form-group"
+                                                        style="display: none;"
+                                                    >
+                                                        <p>Response Body</p>
+                                                        <figure class="highlight">
+                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="acceptPackageResponse"></code></pre>
+                                                        </figure>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a
+                                                data-toggle="collapse"
+                                                data-parent="#accordion"
+                                                href="#collapseThree"
+                                            >Create Package</a>
+                                        </h4>
+                                    </div>
+                                    <div
+                                        id="collapseThree"
+                                        class="panel-collapse collapse"
+                                    >
+                                        <div class="panel-body">
+                                            <div class="col-lg-6">
+                                                <form class="bs-component">
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Escrow pubkey</label>
+                                                        <input
+                                                            id="createPackageEscrowPubkey"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Recipient
+                                                            pubkey
+                                                        </label>
+                                                        <input
+                                                            id="createPackageRecipientPubkey"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Phone number
+                                                            of the launcher</label>
+                                                        <input
+                                                            id="createPackageLauncherPhoneNumber"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Phone number
+                                                            of the recipient</label>
+                                                        <input
+                                                            id="createPackageRecipientPhoneNumber"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >BULs promised
+                                                            as payment</label>
+                                                        <input
+                                                            id="createPackagePaymentBuls"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >BULs promised
+                                                            as collateral</label>
+                                                        <input
+                                                            id="createPackageCollateralBuls"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Deadline
+                                                            timestamp
+                                                        </label>
+                                                        <input
+                                                            id="createPackageDeadlineTimestamp"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Package
+                                                            description (300 characters max)</label>
+                                                        <input
+                                                            id="createPackageDescription"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >GPS location
+                                                            of place where launcher will give package to courier</label>
+                                                        <input
+                                                            id="createPackageFromLocation"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >GPS location
+                                                            of place where package need to be delivered to</label>
+                                                        <input
+                                                            id="createPackageToLocation"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Address
+                                                            of place where launcher will give package to courier</label>
+                                                        <input
+                                                            id="createPackageFromAddress"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >Address
+                                                            of place where package need to be delivered to</label>
+                                                        <input
+                                                            id="createPackageToAddress"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            class="control-label"
+                                                            for="inputDefault"
+                                                        >GPS location
+                                                            of place where launcher submited package info</label>
+                                                        <input
+                                                            id="createPackageEventLocation"
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="inputDefault"
+                                                        >
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <button
+                                                                id="tryCreatePackage"
+                                                                class="btn btn-success"
+                                                            >
+                                                                Try it out!
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        id="createPackageResponseFormGroup"
+                                                        class="form-group"
+                                                        style="display: none;"
+                                                    >
+                                                        <p>Response Body</p>
+                                                        <figure class="highlight">
+                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="createPackageResponse"></code></pre>
+                                                        </figure>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                         <!-- .panel-body -->
