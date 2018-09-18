@@ -1,224 +1,302 @@
 var customerData = []
 var selectUser = {}
-var baseUrl = 'http://itd.pub:11250'
+var baseUrl = "http://itd.pub:11250"
 
-$(document).ready(function() {})
+$(document).ready(function() {
+  $("#applyCustomerData").click(function() {
+    var json = $("#textareaCustomerData").val()
+    customerData = JSON.parse(json)
 
-$('#applyCustomerData').click(function() {
-  var json = $('#textareaCustomerData').val()
-  customerData = JSON.parse(json)
+    // the first user is selected by default
+    setUser(customerData[0])
 
-  // the first user is selected by default
-  setUser(customerData[0])
+    customerData.forEach(function(element, index) {
+      $("#dropdownUsers").append(
+        '<li><a href="#" id="' + index + '">' + element.name + "</a></li>"
+      )
 
-  customerData.forEach(function(element, index) {
-    $('#dropdownUsers').append(
-      '<li><a href="#" id="' + index + '">' + element.name + '</a></li>'
-    )
+      $("#dropdownUsers li a:eq(" + index + ")").click(element, function(
+        event
+      ) {
+        setUser(event.data)
+      })
+    })
 
-    $('#dropdownUsers li a:eq(' + index + ')').click(element, function(event) {
-      setUser(event.data)
+    $("#panelCustomerData").hide()
+    $("#panelRequests").show()
+  })
+
+  $("#addEvent #tryItOut").click(function() {
+    var selectorPanel = "#addEvent "
+
+    var data = {
+      event_type: $(selectorPanel + "#eventType").val(),
+      location: $(selectorPanel + "#location").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/add_event",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
     })
   })
 
-  $('#panelCustomerData').hide()
-  $('#panelRequests').show()
+  $("#acceptPackage #tryItOut").click(function() {
+    var selectorPanel = "#acceptPackage "
+
+    var data = {
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      location: $(selectorPanel + "#location").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/accept_package",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#assignPackage #tryItOut").click(function() {
+    var selectorPanel = "#assignPackage "
+
+    var data = {
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      location: $(selectorPanel + "#location").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/assign_package",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#assignXdrs #tryItOut").click(function() {
+    var selectorPanel = "#assignXdrs "
+
+    var data = {
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      location: $(selectorPanel + "#location").val(),
+      kwargs: $(selectorPanel + "#kwargs").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/assign_xdrs",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#availablePackages #tryItOut").click(function() {
+    var selectorPanel = "#availablePackages "
+
+    var data = {
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      location: $(selectorPanel + "#location").val(),
+      kwargs: $(selectorPanel + "#kwargs").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/available_packages",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#changedLocation #tryItOut").click(function() {
+    var selectorPanel = "#changedLocation "
+
+    var data = {
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      location: $(selectorPanel + "#location").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/changed_location",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#createPackage #tryItOut").click(function() {
+    var selectorPanel = "#createPackage "
+
+    var data = {
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      recipient_pubkey: $(selectorPanel + "#recipientPubkey").val(),
+      launcher_phone_number: $(selectorPanel + "#launcherPhoneNumber").val(),
+      recipient_phone_number: $(selectorPanel + "#recipientPhoneNumber").val(),
+      payment_buls: $(selectorPanel + "#paymentBuls").val(),
+      collateral_buls: $(selectorPanel + "#collateralBuls").val(),
+      deadline_timestamp: $(selectorPanel + "#deadlineTimestamp").val(),
+      description: $(selectorPanel + "#description").val(),
+      from_location: $(selectorPanel + "#fromLocation").val(),
+      to_location: $(selectorPanel + "#foLocation").val(),
+      from_address: $(selectorPanel + "#fromAddress").val(),
+      to_address: $(selectorPanel + "#toAddress").val(),
+      event_location: $(selectorPanel + "#eventLocation").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/create_package",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#events #tryItOut").click(function() {
+    var selectorPanel = "#events "
+
+    var data = {}
+
+    requestToServer({
+      uri: "/v3/events",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#myPackages #tryItOut").click(function() {
+    var selectorPanel = "#myPackages "
+
+    var data = {}
+
+    requestToServer({
+      uri: "/v3/my_packages",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#package #tryItOut").click(function() {
+    var selectorPanel = "#package "
+
+    var data = {
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/package",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
+
+  $("#packagePhoto #tryItOut").click(function() {
+    var selectorPanel = "#packagePhoto "
+
+    var data = {
+      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+    }
+
+    requestToServer({
+      uri: "/v3/package_photo",
+      data: data,
+      response: function(result) {
+        printResponse(selectorPanel, result)
+      },
+    })
+  })
 })
 
-function setUser(newUser) {
-  selectUser = newUser
+function setUser(user) {
+  selectUser = user
 
-  $('#userName')
+  $("#userName")
     .empty()
-    .append(newUser.name)
+    .append(user.name)
 
-  $('#privateKey')
+  $("#privateKey")
     .empty()
-    .append(newUser.privateKey)
+    .append(user.privateKey)
 }
 
-$('#tryAddEvent').click(function() {
-  var newEvent = {
-    event_type: $('#addEventType').val(),
-    location: $('#addEventLocation').val(),
+function requestToServer({ uri, data, response }) {
+  try {
+    var url = baseUrl + uri
+
+    var keypair = StellarBase.Keypair.fromSecret(selectUser.privateKey)
+    var pubkey = keypair.publicKey()
+    var fingerprint = generateFingerprint(url, data)
+    var signature = signFingerprint(fingerprint, keypair.secret())
+
+    var formData = objectToFormData(data)
+
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: formData,
+      dataType: "json",
+      processData: false,
+      contentType: false,
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader("Pubkey", keypair)
+        xhr.setRequestHeader("Fingerprint", fingerprint)
+        xhr.setRequestHeader("Signature", signature)
+      },
+      success: function(result) {
+        response(result)
+      },
+      error: function(result) {
+        response(result)
+      },
+    })
+  } catch (error) {
+    alert("An error has occurred. Details in the Developer Console.")
+  }
+}
+
+function printResponse(selectorPanel, response) {
+  $(selectorPanel + "#responseFormGroup").show()
+
+  $(selectorPanel + "#response")
+    .empty()
+    .append(JSON.stringify(response))
+}
+
+function objectToFormData(data = null) {
+  var formData = new FormData()
+
+  if (!data) return formData
+
+  for (var key in data) {
+    formData.append(key, data[key])
   }
 
-  var uri = baseUrl + '/v3/add_event'
-
-  var keypair = StellarBase.Keypair.fromSecret(selectUser.privateKey)
-  var fingerprint = generateFingerprint(uri, newEvent)
-  var signature = signFingerprint(fingerprint, keypair.secret())
-
-  var formData = new FormData()
-  formData.append('event_type', newEvent.event_type)
-  formData.append('location', newEvent.location)
-
-  $.ajax({
-    type: 'POST',
-    url: uri,
-    data: formData,
-    dataType: 'json',
-    processData: false,
-    contentType: false,
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader('Pubkey', keypair.publicKey())
-      xhr.setRequestHeader('Fingerprint', fingerprint)
-      xhr.setRequestHeader('Signature', signature)
-    },
-    success: function(data) {
-      console.log('success')
-      console.log(data)
-    },
-    error: function(data) {
-      console.log('error')
-      console.log(data)
-      alert('Open the Developer Console in your browser.')
-    },
-  }).done(function(response) {
-    console.log('done')
-    console.log(response)
-
-    printResponse(
-      $('#addEventResponseFormGroup'),
-      $('#addEventResponse'),
-      response
-    )
-  })
-})
-
-$('#tryAcceptPackage').click(function() {
-  var newAcceptPackage = {
-    escrow_pubkey: $('#acceptPackageEscrowPubkey').val(),
-    location: $('#acceptPackageLocation').val(),
-  }
-
-  var uri = baseUrl + '/v3/accept_package'
-
-  var keypair = StellarBase.Keypair.fromSecret(selectUser.privateKey)
-  var fingerprint = generateFingerprint(uri, newAcceptPackage)
-  var signature = signFingerprint(fingerprint, keypair.secret())
-
-  var formData = new FormData()
-  formData.append('event_type', newAcceptPackage.escrow_pubkey)
-  formData.append('location', newAcceptPackage.location)
-
-  $.ajax({
-    type: 'POST',
-    url: uri,
-    data: formData,
-    dataType: 'json',
-    processData: false,
-    contentType: false,
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader('Pubkey', keypair.publicKey())
-      xhr.setRequestHeader('Fingerprint', fingerprint)
-      xhr.setRequestHeader('Signature', signature)
-    },
-    success: function(response) {
-      printResponse(
-        $('#acceptPackageResponseFormGroup'),
-        $('#acceptPackageResponse'),
-        response
-      )
-    },
-    error: function(response) {
-      printResponse(
-        $('#acceptPackageResponseFormGroup'),
-        $('#acceptPackageResponse'),
-        response
-      )
-    },
-  })
-})
-
-$('#tryCreatePackage').click(function() {
-  var newCreatePackage = {
-    escrow_pubkey: $('#createPackageEscrowPubkey').val(),
-    recipient_pubkey: $('#createPackageRecipientPubkey').val(),
-    launcher_phone_number: $('#createPackageLauncherPhoneNumber').val(),
-    recipient_phone_number: $('#createPackageRecipientPhoneNumber').val(),
-    payment_buls: $('#createPackagePaymentBuls').val(),
-    collateral_buls: $('#createPackageCollateralBuls').val(),
-    deadline_timestamp: $('#createPackageDeadlineTimestamp').val(),
-    description: $('#createPackageDescription').val(),
-    from_location: $('#createPackageFromLocation').val(),
-    to_location: $('#createPackageToLocation').val(),
-    from_address: $('#createPackageFromAddress').val(),
-    to_address: $('#createPackageToAddress').val(),
-    event_location: $('#createPackageEventLocation').val(),
-  }
-
-  var uri = baseUrl + '/v3/create_package'
-
-  var keypair = StellarBase.Keypair.fromSecret(selectUser.privateKey)
-  var fingerprint = generateFingerprint(uri, newCreatePackage)
-  var signature = signFingerprint(fingerprint, keypair.secret())
-
-  var formData = new FormData()
-  formData.append('escrow_pubkey', newCreatePackage.escrow_pubkey)
-  formData.append('recipient_pubkey', newCreatePackage.recipient_pubkey)
-  formData.append(
-    'launcher_phone_number',
-    newCreatePackage.launcher_phone_number
-  )
-  formData.append(
-    'recipient_phone_number',
-    newCreatePackage.recipient_phone_number
-  )
-  formData.append('payment_buls', newCreatePackage.payment_buls)
-  formData.append('collateral_buls', newCreatePackage.collateral_buls)
-  formData.append('deadline_timestamp', newCreatePackage.deadline_timestamp)
-  formData.append('description', newCreatePackage.description)
-  formData.append('from_location', newCreatePackage.from_location)
-  formData.append('to_location', newCreatePackage.to_location)
-  formData.append('from_address', newCreatePackage.from_address)
-  formData.append('to_address', newCreatePackage.to_address)
-  formData.append('event_location', newCreatePackage.event_location)
-
-  $.ajax({
-    type: 'POST',
-    url: uri,
-    data: formData,
-    dataType: 'json',
-    processData: false,
-    contentType: false,
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader('Pubkey', keypair.publicKey())
-      xhr.setRequestHeader('Fingerprint', fingerprint)
-      xhr.setRequestHeader('Signature', signature)
-    },
-    success: function(response) {
-      printResponse(
-        $('#createPackageResponseFormGroup'),
-        $('#createPackageResponse'),
-        response
-      )
-    },
-    error: function(response) {
-      printResponse(
-        $('#createPackageResponseFormGroup'),
-        $('#createPackageResponse'),
-        response
-      )
-    },
-  })
-})
-
-function printResponse(elementFormGroup, elementResponse, response) {
-  elementFormGroup.show()
-
-  elementResponse.empty().append(JSON.stringify(response))
+  return formData
 }
 
 function generateFingerprint(uri, kwargs = null) {
   if (kwargs == null) {
-    kwargstring = ''
+    kwargstring = ""
   } else {
-    var ert = ['']
+    var ert = [""]
     for (var key in kwargs) {
       ert.push(`${key}=${kwargs[key]}`)
     }
-    kwargstring = ert.join(',')
+    kwargstring = ert.join(",")
   }
   return `${uri}${kwargstring},${Date.now() * 1000}`
 }
@@ -240,7 +318,7 @@ function stringToArrayBuffer(str) {
 }
 
 function arrayBufferToBase64(buffer) {
-  var binary = ''
+  var binary = ""
   var bytes = new Uint8Array(buffer)
   var len = bytes.byteLength
   for (var i = 0; i < len; i++) {
