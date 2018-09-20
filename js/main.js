@@ -1,41 +1,42 @@
 var customerData = []
 var selectUser = {}
-var baseUrl = "http://itd.pub:11250"
-
+var baseUrl = 'http://itd.pub:11250'
 $(document).ready(function() {
-  $("#applyCustomerData").click(function() {
-    var json = $("#textareaCustomerData").val()
+  $('#applyCustomerData').click(function() {
+    var json = $('#textareaCustomerData').val()
     customerData = JSON.parse(json)
 
-    // the first user is selected by default
-    setUser(customerData[0])
-
     customerData.forEach(function(element, index) {
-      $("#dropdownUsers").append(
-        '<li><a href="#" id="' + index + '">' + element.name + "</a></li>"
+      customerData[index].keypairStellar = generateKeypairStellar(element)
+
+      $('#dropdownUsers').append(
+        '<li><a href="#" id="' + index + '">' + element.name + '</a></li>'
       )
 
-      $("#dropdownUsers li a:eq(" + index + ")").click(element, function(
+      $('#dropdownUsers li a:eq(' + index + ')').click(element, function(
         event
       ) {
         setUser(event.data)
       })
     })
 
-    $("#panelCustomerData").hide()
-    $("#panelRequests").show()
+    // the first user is selected by default
+    setUser(customerData[0])
+
+    $('#panelCustomerData').hide()
+    $('#panelRequests').show()
   })
 
-  $("#addEvent #tryItOut").click(function() {
-    var selectorPanel = "#addEvent "
+  $('#addEvent #tryItOut').click(function() {
+    var selectorPanel = '#addEvent '
 
     var data = {
-      event_type: $(selectorPanel + "#eventType").val(),
-      location: $(selectorPanel + "#location").val(),
+      event_type: $(selectorPanel + '#eventType').val(),
+      location: $(selectorPanel + '#location').val(),
     }
 
     requestToServer({
-      uri: "/v3/add_event",
+      uri: '/v3/add_event',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -43,16 +44,16 @@ $(document).ready(function() {
     })
   })
 
-  $("#acceptPackage #tryItOut").click(function() {
-    var selectorPanel = "#acceptPackage "
+  $('#acceptPackage #tryItOut').click(function() {
+    var selectorPanel = '#acceptPackage '
 
     var data = {
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
-      location: $(selectorPanel + "#location").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+      location: $(selectorPanel + '#location').val(),
     }
 
     requestToServer({
-      uri: "/v3/accept_package",
+      uri: '/v3/accept_package',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -60,16 +61,16 @@ $(document).ready(function() {
     })
   })
 
-  $("#assignPackage #tryItOut").click(function() {
-    var selectorPanel = "#assignPackage "
+  $('#assignPackage #tryItOut').click(function() {
+    var selectorPanel = '#assignPackage '
 
     var data = {
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
-      location: $(selectorPanel + "#location").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+      location: $(selectorPanel + '#location').val(),
     }
 
     requestToServer({
-      uri: "/v3/assign_package",
+      uri: '/v3/assign_package',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -77,17 +78,17 @@ $(document).ready(function() {
     })
   })
 
-  $("#assignXdrs #tryItOut").click(function() {
-    var selectorPanel = "#assignXdrs "
+  $('#assignXdrs #tryItOut').click(function() {
+    var selectorPanel = '#assignXdrs '
 
     var data = {
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
-      location: $(selectorPanel + "#location").val(),
-      kwargs: $(selectorPanel + "#kwargs").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+      location: $(selectorPanel + '#location').val(),
+      kwargs: $(selectorPanel + '#kwargs').val(),
     }
 
     requestToServer({
-      uri: "/v3/assign_xdrs",
+      uri: '/v3/assign_xdrs',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -95,17 +96,17 @@ $(document).ready(function() {
     })
   })
 
-  $("#availablePackages #tryItOut").click(function() {
-    var selectorPanel = "#availablePackages "
+  $('#availablePackages #tryItOut').click(function() {
+    var selectorPanel = '#availablePackages '
 
     var data = {
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
-      location: $(selectorPanel + "#location").val(),
-      kwargs: $(selectorPanel + "#kwargs").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+      location: $(selectorPanel + '#location').val(),
+      kwargs: $(selectorPanel + '#kwargs').val(),
     }
 
     requestToServer({
-      uri: "/v3/available_packages",
+      uri: '/v3/available_packages',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -113,16 +114,16 @@ $(document).ready(function() {
     })
   })
 
-  $("#changedLocation #tryItOut").click(function() {
-    var selectorPanel = "#changedLocation "
+  $('#changedLocation #tryItOut').click(function() {
+    var selectorPanel = '#changedLocation '
 
     var data = {
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
-      location: $(selectorPanel + "#location").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+      location: $(selectorPanel + '#location').val(),
     }
 
     requestToServer({
-      uri: "/v3/changed_location",
+      uri: '/v3/changed_location',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -130,29 +131,29 @@ $(document).ready(function() {
     })
   })
 
-  $("#createPackage #tryItOut").click(function() {
-    var selectorPanel = "#createPackage "
+  $('#createPackage #tryItOut').click(function() {
+    var selectorPanel = '#createPackage '
 
     var data = {
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
 
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
-      recipient_pubkey: $(selectorPanel + "#recipientPubkey").val(),
-      launcher_phone_number: $(selectorPanel + "#launcherPhoneNumber").val(),
-      recipient_phone_number: $(selectorPanel + "#recipientPhoneNumber").val(),
-      payment_buls: $(selectorPanel + "#paymentBuls").val(),
-      collateral_buls: $(selectorPanel + "#collateralBuls").val(),
-      deadline_timestamp: $(selectorPanel + "#deadlineTimestamp").val(),
-      description: $(selectorPanel + "#description").val(),
-      from_location: $(selectorPanel + "#fromLocation").val(),
-      to_location: $(selectorPanel + "#foLocation").val(),
-      from_address: $(selectorPanel + "#fromAddress").val(),
-      to_address: $(selectorPanel + "#toAddress").val(),
-      event_location: $(selectorPanel + "#eventLocation").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+      recipient_pubkey: $(selectorPanel + '#recipientPubkey').val(),
+      launcher_phone_number: $(selectorPanel + '#launcherPhoneNumber').val(),
+      recipient_phone_number: $(selectorPanel + '#recipientPhoneNumber').val(),
+      payment_buls: $(selectorPanel + '#paymentBuls').val(),
+      collateral_buls: $(selectorPanel + '#collateralBuls').val(),
+      deadline_timestamp: $(selectorPanel + '#deadlineTimestamp').val(),
+      description: $(selectorPanel + '#description').val(),
+      from_location: $(selectorPanel + '#fromLocation').val(),
+      to_location: $(selectorPanel + '#foLocation').val(),
+      from_address: $(selectorPanel + '#fromAddress').val(),
+      to_address: $(selectorPanel + '#toAddress').val(),
+      event_location: $(selectorPanel + '#eventLocation').val(),
     }
 
     requestToServer({
-      uri: "/v3/create_package",
+      uri: '/v3/create_package',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -160,13 +161,13 @@ $(document).ready(function() {
     })
   })
 
-  $("#events #tryItOut").click(function() {
-    var selectorPanel = "#events "
+  $('#events #tryItOut').click(function() {
+    var selectorPanel = '#events '
 
     var data = {}
 
     requestToServer({
-      uri: "/v3/events",
+      uri: '/v3/events',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -174,13 +175,13 @@ $(document).ready(function() {
     })
   })
 
-  $("#myPackages #tryItOut").click(function() {
-    var selectorPanel = "#myPackages "
+  $('#myPackages #tryItOut').click(function() {
+    var selectorPanel = '#myPackages '
 
     var data = {}
 
     requestToServer({
-      uri: "/v3/my_packages",
+      uri: '/v3/my_packages',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -188,15 +189,15 @@ $(document).ready(function() {
     })
   })
 
-  $("#package #tryItOut").click(function() {
-    var selectorPanel = "#package "
+  $('#package #tryItOut').click(function() {
+    var selectorPanel = '#package '
 
     var data = {
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
     }
 
     requestToServer({
-      uri: "/v3/package",
+      uri: '/v3/package',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -204,15 +205,15 @@ $(document).ready(function() {
     })
   })
 
-  $("#packagePhoto #tryItOut").click(function() {
-    var selectorPanel = "#packagePhoto "
+  $('#packagePhoto #tryItOut').click(function() {
+    var selectorPanel = '#packagePhoto '
 
     var data = {
-      escrow_pubkey: $(selectorPanel + "#escrowPubkey").val(),
+      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
     }
 
     requestToServer({
-      uri: "/v3/package_photo",
+      uri: '/v3/package_photo',
       data: data,
       response: function(result) {
         printResponse(selectorPanel, result)
@@ -224,37 +225,50 @@ $(document).ready(function() {
 function setUser(user) {
   selectUser = user
 
-  $("#userName")
+  $('#userName')
     .empty()
     .append(user.name)
 
-  $("#privateKey")
+  $('#publicKey')
     .empty()
-    .append(user.privateKey)
+    .append(user.keypairStellar.publicKey())
+}
+
+function generateKeypairStellar(user) {
+  try {
+    var keypair = StellarBase.Keypair.fromSecret(user.privateKey)
+    return keypair
+  } catch (error) {
+    console.error(error)
+    alert('User with name "' + user.name + '" contains not corect private key')
+
+    return null
+  }
 }
 
 function requestToServer({ uri, data, response }) {
   try {
     var url = baseUrl + uri
 
-    var keypair = StellarBase.Keypair.fromSecret(selectUser.privateKey)
-    var pubkey = keypair.publicKey()
     var fingerprint = generateFingerprint(url, data)
-    var signature = signFingerprint(fingerprint, keypair.secret())
+    var signature = signFingerprint(
+      fingerprint,
+      selectUser.keypairStellar.secret()
+    )
 
     var formData = objectToFormData(data)
 
     $.ajax({
-      type: "POST",
+      type: 'POST',
       url: url,
       data: formData,
-      dataType: "json",
+      dataType: 'json',
       processData: false,
       contentType: false,
       beforeSend: function(xhr) {
-        xhr.setRequestHeader("Pubkey", keypair)
-        xhr.setRequestHeader("Fingerprint", fingerprint)
-        xhr.setRequestHeader("Signature", signature)
+        xhr.setRequestHeader('Pubkey', selectUser.keypairStellar.publicKey())
+        xhr.setRequestHeader('Fingerprint', fingerprint)
+        xhr.setRequestHeader('Signature', signature)
       },
       success: function(result) {
         response(result)
@@ -264,14 +278,15 @@ function requestToServer({ uri, data, response }) {
       },
     })
   } catch (error) {
-    alert("An error has occurred. Details in the Developer Console.")
+    console.error(error)
+    alert('An error has occurred. Details in the Developer Console.')
   }
 }
 
 function printResponse(selectorPanel, response) {
-  $(selectorPanel + "#responseFormGroup").show()
+  $(selectorPanel + '#responseFormGroup').show()
 
-  $(selectorPanel + "#response")
+  $(selectorPanel + '#response')
     .empty()
     .append(JSON.stringify(response))
 }
@@ -290,13 +305,13 @@ function objectToFormData(data = null) {
 
 function generateFingerprint(uri, kwargs = null) {
   if (kwargs == null) {
-    kwargstring = ""
+    kwargstring = ''
   } else {
-    var ert = [""]
+    var ert = ['']
     for (var key in kwargs) {
       ert.push(`${key}=${kwargs[key]}`)
     }
-    kwargstring = ert.join(",")
+    kwargstring = ert.join(',')
   }
   return `${uri}${kwargstring},${Date.now() * 1000}`
 }
@@ -318,7 +333,7 @@ function stringToArrayBuffer(str) {
 }
 
 function arrayBufferToBase64(buffer) {
-  var binary = ""
+  var binary = ''
   var bytes = new Uint8Array(buffer)
   var len = bytes.byteLength
   for (var i = 0; i < len; i++) {
