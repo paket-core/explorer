@@ -1,6 +1,7 @@
 var customerData = []
 var selectUser = {}
 var baseUrl = 'http://itd.pub:11250'
+
 $(document).ready(function() {
   $('#applyCustomerData').click(function() {
     var json = $('#textareaCustomerData').val()
@@ -16,12 +17,12 @@ $(document).ready(function() {
       $('#dropdownUsers li a:eq(' + index + ')').click(element, function(
         event
       ) {
-        setUser(event.data)
+        applyChangeUser(event.data)
       })
     })
 
     // the first user is selected by default
-    setUser(customerData[0])
+    applyChangeUser(customerData[0])
 
     $('#panelCustomerData').hide()
     $('#panelRequests').show()
@@ -222,9 +223,10 @@ $(document).ready(function() {
   })
 })
 
-function setUser(user) {
+function applyChangeUser(user) {
   selectUser = user
 
+  // Change display info about user
   $('#userName')
     .empty()
     .append(user.name)
@@ -232,6 +234,72 @@ function setUser(user) {
   $('#publicKey')
     .empty()
     .append(user.keypairStellar.publicKey())
+
+  // Get all packages for this user
+  requestToGetMyPackages()
+    .done(function(data) {
+      var packages = data.packages
+
+      var tablePackages = $('#tablePackages tbody')
+      tablePackages.empty()
+
+      // Set packages in table
+      for (let index = 0; index < packages.length; index++) {
+        const package = packages[index]
+
+        var packageId = package.escrow_pubkey
+
+        var shortPackageId =
+          package.from_address + '-' + packageId.substr(packageId.length - 3)
+
+        var launchDate = package.launch_date
+
+        var recipientsLocation = package.from_location
+
+        var courieredEvent = package.events
+          .filter(event => event.event_type == 'couriered')
+          .last()
+
+        var receivedEvent = package.events
+          .filter(event => event.event_type == 'received')
+          .last()
+
+        var launchedEvent = package.events
+          .filter(event => event.event_type == 'launched')
+          .last()
+
+        var currentCustodianPackage = (
+          courieredEvent ||
+          receivedEvent ||
+          launchedEvent
+        ).user_pubkey
+
+        var htmlRow =
+          '<tr>' +
+          '<td>' +
+          shortPackageId +
+          '</td>' +
+          '<td>' +
+          launchDate +
+          '</td>' +
+          '<td>' +
+          recipientsLocation +
+          '</td>' +
+          '<td>' +
+          currentCustodianPackage +
+          '</td>' +
+          '</tr>'
+
+        tablePackages.append(htmlRow)
+      }
+
+      // Refresh DataTable
+      $('#tablePackages').DataTable()
+    })
+    .catch(function(error) {
+      console.error(error)
+      alert('Failed to get data from server')
+    })
 }
 
 function generateKeypairStellar(user) {
@@ -241,6 +309,45 @@ function generateKeypairStellar(user) {
   } catch (error) {
     console.error(error)
     alert('User with name "' + user.name + '" contains not corect private key')
+
+    return null
+  }
+}
+
+function requestToGetMyPackages() {
+  return new_requestToServer({
+    uri: '/v3/my_packages',
+  })
+}
+
+function new_requestToServer({ uri, data }) {
+  try {
+    var url = baseUrl + uri
+
+    var fingerprint = generateFingerprint(url, data)
+    var signature = signFingerprint(
+      fingerprint,
+      selectUser.keypairStellar.secret()
+    )
+
+    var formData = objectToFormData(data)
+
+    return $.ajax({
+      type: 'POST',
+      url: url,
+      data: formData,
+      dataType: 'json',
+      processData: false,
+      contentType: false,
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('Pubkey', selectUser.keypairStellar.publicKey())
+        xhr.setRequestHeader('Fingerprint', fingerprint)
+        xhr.setRequestHeader('Signature', signature)
+      },
+    })
+  } catch (error) {
+    console.error(error)
+    alert('An error has occurred. Details in the Developer Console.')
 
     return null
   }
@@ -340,4 +447,8 @@ function arrayBufferToBase64(buffer) {
     binary += String.fromCharCode(bytes[i])
   }
   return window.btoa(binary)
+}
+
+Array.prototype.last = function() {
+  return this[this.length - 1]
 }

@@ -21,7 +21,7 @@
         content=""
     >
 
-    <title>Paket</title>
+    <title>PaKeT</title>
 
     <!-- Bootstrap Core CSS -->
     <link
@@ -48,6 +48,12 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.css"
+    />
 
 </head>
 
@@ -126,831 +132,897 @@
 
                         <!-- .panel-heading -->
                         <div class="panel-body">
-                            <div
-                                class="panel-group"
-                                id="accordion"
-                            >
+
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a
+                                        data-toggle="tab"
+                                        href="#info"
+                                    >Info</a>
+                                </li>
+                                <li>
+                                    <a
+                                        data-toggle="tab"
+                                        href="#request"
+                                    >Request</a>
+                                </li>
+                            </ul>
+
+                            <br>
+
+                            <div class="tab-content">
                                 <div
-                                    id="addEvent"
-                                    class="panel panel-success"
+                                    id="info"
+                                    class="tab-pane fade in active"
                                 >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseOne"
-                                            >Add Event</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseOne"
-                                        class="panel-collapse collapse in"
-                                    >
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">Packages</div>
+
                                         <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Event type</label>
-                                                        <input
-                                                            id="eventType"
-                                                            type="text"
-                                                            class="form-control"
-                                                            value="TestEvent"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Location</label>
-                                                        <input
-                                                            id="location"
-                                                            type="text"
-                                                            class="form-control"
-                                                            value="51.803523,-0.37716353"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
-                                            </div>
+                                            <!-- Table -->
+                                            <table
+                                                id="tablePackages"
+                                                class="table table-striped table-bordered"
+                                                style="width:100%"
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <th>Short id of the package</th>
+                                                        <th>Datetime of creation</th>
+                                                        <th>Recipient's location</th>
+                                                        <th>Current custodian of the package</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Tiger Nixon</td>
+                                                        <td>System Architect</td>
+                                                        <td>Edinburgh</td>
+                                                        <td>61</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
+                                <!-- #info -->
 
                                 <div
-                                    id="acceptPackage"
-                                    class="panel panel-success"
+                                    id="request"
+                                    class="tab-pane fade"
                                 >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseTwo"
-                                            >Accept Package</a>
-                                        </h4>
-                                    </div>
                                     <div
-                                        id="collapseTwo"
-                                        class="panel-collapse collapse"
+                                        class="panel-group"
+                                        id="accordion"
                                     >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Escrow pubkey</label>
-                                                        <input
-                                                            id="escrowPubkey"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Location</label>
-                                                        <input
-                                                            id="location"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="addEvent"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseOne"
+                                                    >Add Event</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseOne"
+                                                class="panel-collapse collapse in"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Event type</label>
+                                                                <input
+                                                                    id="eventType"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                    value="TestEvent"
+                                                                >
                                                             </div>
-                                                        </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Location</label>
+                                                                <input
+                                                                    id="location"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                    value="51.803523,-0.37716353"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="assignPackage"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseThree"
-                                            >Assign Package</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseThree"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Escrow pubkey</label>
-                                                        <input
-                                                            id="escrowPubkey"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Location</label>
-                                                        <input
-                                                            id="location"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="acceptPackage"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseTwo"
+                                                    >Accept Package</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseTwo"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Escrow pubkey</label>
+                                                                <input
+                                                                    id="escrowPubkey"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
                                                             </div>
-                                                        </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Location</label>
+                                                                <input
+                                                                    id="location"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="assignXdrs"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseFour"
-                                            >Assign xdrs</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseFour"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Escrow pubkey</label>
-                                                        <input
-                                                            id="escrowPubkey"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Location</label>
-                                                        <input
-                                                            id="location"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >XDRs transaction in JSON format</label>
-                                                        <input
-                                                            id="kwargs"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="assignPackage"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseThree"
+                                                    >Assign Package</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseThree"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Escrow pubkey</label>
+                                                                <input
+                                                                    id="escrowPubkey"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
                                                             </div>
-                                                        </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Location</label>
+                                                                <input
+                                                                    id="location"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="availablePackages"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseFive"
-                                            >Available Packages</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseFive"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Location</label>
-                                                        <input
-                                                            id="location"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="assignXdrs"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseFour"
+                                                    >Assign xdrs</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseFour"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Escrow pubkey</label>
+                                                                <input
+                                                                    id="escrowPubkey"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
                                                             </div>
-                                                        </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Location</label>
+                                                                <input
+                                                                    id="location"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >XDRs transaction in JSON format</label>
+                                                                <input
+                                                                    id="kwargs"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="changedLocation"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseSix"
-                                            >Changed Location</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseSix"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Escrow pubkey</label>
-                                                        <input
-                                                            id="escrowPubkey"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Location</label>
-                                                        <input
-                                                            id="location"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="availablePackages"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseFive"
+                                                    >Available Packages</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseFive"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Location</label>
+                                                                <input
+                                                                    id="location"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
                                                             </div>
-                                                        </div>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="createPackage"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseSeven"
-                                            >Create Package</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseSeven"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Escrow pubkey</label>
-                                                        <input
-                                                            id="escrowPubkey"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Recipient
-                                                            pubkey
-                                                        </label>
-                                                        <input
-                                                            id="recipientPubkey"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Phone number
-                                                            of the launcher</label>
-                                                        <input
-                                                            id="launcherPhoneNumber"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Phone number
-                                                            of the recipient</label>
-                                                        <input
-                                                            id="recipientPhoneNumber"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >BULs promised
-                                                            as payment</label>
-                                                        <input
-                                                            id="paymentBuls"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >BULs promised
-                                                            as collateral</label>
-                                                        <input
-                                                            id="collateralBuls"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Deadline
-                                                            timestamp
-                                                        </label>
-                                                        <input
-                                                            id="deadlineTimestamp"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Package
-                                                            description (300 characters max)</label>
-                                                        <input
-                                                            id="description"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >GPS location
-                                                            of place where launcher will give package to courier</label>
-                                                        <input
-                                                            id="fromLocation"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >GPS location
-                                                            of place where package need to be delivered to</label>
-                                                        <input
-                                                            id="toLocation"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Address
-                                                            of place where launcher will give package to courier</label>
-                                                        <input
-                                                            id="fromAddress"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Address
-                                                            of place where package need to be delivered to</label>
-                                                        <input
-                                                            id="toAddress"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >GPS location
-                                                            of place where launcher submited package info</label>
-                                                        <input
-                                                            id="eventLocation"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="changedLocation"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseSix"
+                                                    >Changed Location</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseSix"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Escrow pubkey</label>
+                                                                <input
+                                                                    id="escrowPubkey"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
                                                             </div>
-                                                        </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Location</label>
+                                                                <input
+                                                                    id="location"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="events"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseEight"
-                                            >Events</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseEight"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="createPackage"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseSeven"
+                                                    >Create Package</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseSeven"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Escrow pubkey</label>
+                                                                <input
+                                                                    id="escrowPubkey"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
                                                             </div>
-                                                        </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Recipient
+                                                                    pubkey
+                                                                </label>
+                                                                <input
+                                                                    id="recipientPubkey"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Phone number
+                                                                    of the launcher</label>
+                                                                <input
+                                                                    id="launcherPhoneNumber"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Phone number
+                                                                    of the recipient</label>
+                                                                <input
+                                                                    id="recipientPhoneNumber"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >BULs promised
+                                                                    as payment</label>
+                                                                <input
+                                                                    id="paymentBuls"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >BULs promised
+                                                                    as collateral</label>
+                                                                <input
+                                                                    id="collateralBuls"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Deadline
+                                                                    timestamp
+                                                                </label>
+                                                                <input
+                                                                    id="deadlineTimestamp"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Package
+                                                                    description (300 characters max)</label>
+                                                                <input
+                                                                    id="description"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >GPS location
+                                                                    of place where launcher will give package to
+                                                                    courier</label>
+                                                                <input
+                                                                    id="fromLocation"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >GPS location
+                                                                    of place where package need to be delivered to</label>
+                                                                <input
+                                                                    id="toLocation"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Address
+                                                                    of place where launcher will give package to
+                                                                    courier</label>
+                                                                <input
+                                                                    id="fromAddress"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Address
+                                                                    of place where package need to be delivered to</label>
+                                                                <input
+                                                                    id="toAddress"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >GPS location
+                                                                    of place where launcher submited package info</label>
+                                                                <input
+                                                                    id="eventLocation"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="myPackages"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseNine"
-                                            >My Packages</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseNine"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="events"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseEight"
+                                                    >Events</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseEight"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="package"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseTen"
-                                            >Accept Package</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseTen"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Escrow pubkey</label>
-                                                        <input
-                                                            id="escrowPubkey"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="myPackages"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseNine"
+                                                    >My Packages</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseNine"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div
-                                    id="packagePhoto"
-                                    class="panel panel-success"
-                                >
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">
-                                            <a
-                                                data-toggle="collapse"
-                                                data-parent="#accordion"
-                                                href="#collapseEleven"
-                                            >Package Photo</a>
-                                        </h4>
-                                    </div>
-                                    <div
-                                        id="collapseEleven"
-                                        class="panel-collapse collapse"
-                                    >
-                                        <div class="panel-body">
-                                            <div class="col-lg-6">
-                                                <form class="bs-component">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="control-label"
-                                                            for="inputDefault"
-                                                        >Escrow pubkey</label>
-                                                        <input
-                                                            id="escrowPubkey"
-                                                            type="text"
-                                                            class="form-control"
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div
-                                                                id="tryItOut"
-                                                                class="btn btn-success"
-                                                            >
-                                                                Try it out!
+                                        <div
+                                            id="package"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseTen"
+                                                    >Accept Package</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseTen"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Escrow pubkey</label>
+                                                                <input
+                                                                    id="escrowPubkey"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
                                                             </div>
-                                                        </div>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                    <div
-                                                        id="responseFormGroup"
-                                                        class="form-group"
-                                                        style="display: none;"
-                                                    >
-                                                        <p>Response Body</p>
-                                                        <figure class="highlight">
-                                                            <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
-                                                        </figure>
-                                                    </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
+
+                                        <div
+                                            id="packagePhoto"
+                                            class="panel panel-success"
+                                        >
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a
+                                                        data-toggle="collapse"
+                                                        data-parent="#accordion"
+                                                        href="#collapseEleven"
+                                                    >Package Photo</a>
+                                                </h4>
+                                            </div>
+                                            <div
+                                                id="collapseEleven"
+                                                class="panel-collapse collapse"
+                                            >
+                                                <div class="panel-body">
+                                                    <div class="col-lg-6">
+                                                        <form class="bs-component">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    class="control-label"
+                                                                    for="inputDefault"
+                                                                >Escrow pubkey</label>
+                                                                <input
+                                                                    id="escrowPubkey"
+                                                                    type="text"
+                                                                    class="form-control"
+                                                                >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div
+                                                                        id="tryItOut"
+                                                                        class="btn btn-success"
+                                                                    >
+                                                                        Try it out!
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                id="responseFormGroup"
+                                                                class="form-group"
+                                                                style="display: none;"
+                                                            >
+                                                                <p>Response Body</p>
+                                                                <figure class="highlight">
+                                                                    <pre><code class="language-javascript" data-lang="JavaScript" id="response"></code></pre>
+                                                                </figure>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
+                                <!-- #request -->
 
                             </div>
+                            <!-- .tab-content -->
                         </div>
                         <!-- .panel-body -->
                     </div>
@@ -976,6 +1048,11 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/main.js"></script>
+
+    <script
+        type="text/javascript"
+        src="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.js"
+    ></script>
 
 </body>
 
