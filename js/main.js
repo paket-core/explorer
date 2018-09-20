@@ -1,13 +1,18 @@
 var customerData = []
 var selectUser = {}
 var baseUrl = 'http://itd.pub:11250'
+var dataTablePackage = null
 
 $(document).ready(function() {
+  // Refresh DataTable
+  dataTablePackage = $('#tablePackages').DataTable()
+
   $('#applyCustomerData').click(function() {
     var json = $('#textareaCustomerData').val()
     customerData = JSON.parse(json)
 
-    customerData.forEach(function(element, index) {
+    for (let index = 0; index < customerData.length; index++) {
+      const element = customerData[index]
       customerData[index].keypairStellar = generateKeypairStellar(element)
 
       $('#dropdownUsers').append(
@@ -19,11 +24,12 @@ $(document).ready(function() {
       ) {
         applyChangeUser(event.data)
       })
-    })
+    }
 
     // the first user is selected by default
     applyChangeUser(customerData[0])
 
+    $('.dropdown-toggle').dropdown()
     $('#panelCustomerData').hide()
     $('#panelRequests').show()
   })
@@ -137,8 +143,6 @@ $(document).ready(function() {
 
     var data = {
       escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
       recipient_pubkey: $(selectorPanel + '#recipientPubkey').val(),
       launcher_phone_number: $(selectorPanel + '#launcherPhoneNumber').val(),
       recipient_phone_number: $(selectorPanel + '#recipientPhoneNumber').val(),
@@ -221,10 +225,103 @@ $(document).ready(function() {
       },
     })
   })
+
+  $('#info #openCreatePackageModal').click(function() {
+    var recipientSelect = $('#createPackageModal #recipient')
+    var courierSelect = $('#createPackageModal #courier')
+
+    recipientSelect.empty()
+    courierSelect.empty()
+
+    // Recipient in modal window
+    for (let index = 0; index < customerData.length; index++) {
+      const element = customerData[index]
+
+      recipientSelect.append(
+        '<option value="' + index + '">' + element.name + '</option>'
+      )
+
+      courierSelect.append(
+        '<option value="' + index + '">' + element.name + '</option>'
+      )
+    }
+
+    // Show modal window
+    $('#createPackageModal').modal()
+  })
+
+  $('#createPackageModal #createPackage').click(function() {
+    var selectorPanel = '#createPackageModal '
+
+    // generate new Keypair
+    const newKeypair = StellarBase.Keypair.random()
+
+    // Get recipient
+    var recipientId = $(selectorPanel + '#recipient').val()
+    var recipientUser = customerData[recipientId]
+
+    // Get deadline
+    var deadline = $(selectorPanel + 'input[name=deadline]').val()
+
+    // Get date
+    var today = new Date()
+    if (deadline == '1Day') {
+      // 1 day from now
+      var deadlineUnixTimestamp =
+        new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() + 1
+        ).getTime() / 1000
+    } else {
+      // 1 week from now
+      var deadlineUnixTimestamp =
+        new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() + 7
+        ).getTime() / 1000
+    }
+
+    var data = {
+      escrow_pubkey: newKeypair.publicKey(),
+      recipient_pubkey: recipientUser.keypairStellar.publicKey(),
+      launcher_phone_number: selectUser.phoneNumber,
+      recipient_phone_number: recipientUser.phoneNumber,
+      payment_buls: $(selectorPanel + 'input[name=paymentBuls]').val(),
+      collateral_buls: $(selectorPanel + 'input[name=collateralBuls]').val(),
+      deadline_timestamp: deadlineUnixTimestamp,
+      description: $(selectorPanel + '#description').val(),
+      from_location: $(selectorPanel + '#fromLocation').val(),
+      to_location: $(selectorPanel + '#toLocation').val(),
+      from_address: $(selectorPanel + '#fromAddress').val(),
+      to_address: $(selectorPanel + '#toAddress').val(),
+      event_location: $(selectorPanel + '#eventLocation').val(),
+    }
+
+    // Create Package
+    request
+      .createPackage(data)
+      .done(function(data) {
+        // TO-DO: need save newKeypair to local storage
+
+        addRowPackagesToDataTable(data.package)
+
+        // Hide modal window
+        $('#createPackageModal').modal('hide')
+      })
+      .catch(function(error) {
+        console.error(error)
+        alert('An error occurred while creating the Package')
+      })
+  })
 })
 
 function applyChangeUser(user) {
   selectUser = user
+
+  var tablePackages = $('#tablePackages tbody')
+  tablePackages.empty()
 
   // Change display info about user
   $('#userName')
@@ -236,70 +333,61 @@ function applyChangeUser(user) {
     .append(user.keypairStellar.publicKey())
 
   // Get all packages for this user
-  requestToGetMyPackages()
+  request
+    .getMyPackages()
     .done(function(data) {
-      var packages = data.packages
-
-      var tablePackages = $('#tablePackages tbody')
-      tablePackages.empty()
-
-      // Set packages in table
-      for (let index = 0; index < packages.length; index++) {
-        const package = packages[index]
-
-        var packageId = package.escrow_pubkey
-
-        var shortPackageId =
-          package.from_address + '-' + packageId.substr(packageId.length - 3)
-
-        var launchDate = package.launch_date
-
-        var recipientsLocation = package.from_location
-
-        var courieredEvent = package.events
-          .filter(event => event.event_type == 'couriered')
-          .last()
-
-        var receivedEvent = package.events
-          .filter(event => event.event_type == 'received')
-          .last()
-
-        var launchedEvent = package.events
-          .filter(event => event.event_type == 'launched')
-          .last()
-
-        var currentCustodianPackage = (
-          courieredEvent ||
-          receivedEvent ||
-          launchedEvent
-        ).user_pubkey
-
-        var htmlRow =
-          '<tr>' +
-          '<td>' +
-          shortPackageId +
-          '</td>' +
-          '<td>' +
-          launchDate +
-          '</td>' +
-          '<td>' +
-          recipientsLocation +
-          '</td>' +
-          '<td>' +
-          currentCustodianPackage +
-          '</td>' +
-          '</tr>'
-
-        tablePackages.append(htmlRow)
+      for (let index = 0; index < data.packages.length; index++) {
+        const package = data.packages[index]
+        addRowPackagesToDataTable(package)
       }
-
-      // Refresh DataTable
-      $('#tablePackages').DataTable()
     })
     .catch(function(error) {
       console.error(error)
       alert('Failed to get data from server')
     })
+}
+
+function addRowPackagesToDataTable(package) {
+  var packageId = package.escrow_pubkey
+
+  var shortPackageId =
+    package.from_address.split(' ')[0] +
+    '-' +
+    packageId.substr(packageId.length - 3)
+
+  var userRole = package.user_role || 'launcher'
+
+  var launchDate = package.launch_date
+
+  var recipientsLocation = package.from_location
+
+  var courieredEvent = package.events
+    .filter(event => event.event_type == 'couriered')
+    .last()
+
+  var receivedEvent = package.events
+    .filter(event => event.event_type == 'received')
+    .last()
+
+  var launchedEvent = package.events
+    .filter(event => event.event_type == 'launched')
+    .last()
+
+  var currentCustodianPackage = (
+    courieredEvent ||
+    receivedEvent ||
+    launchedEvent
+  ).user_pubkey
+
+  dataTablePackage.row
+    .add([
+      shortPackageId,
+      userRole,
+      launchDate,
+      recipientsLocation,
+      currentCustodianPackage,
+    ])
+    .draw(true)
 }
 
 function generateKeypairStellar(user) {
@@ -314,10 +402,46 @@ function generateKeypairStellar(user) {
   }
 }
 
-function requestToGetMyPackages() {
-  return new_requestToServer({
-    uri: '/v3/my_packages',
-  })
+var request = {
+  getMyPackages: function() {
+    return new_requestToServer({
+      uri: '/v3/my_packages',
+    })
+  },
+  createPackage: function({
+    escrow_pubkey,
+    recipient_pubkey,
+    launcher_phone_number,
+    recipient_phone_number,
+    payment_buls,
+    collateral_buls,
+    deadline_timestamp,
+    description,
+    from_location,
+    to_location,
+    from_address,
+    to_address,
+    event_location,
+  }) {
+    return new_requestToServer({
+      uri: '/v3/create_package',
+      data: {
+        escrow_pubkey,
+        recipient_pubkey,
+        launcher_phone_number,
+        recipient_phone_number,
+        payment_buls,
+        collateral_buls,
+        deadline_timestamp,
+        description,
+        from_location,
+        to_location,
+        from_address,
+        to_address,
+        event_location,
+      },
+    })
+  },
 }
 
 function new_requestToServer({ uri, data }) {
