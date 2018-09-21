@@ -79,39 +79,77 @@
                                 rows="8"
                             >[
     { 
-        "name": "Aaron Johnson",
+        "name": "new5 [LAUNCHER]",
+        "privateKey": "SA4IXXZA3F6LYEWNBIK2OQTGJQDOVKXWJVVSZKIJMZRMUXE4EE6DD4QD",
+        "publicKey": "GBFTRKQ2FDOD5GIWT7E7AIS3QBZ43JHFBP4732B4E5NM6YSHFENQYNKJ",
+        "phoneNumber": "+781017754894"
+    },
+    { 
+        "name": "new4 [LAUNCHER]",
+        "privateKey": "SAUM7JP7Y3QPQ433TYRSPADQBZWVGO2NNWC37IMSJCXYDEWL4T6J2N43",
+        "publicKey": "GBSTVBBQ24UV2NUOZGI3ZV2R4IVLZRNUCR5ETFUTSIKS4T4YO6OWV3EJ",
+        "phoneNumber": "+781017754894"
+    },
+    { 
+        "name": "new3 [LAUNCHER]",
+        "privateKey": "SB742SUTROGNH2HF7CRYXVLH3ZFJGWPUYK2P3XUTOXUKXMLHEFZ3LC3U",
+        "publicKey": "GA6OUK7R5OAMQ5H4VTDM6JUXKEQ453D55XOTKXMYREMYKELNWU64QGHW",
+        "phoneNumber": "+781017754894"
+    },
+    { 
+        "name": "new2 [LAUNCHER]",
+        "privateKey": "SB2IYDKJYSG6ZE5ELMQRAKB2JEOBX4OFKT5VUWL56RMX2EASDV6IZWPQ",
+        "publicKey": "GCTXHSVPMKO6BNOCHVEJFOMNQWKSTQ52ASHM7S74KHW7JAAGWUK2WRCK",
+        "phoneNumber": "+781017754894"
+    },
+    { 
+        "name": "new1 [LAUNCHER]",
+        "privateKey": "SBC3LVOKBYUQGLQGRE3J3EFGWF7AHZBU6IEZ5HY5BUJ5Q6QNWEZFQ6II",
+        "publicKey": "GCBVDNVUFKFXY2QNVGFVVCLWIQLGOPGSOX4XI2YDYOZAZZXD4PTRW7LB",
+        "phoneNumber": "+781017754894"
+    },
+    { 
+        "name": "Aaron Johnson [LAUNCHER]",
+        "privateKey": "SDJ2D6G2OU67POFLWFAVQLSRTVUYGOHEWMQNWHJPYXZ57QSH7WTJJLNH",
+        "publicKey": "GAGMBGMJEICK4HKEDRQY6P4NIZUSP44GFOFZQI7IVR7AX53IYGSA7OJQ",
+        "phoneNumber": "+781017754894"
+    },
+    {
+        "name": "James Williams [RECIPIENT]",
+        "privateKey": "SBZMUB2SDNNSWGMNYCTOHKHMJJSXX7S6VRW4NONE7J42LHWWFY5ZGMVU",
+        "publicKey": "GDQIWDI5VGPCL2DM4NKJLGAJCF4QRNOKTLIKVL5CRAETT7G72G5MIIFD",
+        "phoneNumber": "+710178912347"
+    },
+    { 
+        "name": "Dylan Smith [FIRST COURIER]",
+        "privateKey": "SDZHRIJAJITJCGI6K6RAIGH3LYTVXUORBQ6QMFG3RF2M6PKFS6QOCN4Y",
+        "publicKey": "GACHAUDK3WKYSXNVOI63ZJUF7KVM44Z47VLHM2C6MHXTC7BSDK4Y35WT",
+        "phoneNumber": "+710121234234"
+    },
+    {
+        "name": "Jeremy Johnson [SECOND COURIER]",
+        "privateKey": "SABTGQREOAPF3N5HRLPL6W4V5CDNQTKPDKZACMEBKIPHAN7TFCEE5GAR",
+        "publicKey": "GBFEF6TB66FHIZFXVRHQBVQO2YWF7Z2OIJMRDOB6O6UTKLA6J6XWREB7",
+        "phoneNumber": "+711234701212"
+    },
+    { 
+        "name": "Aaron Johnson [TEST]",
         "privateKey": "SAGMKB4K5FB3K2WJ4GCMLJJE5UUVV45ZF7IWKB53WO7LPBJD4CPEWU5J",
         "phoneNumber": "+781017754894"
     },
     { 
-        "name": "Dylan Smith",
+        "name": "Dylan Smith [TEST]",
         "privateKey": "SCTQHHNCBKMEPJXPQGPRTHVGM6JYNCGTPPS35QLZ7ZO3KKJVUTRYNLDJ",
         "phoneNumber": "+710121234234"
-    },
-    {
-        "name": "Jeremy Johnson",
-        "privateKey": "SB6FQX5VMRIVND2R3XJFFLRMSS4LRQHR6JIRZEZ5VFWA7M4T6U4NGRD4",
-        "phoneNumber": "+711234701212"
-    },
-    {
-        "name": "James Williams",
-        "privateKey": "SACJ5HYOKJSHUJTHCEODWVHJT3QQCXJM327BZRNWHMEX62AOKMORBMBI",
-        "phoneNumber": "+710178912347"
-    },
-    {
-        "name": "Richard Jones",
-        "privateKey": "SBG3JPIPNNYITHJD7V64F5D7GUSIWUAE22ITTDES3BT22DVMB2NE4NXT",
-        "phoneNumber": "+710129975347"
     }
 ]</textarea>
                         </div>
                         <!-- .panel-body -->
                         <div class="panel-footer text-right">
-                            <button
+                            <div
                                 id="applyCustomerData"
-                                type="button"
                                 class="btn btn-success"
-                            >Apply</button>
+                            >Apply</div>
                         </div>
                         <!-- .panel-footer -->
                     </div>
@@ -1261,27 +1299,38 @@
                         class="btn btn-default"
                         data-dismiss="modal"
                     >Close</button>
-                    <button
+                    <div
                         id="createPackage"
-                        type="button"
                         class="btn btn-primary"
-                    >Create Package</button>
+                    >Create Package</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- jQuery -->
-    <script src="js/jquery.min.js"></script>
+    <script
+        type="text/javascript"
+        src="js/jquery.min.js"
+    ></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+    <script
+        type="text/javascript"
+        src="js/bootstrap.min.js"
+    ></script>
 
     <!-- Stellar -->
-    <script src="./bower_components/stellar-base/stellar-base.js"></script>
+    <script
+        type="text/javascript"
+        src="./bower_components/stellar-base/stellar-base.js"
+    ></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/main.js"></script>
+    <script
+        type="text/javascript"
+        src="js/main.js"
+    ></script>
 
     <script
         type="text/javascript"
