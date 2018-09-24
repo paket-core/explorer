@@ -329,7 +329,7 @@ $(document).ready(function() {
               .done(function(response) {
                 var signedTransaction = signTransaction(
                   response.transaction,
-                  launcher.keypairStellar
+                  escrowKeypair
                 )
                 // Submit transaction
                 requests.bridge
@@ -338,17 +338,18 @@ $(document).ready(function() {
                     // 4) Call prepare_escrow on bridge as escrow account, sign and submit the tx to bridge
                     requests.bridge
                       .prepareEscrow({
-                        launcher_pubkey: escrowPubkey,
+                        launcher_pubkey: launcher.keypairStellar.publicKey(),
                         courier_pubkey: courierUser.keypairStellar.publicKey(),
                         recipient_pubkey: recipientUser.keypairStellar.publicKey(),
                         payment_buls: paymentBuls,
                         collateral_buls: collateralBuls,
                         deadline_timestamp: deadlineUnixTimestamp,
+                        hederPubkey: escrowPubkey,
                       })
                       .done(function(response) {
                         var signedTransaction = signTransaction(
                           response.package_details.set_options_transaction,
-                          launcher.keypairStellar
+                          escrowKeypair
                         )
                         // Submit transaction
                         requests.bridge
@@ -380,7 +381,7 @@ $(document).ready(function() {
                                       .done(function(response) {
                                         var signedTransaction = signTransaction(
                                           response.transaction,
-                                          launcher.keypairStellar
+                                          courierUser.keypairStellar
                                         )
                                         // Submit transaction
                                         requests.bridge
@@ -692,6 +693,7 @@ var requests = {
       payment_buls,
       collateral_buls,
       deadline_timestamp,
+      hederPubkey,
     }) {
       return new_requestToServer({
         url: this.baseUrl + '/prepare_escrow',
@@ -703,6 +705,7 @@ var requests = {
           collateral_buls,
           deadline_timestamp,
         },
+        hederPubkey,
       })
     },
     prepareSendBuls: function({ from_pubkey, to_pubkey, amount_buls }) {
@@ -724,7 +727,7 @@ var requests = {
   },
 }
 
-function new_requestToServer({ url, data }) {
+function new_requestToServer({ url, data, hederPubkey }) {
   try {
     var fingerprint = generateFingerprint(url, data)
     var signature = signFingerprint(
@@ -742,7 +745,10 @@ function new_requestToServer({ url, data }) {
       processData: false,
       contentType: false,
       beforeSend: function(xhr) {
-        xhr.setRequestHeader('Pubkey', launcher.keypairStellar.publicKey())
+        xhr.setRequestHeader(
+          'Pubkey',
+          hederPubkey || launcher.keypairStellar.publicKey()
+        )
         xhr.setRequestHeader('Fingerprint', fingerprint)
         xhr.setRequestHeader('Signature', signature)
       },
