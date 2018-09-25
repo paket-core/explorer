@@ -1086,17 +1086,21 @@
             role="document"
         >
             <div class="modal-content">
-                <div class="modal-header"> <button
+                <div class="modal-header">
+                    <button
                         type="button"
                         class="close"
                         data-dismiss="modal"
                         aria-label="Close"
-                    ><span aria-hidden="true">×</span></button>
+                    >
+                        <span aria-hidden="true">×</span>
+                    </button>
                     <h4
                         class="modal-title"
                         id="createPackageModalLabel"
                     >Create Package</h4>
                 </div>
+
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
@@ -1267,8 +1271,10 @@
                                     placeholder="Description"
                                 >
                             </div>
+                        </div>
                     </form>
                 </div>
+
                 <div class="modal-footer">
                     <button
                         type="button"
@@ -1279,6 +1285,30 @@
                         id="createPackage"
                         class="btn btn-primary"
                     >Create Package</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        id="loadingScreen"
+        style="display: none;"
+    >
+        <div class="loader">
+            <div>
+                <div class="row">
+                    <h2 style="color: #ffffff;">Please wait</h2>
+                </div>
+
+                <div class="row">
+                    <h4
+                        id="info"
+                        style="color: #ffffff;"
+                    ></h4>
+                </div>
+
+                <div class="row">
+                    <div class="loadersmall"></div>
                 </div>
             </div>
         </div>

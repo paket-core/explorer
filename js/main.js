@@ -275,6 +275,8 @@ $(document).ready(function() {
   })
 
   $('#createPackageModal #createPackage').click(function() {
+    showLoadingScreen('Starting')
+
     var selectorPanel = '#createPackageModal '
 
     // Get recipient
@@ -320,10 +322,12 @@ $(document).ready(function() {
 
     // 1) Create a pubkey for the escrow
     // generate new Keypair
+    infoLoadingScreen('Create a pubkey for the escrow')
     var escrowKeypair = StellarBase.Keypair.random()
     var escrowPubkey = escrowKeypair.publicKey()
 
     // 2) Call prepare_account on bridge as current user (launcher), sign and submit the tx to bridge
+    infoLoadingScreen('Prepare account')
     requests.bridge
       .prepareAccount({
         from_pubkey: launcher.keypairStellar.publicKey(),
@@ -335,10 +339,12 @@ $(document).ready(function() {
           launcher.keypairStellar
         )
         // Submit transaction
+        infoLoadingScreen('Submit Prepare account')
         requests.bridge
           .submitTransaction({ signedTransaction })
           .done(function(response) {
             // 3) Call prepare_trust on bridge as escrow account (launcher), sign and submit the tx to bridge
+            infoLoadingScreen('Prepare trust')
             requests.bridge
               .prepareTrust({
                 from_pubkey: escrowPubkey,
@@ -349,10 +355,12 @@ $(document).ready(function() {
                   escrowKeypair
                 )
                 // Submit transaction
+                infoLoadingScreen('Submit Prepare trust')
                 requests.bridge
                   .submitTransaction({ signedTransaction })
                   .done(function(response) {
                     // 4) Call prepare_escrow on bridge as escrow account, sign and submit the tx to bridge
+                    infoLoadingScreen('Prepare escrow')
                     requests.bridge
                       .prepareEscrow({
                         launcher_pubkey: launcher.keypairStellar.publicKey(),
@@ -369,10 +377,12 @@ $(document).ready(function() {
                           escrowKeypair
                         )
                         // Submit transaction
+                        infoLoadingScreen('Submit Prepare escrow')
                         requests.bridge
                           .submitTransaction({ signedTransaction })
                           .done(function(response) {
                             // 5) Call prepare_send_buls on bridge with the payment amount as the current user (launcher), sign and submit the tx to bridge
+                            infoLoadingScreen('Prepare send buls')
                             requests.bridge
                               .prepareSendBuls({
                                 from_pubkey: launcher.keypairStellar.publicKey(),
@@ -385,10 +395,14 @@ $(document).ready(function() {
                                   launcher.keypairStellar
                                 )
                                 // Submit transaction
+                                infoLoadingScreen('Submit Prepare send buls')
                                 requests.bridge
                                   .submitTransaction({ signedTransaction })
                                   .done(function(response) {
                                     // 6) Call prepare_send_buls on bridge with the collateral amount as the designated courier, sign and submit the tx to bridge
+                                    infoLoadingScreen(
+                                      'Second Prepare send buls'
+                                    )
                                     requests.bridge
                                       .prepareSendBuls({
                                         from_pubkey: courierUser.keypairStellar.publicKey(),
@@ -401,12 +415,16 @@ $(document).ready(function() {
                                           courierUser.keypairStellar
                                         )
                                         // Submit transaction
+                                        infoLoadingScreen(
+                                          'Submit Second Prepare send buls'
+                                        )
                                         requests.bridge
                                           .submitTransaction({
                                             signedTransaction,
                                           })
                                           .done(function(response) {
                                             // 7) Call create_package on router
+                                            infoLoadingScreen('Create package')
                                             requests.router
                                               .createPackage({
                                                 escrow_pubkey: escrowPubkey,
@@ -439,12 +457,15 @@ $(document).ready(function() {
                                                 $('#createPackageModal').modal(
                                                   'hide'
                                                 )
+
+                                                hideLoadingScreen()
                                               })
                                               .catch(function(error) {
                                                 console.error(error)
                                                 alert(
                                                   'An error occurred while creating the Package'
                                                 )
+                                                hideLoadingScreen()
                                               })
                                           })
                                           .catch(function(error) {
@@ -455,6 +476,7 @@ $(document).ready(function() {
                                             console.error(error)
 
                                             alert(errorMessage)
+                                            hideLoadingScreen()
                                           })
                                       })
                                       .catch(function(error) {
@@ -465,6 +487,7 @@ $(document).ready(function() {
                                         console.error(error)
 
                                         alert(errorMessage)
+                                        hideLoadingScreen()
                                       })
                                   })
                                   .catch(function(error) {
@@ -475,6 +498,7 @@ $(document).ready(function() {
                                     console.error(error)
 
                                     alert(errorMessage)
+                                    hideLoadingScreen()
                                   })
                               })
                               .catch(function(error) {
@@ -485,6 +509,7 @@ $(document).ready(function() {
                                 console.error(error)
 
                                 alert(errorMessage)
+                                hideLoadingScreen()
                               })
                           })
                           .catch(function(error) {
@@ -495,6 +520,7 @@ $(document).ready(function() {
                             console.error(error)
 
                             alert(errorMessage)
+                            hideLoadingScreen()
                           })
                       })
                       .catch(function(error) {
@@ -505,6 +531,7 @@ $(document).ready(function() {
                         console.error(error)
 
                         alert(errorMessage)
+                        hideLoadingScreen()
                       })
                   })
                   .catch(function(error) {
@@ -515,6 +542,7 @@ $(document).ready(function() {
                     console.error(error)
 
                     alert(errorMessage)
+                    hideLoadingScreen()
                   })
               })
               .catch(function(error) {
@@ -525,6 +553,7 @@ $(document).ready(function() {
                 console.error(error)
 
                 alert(errorMessage)
+                hideLoadingScreen()
               })
           })
           .catch(function(error) {
@@ -535,6 +564,7 @@ $(document).ready(function() {
             console.error(error)
 
             alert(errorMessage)
+            hideLoadingScreen()
           })
       })
       .catch(function(error) {
@@ -544,6 +574,7 @@ $(document).ready(function() {
         console.error(error)
 
         alert(errorMessage)
+        hideLoadingScreen()
       })
   })
 })
@@ -899,4 +930,18 @@ function getKeypairForPackage() {
 
 Array.prototype.last = function() {
   return this[this.length - 1]
+}
+
+// UiLoadingScreen
+function showLoadingScreen(info = '') {
+  $('#loadingScreen').show()
+  $('#loadingScreen #info').text(info)
+}
+
+function infoLoadingScreen(info = '') {
+  $('#loadingScreen #info').text(info)
+}
+
+function hideLoadingScreen() {
+  $('#loadingScreen').hide()
 }
