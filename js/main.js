@@ -1,3 +1,5 @@
+var jsonData = null
+
 var launcherData = []
 var recipientData = []
 var courierData = []
@@ -17,13 +19,73 @@ $(document).ready(function() {
   var network = new StellarBase.Network('Test SDF Network ; September 2015')
   StellarBase.Network.use(network)
 
-  $('#applyCustomerData').click(function() {
-    var json = $('#textareaCustomerData').val()
-    var customerData = JSON.parse(json)
+  $('#panelCustomerData .input-file').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='.json, .txt'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
 
-    for (var index = 0; index < customerData.length; index++) {
-      var item = customerData[index]
-      customerData[index].keypairStellar = generateKeypairStellar(item)
+        var fileReader = new FileReader()
+        fileReader.onload = function(progressEvent) {
+          try {
+            var json = progressEvent.target.result
+            jsonData = JSON.parse(json)
+          } catch (error) {
+            alert('Problems reading the JSON file. Details in console.')
+            console.error(error)
+          }
+        }
+        fileReader.readAsText(e.target.files[0], 'UTF-8')
+      })
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+      $(this)
+        .find('button.btn-reset')
+        .click(function() {
+          element.val(null)
+          $(this)
+            .parents('.input-file')
+            .find('input')
+            .val('')
+        })
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.input-file')
+            .prev()
+            .click()
+          return false
+        })
+      return element
+    }
+  })
+
+  $('#applyCustomerData').click(function() {
+    for (var index = 0; index < jsonData.length; index++) {
+      var item = jsonData[index]
+      jsonData[index].keypairStellar = generateKeypairStellar(item)
 
       if (item.type == 'LAUNCHER') {
         launcherData.push(item)

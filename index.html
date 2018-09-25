@@ -66,68 +66,46 @@
                         id="panelCustomerData"
                         class="panel panel-default"
                     >
+                        <!-- .panel-heading -->
                         <div class="panel-heading">
                             <div class="btn-group">
-                                Customer Data
+                                Select file like .txt or .json with Customer Data
                             </div>
                         </div>
-                        <!-- .panel-heading -->
-                        <div class="panel-body">
-                            <textarea
-                                id="textareaCustomerData"
-                                class="form-control"
-                                rows="8"
-                            >[
-    { 
-        "name": "Aaron Johnson",
-        "type": "LAUNCHER",
-        "privateKey": "SA4IXXZA3F6LYEWNBIK2OQTGJQDOVKXWJVVSZKIJMZRMUXE4EE6DD4QD",
-        "publicKey": "GBFTRKQ2FDOD5GIWT7E7AIS3QBZ43JHFBP4732B4E5NM6YSHFENQYNKJ",
-        "phoneNumber": "+781017754894"
-    },
-    {
-        "name": "James Williams",
-        "type": "RECIPIENT",
-        "privateKey": "SBZMUB2SDNNSWGMNYCTOHKHMJJSXX7S6VRW4NONE7J42LHWWFY5ZGMVU",
-        "publicKey": "GDQIWDI5VGPCL2DM4NKJLGAJCF4QRNOKTLIKVL5CRAETT7G72G5MIIFD",
-        "phoneNumber": "+710178912347"
-    },
-    { 
-        "name": "Dylan Smith",
-        "type": "COURIER",
-        "privateKey": "SDZHRIJAJITJCGI6K6RAIGH3LYTVXUORBQ6QMFG3RF2M6PKFS6QOCN4Y",
-        "publicKey": "GACHAUDK3WKYSXNVOI63ZJUF7KVM44Z47VLHM2C6MHXTC7BSDK4Y35WT",
-        "phoneNumber": "+710121234234"
-    },
-    {
-        "name": "Jeremy Johnson",
-        "type": "COURIER",
-        "privateKey": "SABTGQREOAPF3N5HRLPL6W4V5CDNQTKPDKZACMEBKIPHAN7TFCEE5GAR",
-        "publicKey": "GBFEF6TB66FHIZFXVRHQBVQO2YWF7Z2OIJMRDOB6O6UTKLA6J6XWREB7",
-        "phoneNumber": "+711234701212"
-    },
-    { 
-        "name": "Aaron Johnson",
-        "type": "TEST",
-        "privateKey": "SAGMKB4K5FB3K2WJ4GCMLJJE5UUVV45ZF7IWKB53WO7LPBJD4CPEWU5J",
-        "phoneNumber": "+781017754894"
-    },
-    { 
-        "name": "Dylan Smith",
-        "type": "TEST",
-        "privateKey": "SCTQHHNCBKMEPJXPQGPRTHVGM6JYNCGTPPS35QLZ7ZO3KKJVUTRYNLDJ",
-        "phoneNumber": "+710121234234"
-    }
-]</textarea>
-                        </div>
+                        <!-- /.panel-heading -->
                         <!-- .panel-body -->
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <div class="input-group input-file">
+                                    <span class="input-group-btn">
+                                        <button
+                                            class="btn btn-default btn-choose"
+                                            type="button"
+                                        >Choose</button>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder='Choose a file...'
+                                    />
+                                    <span class="input-group-btn">
+                                        <button
+                                            class="btn btn-warning btn-reset"
+                                            type="button"
+                                        >Reset</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                        <!-- .panel-footer -->
                         <div class="panel-footer text-right">
                             <div
                                 id="applyCustomerData"
                                 class="btn btn-success"
                             >Apply</div>
                         </div>
-                        <!-- .panel-footer -->
+                        <!-- /.panel-footer -->
                     </div>
                     <!-- /.panel -->
 
