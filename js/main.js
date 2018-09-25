@@ -1,4 +1,7 @@
-var customerData = []
+var launcherData = []
+var recipientData = []
+var courierData = []
+
 var launcher = {}
 var baseUrlRouter = 'http://itd.pub:11250/v3'
 var baseUrlBridge = 'http://itd.pub:11251/v3'
@@ -16,25 +19,35 @@ $(document).ready(function() {
 
   $('#applyCustomerData').click(function() {
     var json = $('#textareaCustomerData').val()
-    customerData = JSON.parse(json)
+    var customerData = JSON.parse(json)
 
     for (var index = 0; index < customerData.length; index++) {
-      var element = customerData[index]
-      customerData[index].keypairStellar = generateKeypairStellar(element)
+      var item = customerData[index]
+      customerData[index].keypairStellar = generateKeypairStellar(item)
+
+      if (item.type == 'LAUNCHER') {
+        launcherData.push(item)
+      } else if (item.type == 'RECIPIENT') {
+        recipientData.push(item)
+      } else if (item.type == 'COURIER') {
+        courierData.push(item)
+      }
+    }
+
+    for (var index = 0; index < launcherData.length; index++) {
+      var item = launcherData[index]
 
       $('#dropdownUsers').append(
-        '<li><a href="#" id="' + index + '">' + element.name + '</a></li>'
+        '<li><a href="#" id="' + index + '">' + item.name + '</a></li>'
       )
 
-      $('#dropdownUsers li a:eq(' + index + ')').click(element, function(
-        event
-      ) {
+      $('#dropdownUsers li a:eq(' + index + ')').click(item, function(event) {
         applyChangeUser(event.data)
       })
     }
 
     // the first user is selected by default
-    applyChangeUser(customerData[0])
+    applyChangeUser(launcherData[0])
 
     $('.dropdown-toggle').dropdown()
     $('#panelCustomerData').hide()
@@ -241,13 +254,17 @@ $(document).ready(function() {
     courierSelect.empty()
 
     // Recipient in modal window
-    for (var index = 0; index < customerData.length; index++) {
-      var element = customerData[index]
+    for (var index = 0; index < recipientData.length; index++) {
+      var element = recipientData[index]
 
       recipientSelect.append(
         '<option value="' + index + '">' + element.name + '</option>'
       )
+    }
 
+    // Courier in modal window
+    for (var index = 0; index < courierData.length; index++) {
+      var element = courierData[index]
       courierSelect.append(
         '<option value="' + index + '">' + element.name + '</option>'
       )
@@ -262,11 +279,11 @@ $(document).ready(function() {
 
     // Get recipient
     var recipientId = $(selectorPanel + '#recipient').val()
-    var recipientUser = customerData[recipientId]
+    var recipientUser = recipientData[recipientId]
 
-    // Get recipient
+    // Get courier
     var courierId = $(selectorPanel + '#courier').val()
-    var courierUser = customerData[courierId]
+    var courierUser = courierData[courierId]
 
     // Get deadline
     var deadline = $(selectorPanel + 'input[name=deadline]').val()
