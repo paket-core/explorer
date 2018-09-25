@@ -551,8 +551,8 @@ function applyChangeUser(user) {
     .getMyPackages()
     .done(function(data) {
       for (var index = 0; index < data.packages.length; index++) {
-        var package = data.packages[index]
-        addRowPackagesToDataTable(package)
+        var packageItem = data.packages[index]
+        addRowPackagesToDataTable(packageItem)
       }
     })
     .catch(function(error) {
