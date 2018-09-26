@@ -5,9 +5,11 @@ var recipientData = []
 var courierData = []
 
 var launcher = {}
-var baseUrlRouter = 'http://itd.pub:11250/v3'
-var baseUrlBridge = 'http://itd.pub:11251/v3'
-var baseUrlFund = 'http://itd.pub:11252/v2'
+
+var protocol = location.protocol == 'file:' ? 'http:' : location.protocol
+var baseUrlRouter = protocol + '//itd.pub:11250/v3'
+var baseUrlBridge = protocol + '//itd.pub:11251/v3'
+var baseUrlFund = protocol + '//itd.pub:11252/v2'
 var dataTablePackage = null
 
 $(document).ready(function() {
