@@ -1,5 +1,5 @@
 var imgSrcBase64 =
-  'data:image/png;base64,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'
+  'iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAMAAAD8CC+4AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURY6Ojo+Pj5GRkZOTk5WVlZeXl5mZmZubm52dnZ+fn6CgoKOjo6SkpKWlpaampqmpqaqqqqurq6ysrK+vr7CwsLKysrOzs7S0tLa2tri4uLm5ubq6ury8vL29vb6+vsDAwMLCwsPDw8TExMbGxsjIyMnJycvLy8zMzM7OztDQ0NLS0tTU1NbW1tjY2Nra2tzc3N3d3d7e3uDg4OLi4uPj4+Tk5Obm5ujo6Onp6erq6uzs7O7u7gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO92gtIAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAtuSURBVHhe7dt/UxNHHIDxJDZAVbSoKaCmNWBEJKiICCHv/311v3ub3BF0hrR/9G6e5zNju7ek4PDc3q+kvYVwjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwO1Pro59OT2byMK1+nHy7K8CHOh73+uIyVtT36m14ybEb+kSYGZfwQf6bX98tYWdujP4rovZ3bsplcxkQZP8Row9cDtP3XEcWSo7KZbBr9r/Ty7TJW1pHow/q0vmn0+fH45EcZK+tC9N/Tn7/K9ubRdU8Xop+mP4+uy4TR/7suRF/EUn9dJoz+33Uieiz1wVWZuR999tf+6OBo9qsT99n04/JLn6af4l8/Jvujt6fLy4Tz16PXH7+VjeL6dDwaHbz7uPZA4Pb8+HA0evdpltXXGd/fp+nDySaPD/5PnYiel/qfZWY9+ukwJsLO5zJ1x3n6SvlvYzhb3BwM8suH05j7tps3ek8b+8zZH9Vc8mq5r4XT7TJbGZXpb3tloves+er26kb0WOr9shjvRr/Zj82i/3fjfn5plr5Q8sRwdrGVXxvSjeD7agdIdlbr9GWZyQazMru4rXeFyh/V/Id+2U6Gq1e3WTeiL2I5vqxm7kS/3ImtwdPDF9V6Lx2a1qIfpxf2n1QvH3ybxD//2M3ln1Uvyq/qbb98M95/HKPHZXrxLm30R5P3b/LP3Nra+pCnp7G1/efxZD++Z78L1TsSPQ7MvS955k70WJSD6pf//Wl84SyPm9aip2X5ONZ05O5FvoN0X3D7IrbKUk+v2ivpTmJvyGeBxeJr+i+H+QQyj6PLaZ5Mh5pI/TYfYW7ib/N7nm23jkRfxGmzWorN6J/TcHheNuZR7v7vfC16OmJUF2D5qX6vP8kbt0/S+CAPF/NxtXeFeJxXjjDjNCz95+ncvlUu42J69bwwTgAnZdxiXYl+ESfOvP6a0eOof1zGaaU11mVtPfqLct7/kY/pVfO0ptP4aRk3zNP0k2qYdqlHy0uG12n6ax5dPWq+M/AlzXdgqXclen7fJP/6G9HzQq9vnBZx2H1Vxitr0X9fvf552tov41x3q4ybfks/oRqlU0HJny7/0qs/5lGcJRr7WXrRJu8A/k86E/0qFmacSBvRP6TRYTXM4sy/CrO0Fr0Mk9iN6l6p7s9+F3GpX43SIX31vY/TbHXaP0ijas1nsSO1/0F/Z6LnQ+p2OpA2or9No+bh/CZtl3VZ+2X0xkk6qeveUU+nno+q0WJxmGarts/S6Kx6VhMi+vIao726E/063lpPl0yN6HG1fOdyPY4GjcN99q+i30wPX+5u5bP+cjrW9PtqGCfy36phdad4R/tv2roTffF3GqYzeCN63EffefQZ5S7LeOlfRD8fldyVavJ7mvst36hdxs+tPoEVx5Z1a090W6hD0eexqibN6PF0tr69SqLc+il18+jH1SO2wfbubn5sU6bj/NJ7vH+Y555UV+zXadgf3dH4vEdbdSh6fvY1nF/VU3Hznt9BWUrb9y6eN45+Fs13P1Q7Tz39PS71lh4vjye/uP5rt7b/jeM3XIaL23i/Y9KYiuupOlvqkrbv3SZvHD12pdWtXD29m773uPrI3rCc25N4qLN+Qmm9LkXP77sM4466TB2l0SpPEl/fK+OVjaOnsKunMPV0HMjPFjfnJ9NZ8620V2m6/ZfrazoVPa+r/NC82szvs99U4xAP6N6W8cqm0eOpWv2+zWo6ftZPlnTcNTYfFXRCt6JHtXyTVG3OI8nyQWr1bKb/vWysbBo9vsvzPEouVhdy8Zx2f3UAWIlXrz7f0RXdip6feDWm4tKuXz0PXSw+x+6w/KhFbdPo83QdNyi3AF/rPew6Lu8Gr8bj8WR68qU+vMTB51njjuHi/o7ROh2LHsfe5lTctPXezG4Wt18nsSi3Vp+fXNk0er77fx6L9/oovuVyelLdyBW7y0cwn2N6eFbtBV/e7fgu238Xv+AyzOJ/UmpMzcp9VHl4Vn/6pbZx9Fle089H+SMU8Y57NZ1f3/CyLOl4Dp8Md3e387V9/S1bq2vRr/MBt74Zv1oe8MN+46JuZePo5Z320D+KE0g1O0v71XD8djQa7e3kRb/8fO6HaocrHv1kv2ubtkdPje8+brmItde8RD+KXOHxzw+scUYoH4+ID7+UYRIff6of7Txt/KBZXuS9wYtvi7PlU/bLtIy3l1dsV/mAszyVXB3G3ykMnk66cFHX9ujzy8v15Xt1uXbivpgejaeffvnb/nG5uqK/vmzedX2/bFyA3d75Qd8+HU1O8/ZVmX6Z1n3jkW98Smf5ialk/uVk/P70Swcu4kLbo7fFj3SQWN3IJfFcqL5Z7BijP0x8SKd5OxhPgNv/HuovGP1h4r29nTJOrtK1Rn/9nfvOMPoDxeXiq+VZfxZXbvUlYdcY/YHiJN4b7I3fTcf7+RP25R31LjL6Q8UdXsNe1x64Nxj9wb4eVO+mh707H9jpGqNvYH4+HSd/f7r/hL9TjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0nMXiHw33jO5Jszk1AAAAAElFTkSuQmCC'
 
 var jsonData = null
 
@@ -17,8 +17,21 @@ var dataTablePackage = null
 
 var mapOnPackageDetailsModal = null
 var markersOnPackageDetailsModal = []
+var photoForCreateProject = null
+var recipientAddressAutocomplete = null
 
 $(document).ready(function() {
+  // Configuration Stellar Network
+  // StellarBase.Network.useTestNetwork()
+  var network = new StellarBase.Network('Test SDF Network ; September 2015')
+  StellarBase.Network.use(network)
+
+  // places.Autocomplete
+  var recipientInput = $('#createPackageModal #recipientAddress')
+  recipientAddressAutocomplete = new google.maps.places.Autocomplete(
+    recipientInput[0]
+  )
+
   // Refresh DataTable
   dataTablePackage = $('#tablePackages').DataTable({
     columnDefs: [
@@ -53,73 +66,76 @@ $(document).ready(function() {
 
         // Show modal window
         $('#packageDetailsModal').modal()
-        $('#packageDetailsModal').on('shown.bs.modal', function(e) {
-          if (!mapOnPackageDetailsModal) {
-            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
-            var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-              maxZoom: 18,
-              attribution:
-                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-            })
-            mapOnPackageDetailsModal.addLayer(tiles)
-          }
+        if (!mapOnPackageDetailsModal) {
+          mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
+          var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution:
+              '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+          })
+          mapOnPackageDetailsModal.addLayer(tiles)
+        }
 
-          // Remove all markers
-          for (
-            let index = 0;
-            index < markersOnPackageDetailsModal.length;
-            index++
-          ) {
-            const element = markersOnPackageDetailsModal[index]
-            mapOnPackageDetailsModal.removeLayer(element)
-          }
-          markersOnPackageDetailsModal = []
+        // Remove all markers
+        for (
+          let index = 0;
+          index < markersOnPackageDetailsModal.length;
+          index++
+        ) {
+          const element = markersOnPackageDetailsModal[index]
+          mapOnPackageDetailsModal.removeLayer(element)
+        }
+        markersOnPackageDetailsModal = []
 
-          // Display marker on map
-          var location = package.from_location.split(',')
-          var marker = L.marker([location[0], location[1]]).addTo(
-            mapOnPackageDetailsModal
-          )
-          mapOnPackageDetailsModal.setView([location[0], location[1]], 7)
-          markersOnPackageDetailsModal.push(marker)
+        // Display marker on map
+        var location = package.from_location.split(',')
+        var marker = L.marker([location[0], location[1]]).addTo(
+          mapOnPackageDetailsModal
+        )
+        mapOnPackageDetailsModal.setView([location[0], location[1]], 7)
+        markersOnPackageDetailsModal.push(marker)
 
-          // Display text
-          var packageId = package.escrow_pubkey
-          var shortPackageId =
-            package.from_address.split(' ')[0] +
-            '-' +
-            packageId.substr(packageId.length - 3)
+        // Display text
+        var packageId = package.escrow_pubkey
+        var shortPackageId =
+          package.from_address.split(' ')[0] +
+          '-' +
+          packageId.substr(packageId.length - 3)
 
-          $('#packageDetailsModal #name')
-            .empty()
-            .append(shortPackageId)
+        $('#packageDetailsModal #name')
+          .empty()
+          .append(shortPackageId)
 
-          $('#packageDetailsModal #description')
-            .empty()
-            .append(package.description)
+        $('#packageDetailsModal #description')
+          .empty()
+          .append(package.description)
 
-          $('#packageDetailsModal #paketUrl').attr('href', package.paket_url)
+        $('#packageDetailsModal #paketUrl').attr('href', package.paket_url)
 
-          $('#packageDetailsModal #deadline')
-            .empty()
-            .append(dateToYMD(new Date(package.deadline * 1000)))
+        $('#packageDetailsModal #deadline')
+          .empty()
+          .append(dateToYMD(new Date(package.deadline * 1000)))
 
-          // Get all packages for this user
-          requests.router
-            .getPackagePhoto(escrow_pubkey)
-            .done(function(data) {
-              var photo = data.package_photo || imgSrcBase64
+        // Get all packages for this user
+        requests.router
+          .getPackagePhoto({ escrow_pubkey: packageId })
+          .done(function(data) {
+            var photo = data.package_photo
+              ? data.package_photo.photo
+              : imgSrcBase64
 
-              $('#packageDetailsModal #img').attr('src', photo)
-            })
-            .catch(function(error) {
-              alert('Error getting Packages info')
-              hideLoadingScreen()
-              console.error(error)
-            })
+            $('#packageDetailsModal #img').attr(
+              'src',
+              'data:image/png;base64,' + photo
+            )
+          })
+          .catch(function(error) {
+            alert('Error getting Packages info')
+            hideLoadingScreen()
+            console.error(error)
+          })
 
-          hideLoadingScreen()
-        })
+        hideLoadingScreen()
       })
       .catch(function(error) {
         alert('Error getting Packages info')
@@ -127,11 +143,6 @@ $(document).ready(function() {
         console.error(error)
       })
   })
-
-  // Configuration Stellar Network
-  // StellarBase.Network.useTestNetwork()
-  var network = new StellarBase.Network('Test SDF Network ; September 2015')
-  StellarBase.Network.use(network)
 
   $('#panelCustomerData .input-file').before(function() {
     if (
@@ -192,6 +203,54 @@ $(document).ready(function() {
             .click()
           return false
         })
+      return element
+    }
+  })
+
+  $('#createPackageModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForCreateProject = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
       return element
     }
   })
@@ -461,6 +520,23 @@ $(document).ready(function() {
     var recipientId = $(selectorPanel + '#recipient').val()
     var recipientUser = recipientData[recipientId]
 
+    // Get val from Recipient address field
+    var recipientAddressVal = $(selectorPanel + '#recipientAddress').val()
+
+    // Get recipient place
+    var recipientPlace = recipientAddressAutocomplete.getPlace()
+    if (!recipientAddressVal || !recipientPlace) {
+      alert('Data is not valid. Please enter the recipient address.')
+      hideLoadingScreen()
+      return
+    }
+
+    var recipientAddress = recipientPlace.formatted_address
+    var recipientLocation =
+      recipientPlace.geometry.location.lat().toFixed(7) +
+      ',' +
+      recipientPlace.geometry.location.lng().toFixed(7)
+
     // Get courier
     var courierId = $(selectorPanel + '#courier').val()
     var courierUser = courierData[courierId]
@@ -489,14 +565,17 @@ $(document).ready(function() {
     }
 
     // Get values
-    var paymentBuls = $(selectorPanel + 'input[name=paymentBuls]').val()
-    var collateralBuls = $(selectorPanel + 'input[name=collateralBuls]').val()
-    var description = $(selectorPanel + '#description').val()
-    var fromLocation = $(selectorPanel + '#fromLocation').val()
-    var toLocation = $(selectorPanel + '#toLocation').val()
-    var fromAddress = $(selectorPanel + '#fromAddress').val()
-    var toAddress = $(selectorPanel + '#toAddress').val()
-    var eventLocation = $(selectorPanel + '#eventLocation').val()
+    var paymentBuls = $(selectorPanel + 'input[name=paymentBuls]:checked').val()
+    var collateralBuls = $(
+      selectorPanel + 'input[name=collateralBuls]:checked'
+    ).val()
+
+    var descriptionType = $(
+      selectorPanel + 'input[name=descriptionType]:checked'
+    ).val()
+    var description = [descriptionType, $(selectorPanel + '#description').val()]
+      .filter(Boolean)
+      .join(', ')
 
     // 1) Create a pubkey for the escrow
     // generate new Keypair
@@ -615,11 +694,14 @@ $(document).ready(function() {
                                                 collateral_buls: collateralBuls,
                                                 deadline_timestamp: deadlineUnixTimestamp,
                                                 description: description,
-                                                from_location: fromLocation,
-                                                to_location: toLocation,
-                                                from_address: fromAddress,
-                                                to_address: toAddress,
-                                                event_location: eventLocation,
+                                                from_location:
+                                                  launcher.location,
+                                                to_location: recipientLocation,
+                                                from_address: launcher.address,
+                                                to_address: recipientAddress,
+                                                event_location:
+                                                  launcher.location,
+                                                photo: photoForCreateProject,
                                               })
                                               .done(function(response) {
                                                 // Save escrow Pubkey/Secret (escrowKeypair) to local storage
@@ -630,6 +712,9 @@ $(document).ready(function() {
                                                 addRowPackagesToDataTable(
                                                   response.package
                                                 )
+
+                                                // clear field for photo
+                                                photoForCreateProject = null
 
                                                 // Hide modal window
                                                 $('#createPackageModal').modal(
@@ -883,24 +968,30 @@ var requests = {
       from_address,
       to_address,
       event_location,
+      photo,
     }) {
+      var data = {
+        escrow_pubkey,
+        recipient_pubkey,
+        launcher_phone_number,
+        recipient_phone_number,
+        payment_buls,
+        collateral_buls,
+        deadline_timestamp,
+        description,
+        from_location,
+        to_location,
+        from_address,
+        to_address,
+        event_location,
+      }
+      if (photo) {
+        data.photo = photo
+      }
+
       return new_requestToServer({
         url: this.baseUrl + '/create_package',
-        data: {
-          escrow_pubkey,
-          recipient_pubkey,
-          launcher_phone_number,
-          recipient_phone_number,
-          payment_buls,
-          collateral_buls,
-          deadline_timestamp,
-          description,
-          from_location,
-          to_location,
-          from_address,
-          to_address,
-          event_location,
-        },
+        data: data,
       })
     },
   },
@@ -1162,4 +1253,12 @@ function dateToYMD(date) {
   var m = strArray[date.getMonth()]
   var y = date.getFullYear()
   return '' + (d <= 9 ? '0' + d : d) + ' ' + m + ' ' + y
+}
+
+function changesCheckBoxEnterDescription(checkBox) {
+  if (checkBox.checked == true) {
+    $('#createPackageModal #description').show()
+  } else {
+    $('#createPackageModal #description').hide()
+  }
 }

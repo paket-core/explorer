@@ -4,39 +4,51 @@
     "type": "LAUNCHER",
     "privateKey": "SA4IXXZA3F6LYEWNBIK2OQTGJQDOVKXWJVVSZKIJMZRMUXE4EE6DD4QD",
     "publicKey": "GBFTRKQ2FDOD5GIWT7E7AIS3QBZ43JHFBP4732B4E5NM6YSHFENQYNKJ",
-    "phoneNumber": "+781017754894"
+    "phoneNumber": "+781017754894",
+    "address": "221B Baker Street, London, UK",
+    "location": "51.5237102,-0.158459"
   },
   {
     "name": "James Williams",
     "type": "RECIPIENT",
     "privateKey": "SBZMUB2SDNNSWGMNYCTOHKHMJJSXX7S6VRW4NONE7J42LHWWFY5ZGMVU",
     "publicKey": "GDQIWDI5VGPCL2DM4NKJLGAJCF4QRNOKTLIKVL5CRAETT7G72G5MIIFD",
-    "phoneNumber": "+710178912347"
+    "phoneNumber": "+710178912347",
+    "address": "123 Green Lanes, London, UK",
+    "location": "51.5549477,-0.0894829"
   },
   {
     "name": "Dylan Smith",
     "type": "COURIER",
     "privateKey": "SDZHRIJAJITJCGI6K6RAIGH3LYTVXUORBQ6QMFG3RF2M6PKFS6QOCN4Y",
     "publicKey": "GACHAUDK3WKYSXNVOI63ZJUF7KVM44Z47VLHM2C6MHXTC7BSDK4Y35WT",
-    "phoneNumber": "+710121234234"
+    "phoneNumber": "+710121234234",
+    "address": "12 Green Street, London, UK",
+    "location": "51.5462383,0.0312111"
   },
   {
     "name": "Jeremy Johnson",
     "type": "COURIER",
     "privateKey": "SABTGQREOAPF3N5HRLPL6W4V5CDNQTKPDKZACMEBKIPHAN7TFCEE5GAR",
     "publicKey": "GBFEF6TB66FHIZFXVRHQBVQO2YWF7Z2OIJMRDOB6O6UTKLA6J6XWREB7",
-    "phoneNumber": "+711234701212"
+    "phoneNumber": "+711234701212",
+    "address": "12 West Green Road, London, UK",
+    "location": "51.5840107,-0.0730015"
   },
   {
     "name": "Aaron Johnson",
     "type": "TEST",
     "privateKey": "SAGMKB4K5FB3K2WJ4GCMLJJE5UUVV45ZF7IWKB53WO7LPBJD4CPEWU5J",
-    "phoneNumber": "+781017754894"
+    "phoneNumber": "+781017754894",
+    "address": "112 West Green Road, London, UK",
+    "location": "51.5852265,-0.0780609"
   },
   {
     "name": "Dylan Smith",
     "type": "TEST",
     "privateKey": "SCTQHHNCBKMEPJXPQGPRTHVGM6JYNCGTPPS35QLZ7ZO3KKJVUTRYNLDJ",
-    "phoneNumber": "+710121234234"
+    "phoneNumber": "+710121234234",
+    "address": "100 West Green Road, London, UK",
+    "location": "51.5850985,-0.0773948"
   }
 ]

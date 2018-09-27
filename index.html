@@ -63,6 +63,8 @@
         href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css"
     />
     <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
 </head>
 
 <body>
@@ -87,7 +89,7 @@
                                 <div class="input-group input-file">
                                     <span class="input-group-btn">
                                         <button
-                                            class="btn btn-default btn-choose"
+                                            class="btn btn-primary btn-choose"
                                             type="button"
                                         >Choose</button>
                                     </span>
@@ -1101,52 +1103,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label for=fromLocation">GPS location of place where launcher will give package to courier</label>
+                            <label for="recipientAddress">Recipient address</label>
                             <input
+                                id="recipientAddress"
                                 type="text"
                                 class="form-control"
-                                id="fromLocation"
-                                placeholder="GPS location from"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for=toLocation">GPS location of place where package need to be delivered to</label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="toLocation"
-                                placeholder="GPS location to"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for=fromAddress">Address of place where launcher will give package to courier</label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="fromAddress"
-                                placeholder="Address from"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for=toAddress">Address of place where package need to be delivered to</label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="toAddress"
-                                placeholder="Address to"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for=eventLocation">GPS location of place where launcher submited package info</label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="eventLocation"
-                                placeholder="Address to"
+                                placeholder="Enter a recipient address"
                             >
                         </div>
 
@@ -1182,13 +1144,14 @@
                                     <input
                                         type="radio"
                                         name="paymentBuls"
-                                        id="inlineRadio3"
+                                        id="inlineRadio4"
                                         value="4"
                                     > 4
                                 </label>
                             </div>
-                            <div class="radio">
-                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="form-group">
                                 <label for="collateralBuls">BULs demanded as collateral</label>
                                 <div class="radio">
@@ -1219,45 +1182,112 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="deadline">Deadline</label>
-                                <div class="radio">
-                                    <label class="radio-inline">
-                                        <input
-                                            type="radio"
-                                            name="deadline"
-                                            id="inlineRadio1"
-                                            value="1Day"
-                                            checked
-                                        > 1 day from now
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input
-                                            type="radio"
-                                            name="deadline"
-                                            id="inlineRadio2"
-                                            value="1Week"
-                                        > 1 week from now
-                                    </label>
-                                </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="deadline">Deadline</label>
+                            <div class="radio">
+                                <label class="radio-inline">
+                                    <input
+                                        type="radio"
+                                        name="deadline"
+                                        id="inlineRadio1"
+                                        value="1Day"
+                                        checked
+                                    > 1 day from now
+                                </label>
+                                <label class="radio-inline">
+                                    <input
+                                        type="radio"
+                                        name="deadline"
+                                        id="inlineRadio2"
+                                        value="1Week"
+                                    > 1 week from now
+                                </label>
                             </div>
-                            <div class="form-group">
-                                <label for="courier">Selection of courier</label>
-                                <select
-                                    id="courier"
-                                    class="form-control"
-                                >
-                                    <option>1</option>
-                                </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="courier">Selection of courier</label>
+                            <select
+                                id="courier"
+                                class="form-control"
+                            >
+                                <option>1</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <div class="radio">
+                                <label class="radio-inline">
+                                    <input
+                                        type="radio"
+                                        name="descriptionType"
+                                        id="inlineRadio1"
+                                        value="small"
+                                        checked
+                                    > small
+                                </label>
+                                <label class="radio-inline">
+                                    <input
+                                        type="radio"
+                                        name="descriptionType"
+                                        id="inlineRadio2"
+                                        value="medium"
+                                    > medium
+                                </label>
+                                <label class="radio-inline">
+                                    <input
+                                        type="radio"
+                                        name="descriptionType"
+                                        id="inlineRadio3"
+                                        value="large"
+                                    > large
+                                </label>
                             </div>
-                            <div class="form-group">
-                                <label for="description">Description</label>
+                        </div>
+
+                        <div class="form-check">
+                            <label
+                                class="form-check-label"
+                                for="enterMessageCheckBox"
+                            >Do you want to enter a description?</label>
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="enterMessage"
+                                id="enterMessageCheckBox"
+                                onchange="changesCheckBoxEnterDescription(this)"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <textarea
+                                id="description"
+                                class="form-control"
+                                rows="3"
+                                style="display: none"
+                            ></textarea>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="form-check-label">Select photo (optional)</label>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group uploadPhoto">
+                                <span class="input-group-btn">
+                                    <button
+                                        class="btn btn-primary btn-choose"
+                                        type="button"
+                                    >Choose</button>
+                                </span>
                                 <input
                                     type="text"
                                     class="form-control"
-                                    id="description"
-                                    placeholder="Description"
-                                >
+                                    placeholder='Choose a file...'
+                                />
                             </div>
                         </div>
                     </form>
@@ -1339,7 +1369,7 @@
                             <img
                                 id="img"
                                 class="featurette-image img-fluid mx-auto"
-                                style="width: 250px; height: 250px;"
+                                style="width: 250px; height: auto;"
                                 src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22500%22%20height%3D%22500%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20500%20500%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_166162b58fb%20text%20%7B%20fill%3A%23AAAAAA%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A25pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_166162b58fb%22%3E%3Crect%20width%3D%22500%22%20height%3D%22500%22%20fill%3D%22%23EEEEEE%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22185.125%22%20y%3D%22261.1%22%3E500x500%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
                                 data-holder-rendered="true"
                             >
