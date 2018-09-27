@@ -43,18 +43,26 @@
     >
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:http:// -->
     <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="http://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="http://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
     <link
         rel="stylesheet"
         type="text/css"
-        href="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.css"
+        href="http://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.css"
     />
 
+    <!--
+    leaflet 1.0.1
+    -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
 </head>
 
 <body>
@@ -107,7 +115,7 @@
                         </div>
                         <!-- /.panel-footer -->
                     </div>
-                    <!-- /.panel -->
+                    <!-- /#panelCustomerData -->
 
                     <div
                         id="panelRequests"
@@ -187,11 +195,13 @@
                                             >
                                                 <thead>
                                                     <tr>
+                                                        <th>EscrowPubkey</th>
                                                         <th>Name</th>
                                                         <th>User role</th>
                                                         <th>Datetime of creation</th>
                                                         <th>Recipient's location</th>
                                                         <th>Current custodian of the package</th>
+                                                        <th>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1041,7 +1051,7 @@
                         </div>
                         <!-- .panel-body -->
                     </div>
-                    <!-- /.panel -->
+                    <!-- /#panelRequests -->
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -1267,6 +1277,95 @@
             </div>
         </div>
     </div>
+    <!-- /#createPackageModal -->
+
+    <div
+        id="packageDetailsModal"
+        class="modal fade packageDetailsModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="packageDetailsModalLabel"
+    >
+        <div
+            class="modal-dialog modal-lg"
+            role="document"
+        >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                    >
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4
+                        class="modal-title"
+                        id="packageDetailsModalLabel"
+                    >Details about the package</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row featurette">
+                        <div class="col-md-8">
+                            <h2 class="featurette-heading">Name:
+                                <span
+                                    id="name"
+                                    class="text-muted"
+                                ></span>
+                            </h2>
+
+                            <p class="lead">Links to the
+                                <a
+                                    id="paketUrl"
+                                    href=""
+                                >package</a>
+                            </p>
+
+                            <p class="lead">Description: <p id="description"></p>
+                            </p>
+
+                            <p class="lead">Deadline:<p id="deadline"></p>
+                            </p>
+
+                            <p class="lead">Description:<p>sdadasdasd</p>
+                            </p>
+                        </div>
+                        <div
+                            class="col-md-4"
+                            align="center"
+                        >
+                            <img
+                                id="img"
+                                class="featurette-image img-fluid mx-auto"
+                                style="width: 250px; height: 250px;"
+                                src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22500%22%20height%3D%22500%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20500%20500%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_166162b58fb%20text%20%7B%20fill%3A%23AAAAAA%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A25pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_166162b58fb%22%3E%3Crect%20width%3D%22500%22%20height%3D%22500%22%20fill%3D%22%23EEEEEE%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22185.125%22%20y%3D%22261.1%22%3E500x500%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+                                data-holder-rendered="true"
+                            >
+                        </div>
+                    </div>
+                    <div class="row featurette">
+                        <div class="col-md-12">
+                            <div
+                                id="map"
+                                style="width: 100%;height: 500px;position: relative;overflow: hidden;"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-default"
+                        data-dismiss="modal"
+                    >Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /#packageDetailsModal -->
 
     <div
         id="loadingScreen"
@@ -1291,6 +1390,8 @@
             </div>
         </div>
     </div>
+    <!-- /#loadingScreen -->
+
 
     <!-- jQuery -->
     <script
@@ -1318,7 +1419,7 @@
 
     <script
         type="text/javascript"
-        src="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.js"
+        src="http://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.js"
     ></script>
 
 </body>
