@@ -571,7 +571,7 @@ $(document).ready(function() {
     var courierUser = courierData[courierId]
 
     // Get deadline
-    var deadline = $(selectorPanel + 'input[name=deadline]').val()
+    var deadline = $(selectorPanel + 'input[name=deadline]:checked').val()
 
     // Get date
     var today = new Date()
@@ -583,13 +583,21 @@ $(document).ready(function() {
           today.getMonth(),
           today.getDate() + 1
         ).getTime() / 1000
-    } else {
+    } else if (deadline == '1Week') {
       // 1 week from now
       var deadlineUnixTimestamp =
         new Date(
           today.getFullYear(),
           today.getMonth(),
           today.getDate() + 7
+        ).getTime() / 1000
+    } else if (deadline == '2Week') {
+      // 2 week from now
+      var deadlineUnixTimestamp =
+        new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() + 14
         ).getTime() / 1000
     }
 
