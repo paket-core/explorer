@@ -76,6 +76,7 @@ $(document).ready(function() {
     ],
   })
 
+  // Show modal window for package details
   $('#tablePackages tbody').on('click', 'button.details', function() {
     showLoadingScreen()
 
@@ -86,77 +87,82 @@ $(document).ready(function() {
         var package = response.package
 
         // Show modal window
-        $('#packageDetailsModal').modal()
-        if (!mapOnPackageDetailsModal) {
-          mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
-          var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution:
-              '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-          })
-          mapOnPackageDetailsModal.addLayer(tiles)
-        }
+        $('#packageDetailsModal').modal({
+          show: true,
+        })
 
-        // Remove all markers
-        for (
-          let index = 0;
-          index < markersOnPackageDetailsModal.length;
-          index++
-        ) {
-          const element = markersOnPackageDetailsModal[index]
-          mapOnPackageDetailsModal.removeLayer(element)
-        }
-        markersOnPackageDetailsModal = []
+        $('#packageDetailsModal').on('shown.bs.modal', function() {
+          if (!mapOnPackageDetailsModal) {
+            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
+            var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+              maxZoom: 18,
+              attribution:
+                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            })
+            mapOnPackageDetailsModal.addLayer(tiles)
+          }
 
-        // Display marker on map
-        var location = package.from_location.split(',')
-        var marker = L.marker([location[0], location[1]]).addTo(
-          mapOnPackageDetailsModal
-        )
-        mapOnPackageDetailsModal.setView([location[0], location[1]], 7)
-        markersOnPackageDetailsModal.push(marker)
+          // Remove all markers
+          for (
+            let index = 0;
+            index < markersOnPackageDetailsModal.length;
+            index++
+          ) {
+            const element = markersOnPackageDetailsModal[index]
+            mapOnPackageDetailsModal.removeLayer(element)
+          }
+          markersOnPackageDetailsModal = []
 
-        // Display text
-        var packageId = package.escrow_pubkey
-        var shortPackageId =
-          package.from_address.split(' ')[0] +
-          '-' +
-          packageId.substr(packageId.length - 3)
+          // Display marker on map
+          var location = package.from_location.split(',')
+          var marker = L.marker([location[0], location[1]]).addTo(
+            mapOnPackageDetailsModal
+          )
+          mapOnPackageDetailsModal.setView([location[0], location[1]], 7)
+          markersOnPackageDetailsModal.push(marker)
 
-        $('#packageDetailsModal #name')
-          .empty()
-          .append(shortPackageId)
+          // Display text
+          var packageId = package.escrow_pubkey
+          var shortPackageId =
+            package.from_address.split(' ')[0] +
+            '-' +
+            packageId.substr(packageId.length - 3)
 
-        $('#packageDetailsModal #description')
-          .empty()
-          .append(package.description)
+          $('#packageDetailsModal #name')
+            .empty()
+            .append(shortPackageId)
 
-        $('#packageDetailsModal #paketUrl').attr('href', package.paket_url)
+          $('#packageDetailsModal #description')
+            .empty()
+            .append(package.description)
 
-        $('#packageDetailsModal #deadline')
-          .empty()
-          .append(dateToYMD(new Date(package.deadline * 1000)))
+          $('#packageDetailsModal #paketUrl').attr('href', package.paket_url)
 
-        // Get all packages for this user
-        requests.router
-          .getPackagePhoto({ escrow_pubkey: packageId })
-          .done(function(data) {
-            var photo = data.package_photo
-              ? data.package_photo.photo
-              : imgSrcBase64
+          $('#packageDetailsModal #deadline')
+            .empty()
+            .append(dateToYMD(new Date(package.deadline * 1000)))
 
-            $('#packageDetailsModal #img').attr(
-              'src',
-              'data:image/png;base64,' + photo
-            )
-          })
-          .catch(function(error) {
-            alert('Error getting Packages info')
-            hideLoadingScreen()
-            console.error(error)
-          })
+          // Get all packages for this user
+          requests.router
+            .getPackagePhoto({ escrow_pubkey: packageId })
+            .done(function(data) {
+              var photo = data.package_photo
+                ? data.package_photo.photo
+                : imgSrcBase64
 
-        hideLoadingScreen()
+              $('#packageDetailsModal #img').attr(
+                'src',
+                'data:image/png;base64,' + photo
+              )
+            })
+            .catch(function(error) {
+              alert('Error getting Packages info')
+              hideLoadingScreen()
+              console.error(error)
+            })
+
+          hideLoadingScreen()
+        })
       })
       .catch(function(error) {
         alert('Error getting Packages info')
