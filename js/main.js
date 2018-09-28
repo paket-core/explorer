@@ -629,12 +629,12 @@ $(document).ready(function() {
 
     // 1) Create a pubkey for the escrow
     // generate new Keypair
-    infoLoadingScreen('Create a pubkey for the escrow')
+    infoLoadingScreen('1/12 Create a pubkey for the escrow')
     var escrowKeypair = StellarBase.Keypair.random()
     var escrowPubkey = escrowKeypair.publicKey()
 
     // 2) Call prepare_account on bridge as current user (launcher), sign and submit the tx to bridge
-    infoLoadingScreen('Prepare account')
+    infoLoadingScreen('2/12 Prepare account')
     requests.bridge
       .prepareAccount({
         from_pubkey: launcher.keypairStellar.publicKey(),
@@ -646,12 +646,12 @@ $(document).ready(function() {
           launcher.keypairStellar
         )
         // Submit transaction
-        infoLoadingScreen('Submit Prepare account')
+        infoLoadingScreen('3/12 Submit Prepare account')
         requests.bridge
           .submitTransaction({ signedTransaction })
           .done(function(response) {
             // 3) Call prepare_trust on bridge as escrow account (launcher), sign and submit the tx to bridge
-            infoLoadingScreen('Prepare trust')
+            infoLoadingScreen('4/12 Prepare trust')
             requests.bridge
               .prepareTrust({
                 from_pubkey: escrowPubkey,
@@ -662,12 +662,12 @@ $(document).ready(function() {
                   escrowKeypair
                 )
                 // Submit transaction
-                infoLoadingScreen('Submit Prepare trust')
+                infoLoadingScreen('5/12 Submit Prepare trust')
                 requests.bridge
                   .submitTransaction({ signedTransaction })
                   .done(function(response) {
                     // 4) Call prepare_escrow on bridge as escrow account, sign and submit the tx to bridge
-                    infoLoadingScreen('Prepare escrow')
+                    infoLoadingScreen('6/12 Prepare escrow')
                     requests.bridge
                       .prepareEscrow({
                         launcher_pubkey: launcher.keypairStellar.publicKey(),
@@ -684,12 +684,12 @@ $(document).ready(function() {
                           escrowKeypair
                         )
                         // Submit transaction
-                        infoLoadingScreen('Submit Prepare escrow')
+                        infoLoadingScreen('7/12 Submit Prepare escrow')
                         requests.bridge
                           .submitTransaction({ signedTransaction })
                           .done(function(response) {
                             // 5) Call prepare_send_buls on bridge with the payment amount as the current user (launcher), sign and submit the tx to bridge
-                            infoLoadingScreen('Prepare send buls')
+                            infoLoadingScreen('8/12 Prepare send buls')
                             requests.bridge
                               .prepareSendBuls({
                                 from_pubkey: launcher.keypairStellar.publicKey(),
@@ -702,13 +702,15 @@ $(document).ready(function() {
                                   launcher.keypairStellar
                                 )
                                 // Submit transaction
-                                infoLoadingScreen('Submit Prepare send buls')
+                                infoLoadingScreen(
+                                  '9/12 Submit Prepare send buls'
+                                )
                                 requests.bridge
                                   .submitTransaction({ signedTransaction })
                                   .done(function(response) {
                                     // 6) Call prepare_send_buls on bridge with the collateral amount as the designated courier, sign and submit the tx to bridge
                                     infoLoadingScreen(
-                                      'Second Prepare send buls'
+                                      '10/12 Second Prepare send buls'
                                     )
                                     requests.bridge
                                       .prepareSendBuls({
@@ -723,7 +725,7 @@ $(document).ready(function() {
                                         )
                                         // Submit transaction
                                         infoLoadingScreen(
-                                          'Submit Second Prepare send buls'
+                                          '11/12 Submit Second Prepare send buls'
                                         )
                                         requests.bridge
                                           .submitTransaction({
@@ -731,7 +733,9 @@ $(document).ready(function() {
                                           })
                                           .done(function(response) {
                                             // 7) Call create_package on router
-                                            infoLoadingScreen('Create package')
+                                            infoLoadingScreen(
+                                              '12/12 Create package'
+                                            )
                                             requests.router
                                               .createPackage({
                                                 escrow_pubkey: escrowPubkey,
