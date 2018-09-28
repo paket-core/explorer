@@ -570,10 +570,21 @@ $(document).ready(function() {
       selectorPanel + 'input[name=collateralBuls]:checked'
     ).val()
 
+    // Get fragile
+    var fragile = $(selectorPanel + '#isFragile')[0].checked ? 'fragile' : null
+
+    // Get description type
     var descriptionType = $(
       selectorPanel + 'input[name=descriptionType]:checked'
     ).val()
-    var description = [descriptionType, $(selectorPanel + '#description').val()]
+
+    // Get description
+    var descriptionText = $(selectorPanel + '#enterMessageCheckBox')[0].checked
+      ? $(selectorPanel + '#description').val()
+      : null
+
+    // Message for a descriptive
+    var description = [descriptionType, fragile, descriptionText]
       .filter(Boolean)
       .join(', ')
 
