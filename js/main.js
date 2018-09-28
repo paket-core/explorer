@@ -26,11 +26,32 @@ $(document).ready(function() {
   var network = new StellarBase.Network('Test SDF Network ; September 2015')
   StellarBase.Network.use(network)
 
-  // places.Autocomplete
+  // Places autocomplete
   var recipientInput = $('#createPackageModal #recipientAddress')
   recipientAddressAutocomplete = new google.maps.places.Autocomplete(
     recipientInput[0]
   )
+
+  // Description autocomplete
+  var inputDescription = $('#createPackageModal #description')
+  inputDescription.typeahead({
+    source: [],
+    autoSelect: true,
+  })
+  inputDescription.change(function() {
+    var current = inputDescription.typeahead('getActive')
+    if (current) {
+      // Some item from your model is active!
+      if (current.name == inputDescription.val()) {
+        // This means the exact match is found. Use toLowerCase() if you want case insensitive match.
+      } else {
+        // This means it is only a partial match, you can either add a new item
+        // or take the active if you don't want new items
+      }
+    } else {
+      // Nothing is active so it is a new value (or maybe empty value)
+    }
+  })
 
   // Refresh DataTable
   dataTablePackage = $('#tablePackages').DataTable({
@@ -484,10 +505,13 @@ $(document).ready(function() {
   })
 
   $('#info #openCreatePackageModal').click(function() {
-    var recipientSelect = $('#createPackageModal #recipient')
-    var courierSelect = $('#createPackageModal #courier')
+    $('#createPackageModal #description').val('')
+    $('#createPackageModal #recipientAddress').val('')
 
+    var recipientSelect = $('#createPackageModal #recipient')
     recipientSelect.empty()
+
+    var courierSelect = $('#createPackageModal #courier')
     courierSelect.empty()
 
     // Recipient in modal window
@@ -506,6 +530,11 @@ $(document).ready(function() {
         '<option value="' + index + '">' + element.name + '</option>'
       )
     }
+
+    // Set new description to autocomplete
+    $('#createPackageModal #description').data(
+      'typeahead'
+    ).source = getDescriptionForCreatePackage()
 
     // Show modal window
     $('#createPackageModal').modal()
@@ -582,6 +611,8 @@ $(document).ready(function() {
     var descriptionText = $(selectorPanel + '#enterMessageCheckBox')[0].checked
       ? $(selectorPanel + '#description').val()
       : null
+
+    saveDescriptionForCreatePackage(descriptionText)
 
     // Message for a descriptive
     var description = [descriptionType, fragile, descriptionText]
@@ -1227,6 +1258,23 @@ function getKeypairForPackage() {
   return listKeypair
 }
 
+// Save description for create package
+function saveDescriptionForCreatePackage(description) {
+  var descriptions = getDescriptionForCreatePackage()
+
+  descriptions.unshift(description)
+  descriptions.splice(5)
+
+  localStorage.setItem('descriptionAutofill', JSON.stringify(descriptions))
+}
+
+function getDescriptionForCreatePackage() {
+  var descriptions =
+    JSON.parse(localStorage.getItem('descriptionAutofill')) || []
+  return descriptions
+}
+
+// Property for array
 Array.prototype.last = function() {
   return this[this.length - 1]
 }
@@ -1245,6 +1293,7 @@ function hideLoadingScreen() {
   $('#loadingScreen').hide()
 }
 
+// Conwert date time
 function dateToYMD(date) {
   var strArray = [
     'Jan',
