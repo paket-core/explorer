@@ -1145,7 +1145,10 @@ function new_requestToServer({ url, data, hederPubkey }) {
           'Pubkey',
           hederPubkey || launcher.keypairStellar.publicKey()
         )
-        xhr.setRequestHeader('Fingerprint', fingerprint)
+        xhr.setRequestHeader(
+          'Fingerprint',
+          unescape(encodeURIComponent(fingerprint))
+        )
         xhr.setRequestHeader('Signature', signature)
       },
     })
