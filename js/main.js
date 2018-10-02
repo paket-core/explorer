@@ -1183,6 +1183,20 @@ var requests = {
         },
       })
     },
+    acceptPackage: function(
+      userSecret,
+      userPubkey,
+      { escrow_pubkey, location, leg_price }
+    ) {
+      return new_requestToServer(userSecret, userPubkey, {
+        url: this.baseUrl + '/accept_package',
+        data: {
+          escrow_pubkey, // escrow pubkey (the package ID)
+          location, // location of place where user accepted package
+          leg_price, // leg price
+        },
+      })
+    },
   },
   bridge: {
     baseUrl: baseUrlBridge,
