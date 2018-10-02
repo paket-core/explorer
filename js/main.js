@@ -10,9 +10,9 @@ var courierData = []
 var launcher = {}
 
 var protocol = location.protocol == 'file:' ? 'http:' : location.protocol
-var baseUrlRouter = protocol + '//route.paket.global/v3'
-var baseUrlBridge = protocol + '//bridge.paket.global/v3'
-var baseUrlFund = protocol + '//fund.paket.global/v2'
+var baseUrlRouter = protocol + '//itd.pub:11250/v3'
+var baseUrlBridge = protocol + '//itd.pub:11251/v3'
+var baseUrlFund = protocol + '//itd.pub:11252/v2'
 var dataTablePackage = null
 
 var mapOnPackageDetailsModal = null
