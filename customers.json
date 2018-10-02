@@ -1,5 +1,33 @@
 [
   {
+    "name": "Nobody's Fault Productions",
+    "type": "LAUNCHER",
+    "privateKey": "SCRP32LC3OJFF4NCKPFFWWF6HB6Z3ENRYY7ETB26Y43ML6GJXMUGTN6U",
+    "publicKey": "GAIKK74K2DLWKK6FCDMAHPCF2GSERKBXV5GZJCQ4MQINZOYMXOPQYU4O",
+    "phoneNumber": "+972542195133",
+    "address": "Shem ha-Gdolim St 3, Tel Aviv-Yafo, Israel",
+    "location": "32.036632, 34.748153"
+  },
+  {
+    "name": "Generic recipient",
+    "type": "RECIPIENT",
+    "privateKey": "SAWCEUCP52NO6D3A67Z6Y6VEWXZS7FCEFXVXXPZWWQSPEFZIASQYAZWH",
+    "publicKey": "GD6YKJISYCVPTCEU4EHA4GJR7ZPNSHAOKIA5XRHE4SPH7MBQOSZCW2IN",
+    "phoneNumber": "+972542195133",
+    "address": "Shem ha-Gdolim St 3, Tel Aviv-Yafo, Israel",
+    "location": "32.036632, 34.748153"
+  },
+  {
+    "name": "Yamit Hagar (Dylan Smith)",
+    "type": "COURIER",
+    "privateKey": "SDZHRIJAJITJCGI6K6RAIGH3LYTVXUORBQ6QMFG3RF2M6PKFS6QOCN4Y",
+    "publicKey": "GACHAUDK3WKYSXNVOI63ZJUF7KVM44Z47VLHM2C6MHXTC7BSDK4Y35WT",
+    "phoneNumber": "+972542195133",
+    "address": "Shem ha-Gdolim St 3, Tel Aviv-Yafo, Israel",
+    "location": "32.036632, 34.748153"
+  },
+
+  {
     "name": "Aaron Johnson",
     "type": "LAUNCHER",
     "privateKey": "SA4IXXZA3F6LYEWNBIK2OQTGJQDOVKXWJVVSZKIJMZRMUXE4EE6DD4QD",
@@ -18,15 +46,6 @@
     "location": "51.5549477,-0.0894829"
   },
   {
-    "name": "Dylan Smith",
-    "type": "COURIER",
-    "privateKey": "SDZHRIJAJITJCGI6K6RAIGH3LYTVXUORBQ6QMFG3RF2M6PKFS6QOCN4Y",
-    "publicKey": "GACHAUDK3WKYSXNVOI63ZJUF7KVM44Z47VLHM2C6MHXTC7BSDK4Y35WT",
-    "phoneNumber": "+710121234234",
-    "address": "12 Green Street, London, UK",
-    "location": "51.5462383,0.0312111"
-  },
-  {
     "name": "Jeremy Johnson",
     "type": "COURIER",
     "privateKey": "SABTGQREOAPF3N5HRLPL6W4V5CDNQTKPDKZACMEBKIPHAN7TFCEE5GAR",
@@ -34,21 +53,5 @@
     "phoneNumber": "+711234701212",
     "address": "12 West Green Road, London, UK",
     "location": "51.5840107,-0.0730015"
-  },
-  {
-    "name": "Aaron Johnson",
-    "type": "TEST",
-    "privateKey": "SAGMKB4K5FB3K2WJ4GCMLJJE5UUVV45ZF7IWKB53WO7LPBJD4CPEWU5J",
-    "phoneNumber": "+781017754894",
-    "address": "112 West Green Road, London, UK",
-    "location": "51.5852265,-0.0780609"
-  },
-  {
-    "name": "Dylan Smith",
-    "type": "TEST",
-    "privateKey": "SCTQHHNCBKMEPJXPQGPRTHVGM6JYNCGTPPS35QLZ7ZO3KKJVUTRYNLDJ",
-    "phoneNumber": "+710121234234",
-    "address": "100 West Green Road, London, UK",
-    "location": "51.5850985,-0.0773948"
   }
 ]

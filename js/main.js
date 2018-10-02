@@ -10,9 +10,9 @@ var courierData = []
 var launcher = {}
 
 var protocol = location.protocol == 'file:' ? 'http:' : location.protocol
-var baseUrlRouter = protocol + '//itd.pub:11250/v3'
-var baseUrlBridge = protocol + '//itd.pub:11251/v3'
-var baseUrlFund = protocol + '//itd.pub:11252/v2'
+var baseUrlRouter = protocol + '//route.paket.global/v3'
+var baseUrlBridge = protocol + '//bridge.paket.global/v3'
+var baseUrlFund = protocol + '//fund.paket.global/v2'
 var dataTablePackage = null
 
 var mapOnPackageDetailsModal = null
@@ -660,6 +660,7 @@ $(document).ready(function() {
     var escrowKeypair = StellarBase.Keypair.random()
     var escrowPubkey = escrowKeypair.publicKey()
     var escrowSecret = escrowKeypair.secret()
+    console.debug('escrowKeypair', escrowKeypair)
 
     // 2) Call prepare_account on bridge as current user (launcher), sign and submit the tx to bridge
     infoLoadingScreen('2/14 Prepare account')
@@ -669,6 +670,7 @@ $(document).ready(function() {
         new_pubkey: escrowPubkey,
       })
       .done(function(response) {
+        console.debug('prepare_account', response)
         var signedTransaction = signTransaction(
           response.transaction,
           launcher.keypairStellar
@@ -678,6 +680,7 @@ $(document).ready(function() {
         requests.bridge
           .submitTransaction({ signedTransaction })
           .done(function(response) {
+            console.debug('submit prepare_account', response)
             // 3) Call prepare_trust on bridge as escrow account (launcher), sign and submit the tx to bridge
             infoLoadingScreen('4/14 Prepare trust')
             requests.bridge
@@ -685,6 +688,7 @@ $(document).ready(function() {
                 from_pubkey: escrowPubkey,
               })
               .done(function(response) {
+                console.debug('prepare_trust', response)
                 var signedTransaction = signTransaction(
                   response.transaction,
                   escrowKeypair
@@ -694,6 +698,7 @@ $(document).ready(function() {
                 requests.bridge
                   .submitTransaction({ signedTransaction })
                   .done(function(response) {
+                    console.debug('submit prepare_trust', response)
                     // 4) Call prepare_escrow on bridge as escrow account, sign and submit the tx to bridge
                     infoLoadingScreen('6/14 Prepare escrow')
                     requests.bridge
@@ -710,6 +715,8 @@ $(document).ready(function() {
                           response.escrow_details.set_options_transaction,
                           escrowKeypair
                         )
+
+                        console.debug('prepare_escrow', response)
 
                         var XDRs = {
                           escrow_xdrs: {
@@ -729,6 +736,7 @@ $(document).ready(function() {
                         requests.bridge
                           .submitTransaction({ signedTransaction })
                           .done(function(response) {
+                            console.debug('submit prepare_escrow', response)
                             // 5) Call prepare_send_buls on bridge with the payment amount as the current user (launcher), sign and submit the tx to bridge
                             infoLoadingScreen('8/14 Prepare send buls')
                             requests.bridge
@@ -742,6 +750,10 @@ $(document).ready(function() {
                                   response.transaction,
                                   launcher.keypairStellar
                                 )
+                                console.debug(
+                                  'prepare_send_buls (payment)',
+                                  response
+                                )
                                 // Submit transaction
                                 infoLoadingScreen(
                                   '9/14 Submit Prepare send buls'
@@ -749,6 +761,10 @@ $(document).ready(function() {
                                 requests.bridge
                                   .submitTransaction({ signedTransaction })
                                   .done(function(response) {
+                                    console.debug(
+                                      'submit prepare_send_buls (payment)',
+                                      response
+                                    )
                                     // 6) Call prepare_send_buls on bridge with the collateral amount as the designated courier, sign and submit the tx to bridge
                                     infoLoadingScreen(
                                       '10/14 Second Prepare send buls'
@@ -764,6 +780,10 @@ $(document).ready(function() {
                                           response.transaction,
                                           courierUser.keypairStellar
                                         )
+                                        console.debug(
+                                          'prepare_send_buls (collateral)',
+                                          response
+                                        )
                                         // Submit transaction
                                         infoLoadingScreen(
                                           '11/14 Submit Second Prepare send buls'
@@ -773,6 +793,10 @@ $(document).ready(function() {
                                             signedTransaction,
                                           })
                                           .done(function(response) {
+                                            console.debug(
+                                              'submit prepare_send_buls (collateral)',
+                                              response
+                                            )
                                             // 7) Call create_package on router
                                             infoLoadingScreen(
                                               '12/14 Create package'
@@ -802,6 +826,10 @@ $(document).ready(function() {
                                                 // Save escrow Pubkey/Secret (escrowKeypair) to local storage
                                                 saveKeypairForPackage(
                                                   escrowKeypair
+                                                )
+                                                console.debug(
+                                                  'create_package',
+                                                  response
                                                 )
 
                                                 addRowPackagesToDataTable(
