@@ -67,9 +67,15 @@ $(document).ready(function() {
         orderable: false,
         render: function($data, $type, $row) {
           return (
+            '<div class="btn-group">' +
+            '<button type="button" class="btn btn-success">Launch</button>' +
+            '<button type="button" class="btn btn-success">Relay</button>' +
+            '<button type="button" class="btn btn-success">Receive</button>' +
+            '<button type="button" class="btn btn-success">Change location</button>' +
             '<button type="button" class="details btn btn-info" id="' +
             $row[0] +
-            '">Details</button>'
+            '">Details</button>' +
+            '</div>'
           )
         },
       },
