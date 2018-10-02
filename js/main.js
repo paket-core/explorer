@@ -825,7 +825,10 @@ $(document).ready(function() {
                                               .done(function(response) {
                                                 // Save escrow Pubkey/Secret (escrowKeypair) to local storage
                                                 saveKeypairForPackage(
-                                                  escrowKeypair
+                                                  escrowKeypair,
+                                                  courierUser.keypairStellar,
+                                                  launcher.keypairStellar,
+                                                  recipientUser.keypairStellar
                                                 )
                                                 console.debug(
                                                   'create_package',
@@ -1448,11 +1451,30 @@ function arrayBufferToBase64(buffer) {
 }
 
 // Save escrow Pubkey/Secret (escrowKeypair) to local storage
-function saveKeypairForPackage(escrowKeypair) {
+function saveKeypairForPackage(
+  escrowKeypair,
+  courierKeypair,
+  launcherKeypair,
+  recipientKeypair
+) {
   var listKeypair = getKeypairForPackage()
   listKeypair.push({
-    privateKey: escrowKeypair.secret(),
-    publicKey: escrowKeypair.publicKey(),
+    escrow: {
+      privateKey: escrowKeypair.secret(),
+      publicKey: escrowKeypair.publicKey(),
+    },
+    launcher: {
+      privateKey: launcherKeypair.secret(),
+      publicKey: launcherKeypair.publicKey(),
+    },
+    courier: {
+      privateKey: courierKeypair.secret(),
+      publicKey: courierKeypair.publicKey(),
+    },
+    recipient: {
+      privateKey: recipientKeypair.secret(),
+      publicKey: recipientKeypair.publicKey(),
+    },
   })
   localStorage.setItem('keypairForPackages', JSON.stringify(listKeypair))
 }
