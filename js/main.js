@@ -76,9 +76,9 @@ $(document).ready(function() {
             '<button type="button" class="launch btn btn-success" id="' +
             $row[0] +
             '">Launch</button>' +
-            '<button type="button" class="btn btn-success">Relay</button>' +
-            '<button type="button" class="btn btn-success">Receive</button>' +
-            '<button type="button" class="btn btn-success">Change location</button>' +
+            // '<button type="button" class="btn btn-success">Relay</button>' +
+            // '<button type="button" class="btn btn-success">Receive</button>' +
+            // '<button type="button" class="btn btn-success">Change location</button>' +
             '<button type="button" class="details btn btn-info" id="' +
             $row[0] +
             '">Details</button>' +
@@ -90,11 +90,78 @@ $(document).ready(function() {
   })
 
   // Show modal window for package launch
+  var packageIdForLaunch = null
   $('#tablePackages tbody').on('click', 'button.launch', function() {
+    packageIdForLaunch = this.attributes.id.value
+
+    $('#launchModal #packageId')
+      .empty()
+      .append(packageIdForLaunch.substr(packageIdForLaunch.length - 3))
+
     // Show modal window
     $('#launchModal').modal({
       show: true,
     })
+  })
+
+  $('#launchModal #launchPackage').click(function() {
+    showLoadingScreen('Starting')
+
+    // Get val from Recipient address field
+    var addressVal = $('#launchModal #address').val()
+
+    // Get place
+    var place = courierAddressAutocompleteOnLaunchModal.getPlace()
+    if (!addressVal || !place) {
+      alert('Data is not valid. Please enter the recipient address.')
+      hideLoadingScreen()
+      return
+    }
+
+    var location =
+      place.geometry.location.lat().toFixed(7) +
+      ',' +
+      place.geometry.location.lng().toFixed(7)
+
+    var packageCurent = null
+    var packages = getKeypairForPackage()
+
+    for (var index = 0; index < packages.length; index++) {
+      packageCurent = packages[index]
+
+      if (packageCurent.escrow.publicKey == packageIdForLaunch) {
+        break
+      }
+    }
+
+    if (!packageCurent) {
+      alert('Sorry, this package was not found in local storage.')
+      hideLoadingScreen()
+      return
+    }
+
+    requests.router
+      .acceptPackage(
+        packageCurent.courier.privateKey,
+        packageCurent.courier.publicKey,
+        {
+          escrow_pubkey: packageIdForLaunch,
+          location: location,
+          leg_price: 1,
+        }
+      )
+      .done(function(response) {
+        console.log(response)
+        hideLoadingScreen()
+
+        // Hide modal window
+        $('#launchModal').modal('hide')
+      })
+      .catch(function(error) {
+        console.error(error)
+        alert('An error occurred while confirm couriering')
+        hideLoadingScreen()
+      })
   })
 
   // Show modal window for package details
