@@ -19,6 +19,7 @@ var mapOnPackageDetailsModal = null
 var markersOnPackageDetailsModal = []
 var photoForCreateProject = null
 var recipientAddressAutocomplete = null
+var courierAddressAutocompleteOnLaunchModal = null
 
 $(document).ready(function() {
   // Configuration Stellar Network
@@ -26,10 +27,14 @@ $(document).ready(function() {
   var network = new StellarBase.Network('Test SDF Network ; September 2015')
   StellarBase.Network.use(network)
 
-  // Places autocomplete
-  var recipientInput = $('#createPackageModal #recipientAddress')
+  // Places autocomplete on create package modal
   recipientAddressAutocomplete = new google.maps.places.Autocomplete(
-    recipientInput[0]
+    $('#createPackageModal #recipientAddress')[0]
+  )
+
+  // Places autocomplete on launch modal
+  courierAddressAutocompleteOnLaunchModal = new google.maps.places.Autocomplete(
+    $('#launchModal #address')[0]
   )
 
   // Description autocomplete
@@ -68,7 +73,9 @@ $(document).ready(function() {
         render: function($data, $type, $row) {
           return (
             '<div class="btn-group">' +
-            '<button type="button" class="btn btn-success">Launch</button>' +
+            '<button type="button" class="launch btn btn-success" id="' +
+            $row[0] +
+            '">Launch</button>' +
             '<button type="button" class="btn btn-success">Relay</button>' +
             '<button type="button" class="btn btn-success">Receive</button>' +
             '<button type="button" class="btn btn-success">Change location</button>' +
@@ -80,6 +87,14 @@ $(document).ready(function() {
         },
       },
     ],
+  })
+
+  // Show modal window for package launch
+  $('#tablePackages tbody').on('click', 'button.launch', function() {
+    // Show modal window
+    $('#launchModal').modal({
+      show: true,
+    })
   })
 
   // Show modal window for package details

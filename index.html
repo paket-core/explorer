@@ -1423,65 +1423,106 @@
     <!-- /#packageDetailsModal -->
 
     <div
-        id="loadingScreen"
-        style="display: none;"
+        id="launchModal"
+        class="modal fade launchModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="launchModalLabel"
     >
-        <div class="loader">
-            <div>
-                <div class="row">
-                    <h2 style="color: #ffffff;">Please wait</h2>
+        <div
+            class="modal-dialog modal-lg"
+            role="document"
+        >
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="address">Courier address</label>
+                            <input
+                                id="address"
+                                type="text"
+                                class="form-control"
+                                placeholder="Enter a address"
+                            >
+                        </div>
+                    </form>
                 </div>
 
-                <div class="row">
-                    <h4
-                        id="info"
-                        style="color: #ffffff;"
-                    ></h4>
-                </div>
-
-                <div class="row">
-                    <div class="loadersmall"></div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-default"
+                        data-dismiss="modal"
+                    >Close</button>
+                    <div
+                        id="createPackage"
+                        class="btn btn-primary"
+                    >Launch</div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- /#loadingScreen -->
+        <!-- /#launchModal -->
+
+        <div
+            id="loadingScreen"
+            style="display: none;"
+        >
+            <div class="loader">
+                <div>
+                    <div class="row">
+                        <h2 style="color: #ffffff;">Please wait</h2>
+                    </div>
+
+                    <div class="row">
+                        <h4
+                            id="info"
+                            style="color: #ffffff;"
+                        ></h4>
+                    </div>
+
+                    <div class="row">
+                        <div class="loadersmall"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#loadingScreen -->
 
 
-    <!-- jQuery -->
-    <script
-        type="text/javascript"
-        src="js/jquery.min.js"
-    ></script>
+        <!-- jQuery -->
+        <script
+            type="text/javascript"
+            src="js/jquery.min.js"
+        ></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script
-        type="text/javascript"
-        src="js/bootstrap.min.js"
-    ></script>
+        <!-- Bootstrap Core JavaScript -->
+        <script
+            type="text/javascript"
+            src="js/bootstrap.min.js"
+        ></script>
 
-    <!-- Stellar -->
-    <script
-        type="text/javascript"
-        src="https://unpkg.com/stellar-base@0.9.0/dist/stellar-base.js"
-    ></script>
+        <!-- Stellar -->
+        <script
+            type="text/javascript"
+            src="https://unpkg.com/stellar-base@0.9.0/dist/stellar-base.js"
+        ></script>
 
-    <script
-        type="text/javascript"
-        src="http://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.js"
-    ></script>
+        <script
+            type="text/javascript"
+            src="http://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.js"
+        ></script>
 
-    <!-- Bootstrap typeahead -->
-    <script
-        type="text/javascript"
-        src="js/bootstrap3-typeahead.min.js"
-    ></script>
+        <!-- Bootstrap typeahead -->
+        <script
+            type="text/javascript"
+            src="js/bootstrap3-typeahead.min.js"
+        ></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script
-        type="text/javascript"
-        src="js/main.js"
-    ></script>
+        <!-- Bootstrap Core JavaScript -->
+        <script
+            type="text/javascript"
+            src="js/main.js"
+        ></script>
 
 </body>
 
