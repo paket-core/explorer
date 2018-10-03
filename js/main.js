@@ -1267,10 +1267,10 @@ $(document).ready(function() {
         from_pubkey: launcher.keypairStellar.publicKey(),
         new_pubkey: escrowPubkey,
       })
-      .done(function(response) {
-        console.debug('prepare_account', response)
+      .done(function(responsePrepareAccount) {
+        console.debug('prepare_account', responsePrepareAccount)
         var signedTransaction = signTransaction(
-          response.transaction,
+          responsePrepareAccount.transaction,
           launcher.keypairStellar
         )
         // Submit transaction
@@ -1285,10 +1285,10 @@ $(document).ready(function() {
               .prepareTrust({
                 from_pubkey: escrowPubkey,
               })
-              .done(function(response) {
-                console.debug('prepare_trust', response)
+              .done(function(responsePrepareTrust) {
+                console.debug('prepare_trust', responsePrepareTrust)
                 var signedTransaction = signTransaction(
-                  response.transaction,
+                  responsePrepareTrust.transaction,
                   escrowKeypair
                 )
                 // Submit transaction
@@ -1308,24 +1308,29 @@ $(document).ready(function() {
                         collateral_buls: collateralBuls,
                         deadline_timestamp: deadlineUnixTimestamp,
                       })
-                      .done(function(response) {
+                      .done(function(responsePrepareEscrow) {
                         var signedTransaction = signTransaction(
-                          response.escrow_details.set_options_transaction,
+                          responsePrepareEscrow.escrow_details
+                            .set_options_transaction,
                           escrowKeypair
                         )
 
-                        console.debug('prepare_escrow', response)
+                        console.debug('prepare_escrow', responsePrepareEscrow)
 
                         var XDRs = {
                           escrow_xdrs: {
                             merge_transaction:
-                              response.escrow_details.merge_transaction,
+                              responsePrepareEscrow.escrow_details
+                                .merge_transaction,
                             payment_transaction:
-                              response.escrow_details.payment_transaction,
+                              responsePrepareEscrow.escrow_details
+                                .payment_transaction,
                             refund_transaction:
-                              response.escrow_details.refund_transaction,
+                              responsePrepareEscrow.escrow_details
+                                .refund_transaction,
                             set_options_transaction:
-                              response.escrow_details.set_options_transaction,
+                              responsePrepareEscrow.escrow_details
+                                .set_options_transaction,
                           },
                         }
 
@@ -1343,14 +1348,14 @@ $(document).ready(function() {
                                 to_pubkey: escrowPubkey,
                                 amount_buls: paymentBuls,
                               })
-                              .done(function(response) {
+                              .done(function(responsePrepareSendBuls) {
                                 var signedTransaction = signTransaction(
-                                  response.transaction,
+                                  responsePrepareSendBuls.transaction,
                                   launcher.keypairStellar
                                 )
                                 console.debug(
                                   'prepare_send_buls (payment)',
-                                  response
+                                  responsePrepareSendBuls
                                 )
                                 // Submit transaction
                                 infoLoadingScreen(
@@ -1373,14 +1378,14 @@ $(document).ready(function() {
                                         to_pubkey: escrowPubkey,
                                         amount_buls: collateralBuls,
                                       })
-                                      .done(function(response) {
+                                      .done(function(responsePrepareSendBuls) {
                                         var signedTransaction = signTransaction(
-                                          response.transaction,
+                                          responsePrepareSendBuls.transaction,
                                           courierUser.keypairStellar
                                         )
                                         console.debug(
                                           'prepare_send_buls (collateral)',
-                                          response
+                                          responsePrepareSendBuls
                                         )
                                         // Submit transaction
                                         infoLoadingScreen(
@@ -1420,21 +1425,32 @@ $(document).ready(function() {
                                                   launcher.location,
                                                 photo: photoForCreateProject,
                                               })
-                                              .done(function(response) {
+                                              .done(function(
+                                                responseCreatePackage
+                                              ) {
+                                                console.debug(
+                                                  'create_package',
+                                                  responseCreatePackage
+                                                )
+
                                                 // Save escrow Pubkey/Secret (escrowKeypair) to local storage
-                                                saveKeypairForPackage(
+                                                savePackageToLocalStorage(
                                                   escrowKeypair,
                                                   courierUser.keypairStellar,
                                                   launcher.keypairStellar,
-                                                  recipientUser.keypairStellar
-                                                )
-                                                console.debug(
-                                                  'create_package',
-                                                  response
+                                                  recipientUser.keypairStellar,
+                                                  {
+                                                    responsePrepareAccount,
+                                                    responsePrepareTrust,
+                                                    responsePrepareEscrow,
+                                                    responsePrepareSendBuls,
+                                                    responsePrepareSendBuls,
+                                                    responseCreatePackage,
+                                                  }
                                                 )
 
                                                 addRowPackagesToDataTable(
-                                                  response.package
+                                                  responseCreatePackage.package
                                                 )
 
                                                 // clear field for photo
@@ -1473,8 +1489,6 @@ $(document).ready(function() {
                                                         }
                                                       )
                                                       .done(function(response) {
-                                                        assignXdrs
-
                                                         // Hide modal window
                                                         $(
                                                           '#createPackageModal'
@@ -2064,11 +2078,12 @@ function arrayBufferToBase64(buffer) {
 }
 
 // Save escrow Pubkey/Secret (escrowKeypair) to local storage
-function saveKeypairForPackage(
+function savePackageToLocalStorage(
   escrowKeypair,
   courierKeypair,
   launcherKeypair,
-  recipientKeypair
+  recipientKeypair,
+  packageData
 ) {
   var listKeypair = getKeypairForPackage()
   listKeypair.push({
@@ -2088,6 +2103,7 @@ function saveKeypairForPackage(
       privateKey: recipientKeypair.secret(),
       publicKey: recipientKeypair.publicKey(),
     },
+    packageData: packageData,
   })
   localStorage.setItem('keypairForPackages', JSON.stringify(listKeypair))
 }
