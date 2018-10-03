@@ -17,8 +17,13 @@ var dataTablePackage = null
 
 var mapOnPackageDetailsModal = null
 var markersOnPackageDetailsModal = []
+
 var photoForCreateProject = null
-var photoForlaunchModal = null
+var photoForLaunchModal = null
+var photoForRelayModal = null
+var photoForReceiveModal = null
+var photoForChangeLocationModal = null
+
 var recipientAddressAutocomplete = null
 var courierAddressAutocompleteOnLaunchModal = null
 var courierAddressAutocompleteOnRelayModal = null
@@ -174,7 +179,7 @@ $(document).ready(function() {
           escrow_pubkey: packageIdForLaunch,
           location: location,
           leg_price: 1,
-          photo: photoForlaunchModal,
+          photo: photoForLaunchModal,
         }
       )
       .done(function(response) {
@@ -248,7 +253,7 @@ $(document).ready(function() {
     for (var index = 0; index < packages.length; index++) {
       packageCurent = packages[index]
 
-      if (packageCurent.escrow.publicKey == packageIdForLaunch) {
+      if (packageCurent.escrow.publicKey == packageIdForRelay) {
         break
       }
     }
@@ -268,10 +273,10 @@ $(document).ready(function() {
         packageCurent.courier.privateKey,
         packageCurent.courier.publicKey,
         {
-          escrow_pubkey: packageIdForLaunch,
+          escrow_pubkey: packageIdForRelay,
           location: location,
           leg_price: 1,
-          photo: photoForlaunchModal,
+          photo: photoForLaunchModal,
         }
       )
       .done(function(response) {
@@ -305,7 +310,7 @@ $(document).ready(function() {
   })
 
   $('#receiveModal #receivePackage').click(function() {
-    showLoadingScreen('Starting')
+    showLoadingScreen()
 
     // Get val from Recipient address field
     var addressVal = $('#receiveModal #address').val()
@@ -331,7 +336,7 @@ $(document).ready(function() {
     for (var index = 0; index < packages.length; index++) {
       packageCurent = packages[index]
 
-      if (packageCurent.escrow.publicKey == packageIdForLaunch) {
+      if (packageCurent.escrow.publicKey == packageIdForReceive) {
         break
       }
     }
@@ -342,34 +347,73 @@ $(document).ready(function() {
       return
     }
 
-    $('#receiveModal').modal('hide')
-    hideLoadingScreen()
-
-    /*
     requests.router
-      .acceptPackage(
-        packageCurent.courier.privateKey,
-        packageCurent.courier.publicKey,
-        {
-          escrow_pubkey: packageIdForLaunch,
-          location: location,
-          leg_price: 1,
-          photo: photoForlaunchModal,
-        }
-      )
+      .getPackage({ escrow_pubkey: packageIdForReceive })
       .done(function(response) {
-        console.log(response)
-        hideLoadingScreen()
+        console.log('get package', response)
+        var package = response.package
 
-        // Hide modal window
-        $('#launchModal').modal('hide')
+        var escrowXdrsForPackage = null
+        for (let index = 0; index < package.events.length; index++) {
+          const event = package.events[index]
+          if (event.event_type == 'escrow XDRs assigned') {
+            escrowXdrsForPackage = JSON.parse(event.kwargs).escrow_xdrs
+          }
+        }
+
+        if (escrowXdrsForPackage == null) {
+          alert('The package still does not have escrow xdrs')
+          return
+        }
+
+        var paymentTransaction = escrowXdrsForPackage.payment_transaction
+
+        var signedTransaction = signTransaction(
+          paymentTransaction,
+          StellarBase.Keypair.fromSecret(packageCurent.recipient.privateKey)
+        )
+
+        requests.bridge
+          .submitTransaction({ signedTransaction })
+          .done(function(response) {
+            console.debug('submit payment transaction', response)
+
+            requests.router
+              .acceptPackage(
+                packageCurent.recipient.privateKey,
+                packageCurent.recipient.publicKey,
+                {
+                  escrow_pubkey: packageIdForReceive,
+                  location: location,
+                  leg_price: 1,
+                  photo: photoForReceiveModal,
+                }
+              )
+              .done(function(response) {
+                console.debug('submit payment transaction', response)
+
+                hideLoadingScreen()
+
+                // Hide modal window
+                $('#receiveModal').modal('hide')
+              })
+              .catch(function(error) {
+                console.error(error)
+                alert('An error occurred while submit payment transaction')
+                hideLoadingScreen()
+              })
+          })
+          .catch(function(error) {
+            console.error(error)
+            alert('An error occurred while submit payment transaction')
+            hideLoadingScreen()
+          })
       })
       .catch(function(error) {
         console.error(error)
-        alert('An error occurred while confirm couriering')
+        alert('An error occurred while get package')
         hideLoadingScreen()
       })
-      */
   })
 
   // Show modal window for package change location
@@ -437,7 +481,7 @@ $(document).ready(function() {
         {
           escrow_pubkey: packageIdForChangeLocation,
           location: location,
-          photo: photoForlaunchModal,
+          photo: photoForChangeLocationModal,
         }
       )
       .done(function(response) {
@@ -681,7 +725,151 @@ $(document).ready(function() {
               .pop()
           )
 
-        photoForlaunchModal = e.target.files[0]
+        photoForLaunchModal = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
+      return element
+    }
+  })
+
+  $('#relayModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForRelayModal = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
+      return element
+    }
+  })
+
+  $('#receiveModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForReceiveModal = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
+      return element
+    }
+  })
+
+  $('#changeLocationModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForChangeLocationModal = e.target.files[0]
       })
 
       $(this)
