@@ -18,6 +18,7 @@ var dataTablePackage = null
 var mapOnPackageDetailsModal = null
 var markersOnPackageDetailsModal = []
 var photoForCreateProject = null
+var photoForlaunchModal = null
 var recipientAddressAutocomplete = null
 var courierAddressAutocompleteOnLaunchModal = null
 
@@ -148,6 +149,7 @@ $(document).ready(function() {
           escrow_pubkey: packageIdForLaunch,
           location: location,
           leg_price: 1,
+          photo: photoForlaunchModal,
         }
       )
       .done(function(response) {
@@ -344,6 +346,54 @@ $(document).ready(function() {
           )
 
         photoForCreateProject = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
+      return element
+    }
+  })
+
+  $('#launchModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForlaunchModal = e.target.files[0]
       })
 
       $(this)
@@ -1284,7 +1334,7 @@ var requests = {
     acceptPackage: function(
       userSecret,
       userPubkey,
-      { escrow_pubkey, location, leg_price }
+      { escrow_pubkey, location, leg_price, photo }
     ) {
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/accept_package',
@@ -1292,6 +1342,7 @@ var requests = {
           escrow_pubkey, // escrow pubkey (the package ID)
           location, // location of place where user accepted package
           leg_price, // leg price
+          // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
         },
       })
     },
