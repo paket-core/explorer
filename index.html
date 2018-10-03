@@ -1434,6 +1434,21 @@
             role="document"
         >
             <div class="modal-content">
+                <div class="modal-header">
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                    >
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4
+                        class="modal-title"
+                        id="launchModalLabel"
+                    >Launch</h4>
+                </div>
+
                 <div class="modal-body">
                     <form>
                         <div class="input-group">
@@ -1487,6 +1502,98 @@
         </div>
     </div>
     <!-- /#launchModal -->
+
+    <div
+        id="relayModal"
+        class="modal fade relayModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="relayModalLabel"
+    >
+        <div
+            class="modal-dialog modal-lg"
+            role="document"
+        >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                    >
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4
+                        class="modal-title"
+                        id="relayModalLabel"
+                    >Relay</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form>
+                        <div class="input-group">
+                            <label class="form-check-label">Package id: ***-<label id='packageId'></label></label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Courier address</label>
+                            <input
+                                id="address"
+                                type="text"
+                                class="form-control"
+                                placeholder="Enter a address"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="courier">Selection of courier</label>
+                            <select
+                                id="courier"
+                                class="form-control"
+                            >
+                                <option>1</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="form-check-label">Select photo (optional)</label>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group uploadPhoto">
+                                <span class="input-group-btn">
+                                    <button
+                                        class="btn btn-primary btn-choose"
+                                        type="button"
+                                    >Choose</button>
+                                </span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder='Choose a file...'
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-default"
+                        data-dismiss="modal"
+                    >Close</button>
+                    <div
+                        id="relayPackage"
+                        class="btn btn-primary"
+                    >Relay</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /#relayModal -->
+
 
     <div
         id="loadingScreen"
