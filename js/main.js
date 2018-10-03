@@ -121,6 +121,8 @@ $(document).ready(function() {
     ],
   })
 
+  dataTablePackage.clear().draw()
+
   // Show modal window for package launch
   var packageIdForLaunch = null
   $('#tablePackages tbody').on('click', 'button.launch', function() {
@@ -919,6 +921,8 @@ $(document).ready(function() {
       )
 
       $('#dropdownUsers li a:eq(' + index + ')').click(item, function(event) {
+        dataTablePackage.clear().draw()
+
         changeSelectedLauncher(event.data)
         displayPackagesForLauncher()
       })
