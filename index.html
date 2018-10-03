@@ -1456,7 +1456,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="address">Courier address</label>
+                            <label for="address">Address</label>
                             <input
                                 id="address"
                                 type="text"
@@ -1537,7 +1537,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="address">Courier address</label>
+                            <label for="address">Address</label>
                             <input
                                 id="address"
                                 type="text"
@@ -1628,7 +1628,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="address">Courier address</label>
+                            <label for="address">Address</label>
                             <input
                                 id="address"
                                 type="text"
@@ -1676,6 +1676,87 @@
     <!-- /#receiveModal -->
 
     <div
+        id="changeLocationModal"
+        class="modal fade changeLocationModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="changeLocationModalLabel"
+    >
+        <div
+            class="modal-dialog modal-lg"
+            role="document"
+        >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                    >
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4
+                        class="modal-title"
+                        id="changeLocationModalLabel"
+                    >Change location</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form>
+                        <div class="input-group">
+                            <label class="form-check-label">Package id: ***-<label id='packageId'></label></label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input
+                                id="address"
+                                type="text"
+                                class="form-control"
+                                placeholder="Enter a address"
+                            >
+                        </div>
+
+                        <div class="input-group">
+                            <label class="form-check-label">Select photo (optional)</label>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group uploadPhoto">
+                                <span class="input-group-btn">
+                                    <button
+                                        class="btn btn-primary btn-choose"
+                                        type="button"
+                                    >Choose</button>
+                                </span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder='Choose a file...'
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-default"
+                        data-dismiss="modal"
+                    >Close</button>
+                    <div
+                        id="changeLocationPackage"
+                        class="btn btn-primary"
+                    >Change location</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /#changeLocationModal -->
+
+    <div
         id="loadingScreen"
         style="display: none;"
     >
@@ -1699,7 +1780,6 @@
         </div>
     </div>
     <!-- /#loadingScreen -->
-
 
     <!-- jQuery -->
     <script

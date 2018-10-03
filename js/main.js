@@ -23,6 +23,7 @@ var recipientAddressAutocomplete = null
 var courierAddressAutocompleteOnLaunchModal = null
 var courierAddressAutocompleteOnRelayModal = null
 var courierAddressAutocompleteOnReceiveModal = null
+var courierAddressAutocompleteOnChangeLocationModal = null
 
 $(document).ready(function() {
   // Configuration Stellar Network
@@ -48,6 +49,11 @@ $(document).ready(function() {
   // Places autocomplete on launch modal
   courierAddressAutocompleteOnReceiveModal = new google.maps.places.Autocomplete(
     $('#receiveModal #address')[0]
+  )
+
+  // Places autocomplete on launch modal
+  courierAddressAutocompleteOnChangeLocationModal = new google.maps.places.Autocomplete(
+    $('#changeLocationModal #address')[0]
   )
 
   // Description autocomplete
@@ -96,7 +102,9 @@ $(document).ready(function() {
             '<button type="button" class="receive btn btn-success" id="' +
             $row[0] +
             '">Receive</button>' +
-            // '<button type="button" class="btn btn-success">Change location</button>' +
+            '<button type="button" class="changeLocation btn btn-success" id="' +
+            $row[0] +
+            '">Change location</button>' +
             '<button type="button" class="details btn btn-info" id="' +
             $row[0] +
             '">Details</button>' +
@@ -224,7 +232,7 @@ $(document).ready(function() {
     }
 
     // Get courier
-    var courierId = $(selectorPanel + '#courier').val()
+    var courierId = $('#relayModal #courier').val()
     var newCourier = courierData[courierId]
 
     // Get location
@@ -250,6 +258,9 @@ $(document).ready(function() {
       hideLoadingScreen()
       return
     }
+
+    $('#relayModal').modal('hide')
+    hideLoadingScreen()
 
     /*
     requests.router
@@ -297,10 +308,10 @@ $(document).ready(function() {
     showLoadingScreen('Starting')
 
     // Get val from Recipient address field
-    var addressVal = $('#launchModal #address').val()
+    var addressVal = $('#receiveModal #address').val()
 
     // Get place
-    var place = courierAddressAutocompleteOnLaunchModal.getPlace()
+    var place = courierAddressAutocompleteOnReceiveModal.getPlace()
     if (!addressVal || !place) {
       alert('Data is not valid. Please enter the recipient address.')
       hideLoadingScreen()
@@ -330,6 +341,94 @@ $(document).ready(function() {
       hideLoadingScreen()
       return
     }
+
+    $('#receiveModal').modal('hide')
+    hideLoadingScreen()
+
+    /*
+    requests.router
+      .acceptPackage(
+        packageCurent.courier.privateKey,
+        packageCurent.courier.publicKey,
+        {
+          escrow_pubkey: packageIdForLaunch,
+          location: location,
+          leg_price: 1,
+          photo: photoForlaunchModal,
+        }
+      )
+      .done(function(response) {
+        console.log(response)
+        hideLoadingScreen()
+
+        // Hide modal window
+        $('#launchModal').modal('hide')
+      })
+      .catch(function(error) {
+        console.error(error)
+        alert('An error occurred while confirm couriering')
+        hideLoadingScreen()
+      })
+      */
+  })
+
+  // Show modal window for package change location
+  var packageIdForChangeLocation = null
+  $('#tablePackages tbody').on('click', 'button.changeLocation', function() {
+    packageIdForChangeLocation = this.attributes.id.value
+
+    $('#changeLocationModal #packageId')
+      .empty()
+      .append(
+        packageIdForChangeLocation.substr(packageIdForChangeLocation.length - 3)
+      )
+
+    // Show modal window
+    $('#changeLocationModal').modal({
+      show: true,
+    })
+  })
+
+  $('#changeLocationModal #changeLocationPackage').click(function() {
+    showLoadingScreen('Starting')
+
+    // Get val from Recipient address field
+    var addressVal = $('#changeLocationModal #address').val()
+
+    // Get place
+    var place = courierAddressAutocompleteOnChangeLocationModal.getPlace()
+    if (!addressVal || !place) {
+      alert('Data is not valid. Please enter the recipient address.')
+      hideLoadingScreen()
+      return
+    }
+
+    // Get location
+    var location =
+      place.geometry.location.lat().toFixed(7) +
+      ',' +
+      place.geometry.location.lng().toFixed(7)
+
+    // Get package
+    var packageCurent = null
+    var packages = getKeypairForPackage()
+
+    for (var index = 0; index < packages.length; index++) {
+      packageCurent = packages[index]
+
+      if (packageCurent.escrow.publicKey == packageIdForLaunch) {
+        break
+      }
+    }
+
+    if (!packageCurent) {
+      alert('Sorry, this package was not found in local storage.')
+      hideLoadingScreen()
+      return
+    }
+
+    $('#changeLocationModal').modal('hide')
+    hideLoadingScreen()
 
     /*
     requests.router
