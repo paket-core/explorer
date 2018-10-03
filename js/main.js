@@ -17,9 +17,18 @@ var dataTablePackage = null
 
 var mapOnPackageDetailsModal = null
 var markersOnPackageDetailsModal = []
+
 var photoForCreateProject = null
+var photoForLaunchModal = null
+var photoForRelayModal = null
+var photoForReceiveModal = null
+var photoForChangeLocationModal = null
+
 var recipientAddressAutocomplete = null
 var courierAddressAutocompleteOnLaunchModal = null
+var courierAddressAutocompleteOnRelayModal = null
+var courierAddressAutocompleteOnReceiveModal = null
+var courierAddressAutocompleteOnChangeLocationModal = null
 
 $(document).ready(function() {
   // Configuration Stellar Network
@@ -37,12 +46,28 @@ $(document).ready(function() {
     $('#launchModal #address')[0]
   )
 
+  // Places autocomplete on launch modal
+  courierAddressAutocompleteOnRelayModal = new google.maps.places.Autocomplete(
+    $('#relayModal #address')[0]
+  )
+
+  // Places autocomplete on launch modal
+  courierAddressAutocompleteOnReceiveModal = new google.maps.places.Autocomplete(
+    $('#receiveModal #address')[0]
+  )
+
+  // Places autocomplete on launch modal
+  courierAddressAutocompleteOnChangeLocationModal = new google.maps.places.Autocomplete(
+    $('#changeLocationModal #address')[0]
+  )
+
   // Description autocomplete
   var inputDescription = $('#createPackageModal #description')
   inputDescription.typeahead({
     source: [],
     autoSelect: true,
   })
+
   inputDescription.change(function() {
     var current = inputDescription.typeahead('getActive')
     if (current) {
@@ -76,9 +101,15 @@ $(document).ready(function() {
             '<button type="button" class="launch btn btn-success" id="' +
             $row[0] +
             '">Launch</button>' +
-            // '<button type="button" class="btn btn-success">Relay</button>' +
-            // '<button type="button" class="btn btn-success">Receive</button>' +
-            // '<button type="button" class="btn btn-success">Change location</button>' +
+            '<button type="button" class="relay btn btn-success" id="' +
+            $row[0] +
+            '">Relay</button>' +
+            '<button type="button" class="receive btn btn-success" id="' +
+            $row[0] +
+            '">Receive</button>' +
+            '<button type="button" class="changeLocation btn btn-success" id="' +
+            $row[0] +
+            '">Change location</button>' +
             '<button type="button" class="details btn btn-info" id="' +
             $row[0] +
             '">Details</button>' +
@@ -148,6 +179,309 @@ $(document).ready(function() {
           escrow_pubkey: packageIdForLaunch,
           location: location,
           leg_price: 1,
+          photo: photoForLaunchModal,
+        }
+      )
+      .done(function(response) {
+        console.log(response)
+        hideLoadingScreen()
+
+        // Hide modal window
+        $('#launchModal').modal('hide')
+      })
+      .catch(function(error) {
+        console.error(error)
+        alert('An error occurred while confirm couriering')
+        hideLoadingScreen()
+      })
+  })
+
+  // Show modal window for package relay
+  var packageIdForRelay = null
+  $('#tablePackages tbody').on('click', 'button.relay', function() {
+    packageIdForRelay = this.attributes.id.value
+
+    $('#relayModal #packageId')
+      .empty()
+      .append(packageIdForRelay.substr(packageIdForRelay.length - 3))
+
+    // Display courier
+    var courierSelect = $('#relayModal #courier')
+    courierSelect.empty()
+
+    for (var index = 0; index < courierData.length; index++) {
+      var element = courierData[index]
+      courierSelect.append(
+        '<option value="' + index + '">' + element.name + '</option>'
+      )
+    }
+
+    // Show modal window
+    $('#relayModal').modal({
+      show: true,
+    })
+  })
+
+  $('#relayModal #relayPackage').click(function() {
+    showLoadingScreen('Starting')
+
+    // Get val from Recipient address field
+    var addressVal = $('#relayModal #address').val()
+
+    // Get place
+    var place = courierAddressAutocompleteOnRelayModal.getPlace()
+    if (!addressVal || !place) {
+      alert('Data is not valid. Please enter the recipient address.')
+      hideLoadingScreen()
+      return
+    }
+
+    // Get courier
+    var courierId = $('#relayModal #courier').val()
+    var newCourier = courierData[courierId]
+
+    // Get location
+    var location =
+      place.geometry.location.lat().toFixed(7) +
+      ',' +
+      place.geometry.location.lng().toFixed(7)
+
+    // Get package
+    var packageCurent = null
+    var packages = getKeypairForPackage()
+
+    for (var index = 0; index < packages.length; index++) {
+      packageCurent = packages[index]
+
+      if (packageCurent.escrow.publicKey == packageIdForRelay) {
+        break
+      }
+    }
+
+    if (!packageCurent) {
+      alert('Sorry, this package was not found in local storage.')
+      hideLoadingScreen()
+      return
+    }
+
+    $('#relayModal').modal('hide')
+    hideLoadingScreen()
+
+    /*
+    requests.router
+      .acceptPackage(
+        packageCurent.courier.privateKey,
+        packageCurent.courier.publicKey,
+        {
+          escrow_pubkey: packageIdForRelay,
+          location: location,
+          leg_price: 1,
+          photo: photoForLaunchModal,
+        }
+      )
+      .done(function(response) {
+        console.log(response)
+        hideLoadingScreen()
+
+        // Hide modal window
+        $('#launchModal').modal('hide')
+      })
+      .catch(function(error) {
+        console.error(error)
+        alert('An error occurred while confirm couriering')
+        hideLoadingScreen()
+      })
+    */
+  })
+
+  // Show modal window for package receive
+  var packageIdForReceive = null
+  $('#tablePackages tbody').on('click', 'button.receive', function() {
+    packageIdForReceive = this.attributes.id.value
+
+    $('#receiveModal #packageId')
+      .empty()
+      .append(packageIdForReceive.substr(packageIdForReceive.length - 3))
+
+    // Show modal window
+    $('#receiveModal').modal({
+      show: true,
+    })
+  })
+
+  $('#receiveModal #receivePackage').click(function() {
+    showLoadingScreen()
+
+    // Get val from Recipient address field
+    var addressVal = $('#receiveModal #address').val()
+
+    // Get place
+    var place = courierAddressAutocompleteOnReceiveModal.getPlace()
+    if (!addressVal || !place) {
+      alert('Data is not valid. Please enter the recipient address.')
+      hideLoadingScreen()
+      return
+    }
+
+    // Get location
+    var location =
+      place.geometry.location.lat().toFixed(7) +
+      ',' +
+      place.geometry.location.lng().toFixed(7)
+
+    // Get package
+    var packageCurent = null
+    var packages = getKeypairForPackage()
+
+    for (var index = 0; index < packages.length; index++) {
+      packageCurent = packages[index]
+
+      if (packageCurent.escrow.publicKey == packageIdForReceive) {
+        break
+      }
+    }
+
+    if (!packageCurent) {
+      alert('Sorry, this package was not found in local storage.')
+      hideLoadingScreen()
+      return
+    }
+
+    requests.router
+      .getPackage({ escrow_pubkey: packageIdForReceive })
+      .done(function(response) {
+        console.log('get package', response)
+        var package = response.package
+
+        var escrowXdrsForPackage = null
+        for (let index = 0; index < package.events.length; index++) {
+          const event = package.events[index]
+          if (event.event_type == 'escrow XDRs assigned') {
+            escrowXdrsForPackage = JSON.parse(event.kwargs).escrow_xdrs
+          }
+        }
+
+        if (escrowXdrsForPackage == null) {
+          alert('The package still does not have escrow xdrs')
+          return
+        }
+
+        var paymentTransaction = escrowXdrsForPackage.payment_transaction
+
+        var signedTransaction = signTransaction(
+          paymentTransaction,
+          StellarBase.Keypair.fromSecret(packageCurent.recipient.privateKey)
+        )
+
+        requests.bridge
+          .submitTransaction({ signedTransaction })
+          .done(function(response) {
+            console.debug('submit payment transaction', response)
+
+            requests.router
+              .acceptPackage(
+                packageCurent.recipient.privateKey,
+                packageCurent.recipient.publicKey,
+                {
+                  escrow_pubkey: packageIdForReceive,
+                  location: location,
+                  leg_price: 1,
+                  photo: photoForReceiveModal,
+                }
+              )
+              .done(function(response) {
+                console.debug('submit payment transaction', response)
+
+                hideLoadingScreen()
+
+                // Hide modal window
+                $('#receiveModal').modal('hide')
+              })
+              .catch(function(error) {
+                console.error(error)
+                alert('An error occurred while submit payment transaction')
+                hideLoadingScreen()
+              })
+          })
+          .catch(function(error) {
+            console.error(error)
+            alert('An error occurred while submit payment transaction')
+            hideLoadingScreen()
+          })
+      })
+      .catch(function(error) {
+        console.error(error)
+        alert('An error occurred while get package')
+        hideLoadingScreen()
+      })
+  })
+
+  // Show modal window for package change location
+  var packageIdForChangeLocation = null
+  $('#tablePackages tbody').on('click', 'button.changeLocation', function() {
+    packageIdForChangeLocation = this.attributes.id.value
+
+    $('#changeLocationModal #packageId')
+      .empty()
+      .append(
+        packageIdForChangeLocation.substr(packageIdForChangeLocation.length - 3)
+      )
+
+    // Show modal window
+    $('#changeLocationModal').modal({
+      show: true,
+    })
+  })
+
+  $('#changeLocationModal #changeLocationPackage').click(function() {
+    showLoadingScreen('Starting')
+
+    // Get val from Recipient address field
+    var addressVal = $('#changeLocationModal #address').val()
+
+    // Get place
+    var place = courierAddressAutocompleteOnChangeLocationModal.getPlace()
+    if (!addressVal || !place) {
+      alert('Data is not valid. Please enter the recipient address.')
+      hideLoadingScreen()
+      return
+    }
+
+    // Get location
+    var location =
+      place.geometry.location.lat().toFixed(7) +
+      ',' +
+      place.geometry.location.lng().toFixed(7)
+
+    // Get package
+    var packageCurent = null
+    var packages = getKeypairForPackage()
+
+    for (var index = 0; index < packages.length; index++) {
+      packageCurent = packages[index]
+
+      if (packageCurent.escrow.publicKey == packageIdForChangeLocation) {
+        break
+      }
+    }
+
+    if (!packageCurent) {
+      alert('Sorry, this package was not found in local storage.')
+      hideLoadingScreen()
+      return
+    }
+
+    $('#changeLocationModal').modal('hide')
+    hideLoadingScreen()
+
+    requests.router
+      .changedLocation(
+        packageCurent.courier.privateKey,
+        packageCurent.courier.publicKey,
+        {
+          escrow_pubkey: packageIdForChangeLocation,
+          location: location,
+          photo: photoForChangeLocationModal,
         }
       )
       .done(function(response) {
@@ -344,6 +678,198 @@ $(document).ready(function() {
           )
 
         photoForCreateProject = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
+      return element
+    }
+  })
+
+  $('#launchModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForLaunchModal = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
+      return element
+    }
+  })
+
+  $('#relayModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForRelayModal = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
+      return element
+    }
+  })
+
+  $('#receiveModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForReceiveModal = e.target.files[0]
+      })
+
+      $(this)
+        .find('button.btn-choose')
+        .click(function() {
+          element.click()
+        })
+
+      $(this)
+        .find('input')
+        .css('cursor', 'pointer')
+
+      $(this)
+        .find('input')
+        .mousedown(function() {
+          $(this)
+            .parents('.uploadPhoto')
+            .prev()
+            .click()
+          return false
+        })
+
+      return element
+    }
+  })
+
+  $('#changeLocationModal .uploadPhoto').before(function() {
+    if (
+      !$(this)
+        .prev()
+        .hasClass('input-ghost')
+    ) {
+      var element = $(
+        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
+      )
+      element.attr('name', $(this).attr('name'))
+      element.change(function(e) {
+        element
+          .next(element)
+          .find('input')
+          .val(
+            element
+              .val()
+              .split('\\')
+              .pop()
+          )
+
+        photoForChangeLocationModal = e.target.files[0]
       })
 
       $(this)
@@ -1284,7 +1810,7 @@ var requests = {
     acceptPackage: function(
       userSecret,
       userPubkey,
-      { escrow_pubkey, location, leg_price }
+      { escrow_pubkey, location, leg_price, photo }
     ) {
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/accept_package',
@@ -1292,6 +1818,21 @@ var requests = {
           escrow_pubkey, // escrow pubkey (the package ID)
           location, // location of place where user accepted package
           leg_price, // leg price
+          // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
+        },
+      })
+    },
+    changedLocation: function(
+      userSecret,
+      userPubkey,
+      { escrow_pubkey, location, photo }
+    ) {
+      return new_requestToServer(userSecret, userPubkey, {
+        url: this.baseUrl + '/changed_location',
+        data: {
+          escrow_pubkey, // pubkey of package escrow
+          location, // GPS coordinates where user is at this moment
+          // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
         },
       })
     },
