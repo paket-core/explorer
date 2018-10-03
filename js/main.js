@@ -22,6 +22,7 @@ var photoForlaunchModal = null
 var recipientAddressAutocomplete = null
 var courierAddressAutocompleteOnLaunchModal = null
 var courierAddressAutocompleteOnRelayModal = null
+var courierAddressAutocompleteOnReceiveModal = null
 
 $(document).ready(function() {
   // Configuration Stellar Network
@@ -40,8 +41,13 @@ $(document).ready(function() {
   )
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnLaunchModal = new google.maps.places.Autocomplete(
+  courierAddressAutocompleteOnRelayModal = new google.maps.places.Autocomplete(
     $('#relayModal #address')[0]
+  )
+
+  // Places autocomplete on launch modal
+  courierAddressAutocompleteOnReceiveModal = new google.maps.places.Autocomplete(
+    $('#receiveModal #address')[0]
   )
 
   // Description autocomplete
@@ -50,6 +56,7 @@ $(document).ready(function() {
     source: [],
     autoSelect: true,
   })
+
   inputDescription.change(function() {
     var current = inputDescription.typeahead('getActive')
     if (current) {
@@ -86,7 +93,9 @@ $(document).ready(function() {
             '<button type="button" class="relay btn btn-success" id="' +
             $row[0] +
             '">Relay</button>' +
-            // '<button type="button" class="btn btn-success">Receive</button>' +
+            '<button type="button" class="receive btn btn-success" id="' +
+            $row[0] +
+            '">Receive</button>' +
             // '<button type="button" class="btn btn-success">Change location</button>' +
             '<button type="button" class="details btn btn-info" id="' +
             $row[0] +
@@ -109,32 +118,6 @@ $(document).ready(function() {
 
     // Show modal window
     $('#launchModal').modal({
-      show: true,
-    })
-  })
-
-  // Show modal window for package launch
-  var packageIdForRelay = null
-  $('#tablePackages tbody').on('click', 'button.relay', function() {
-    packageIdForRelay = this.attributes.id.value
-
-    $('#relayModal #packageId')
-      .empty()
-      .append(packageIdForRelay.substr(packageIdForRelay.length - 3))
-
-    // Display courier
-    var courierSelect = $('#relayModal #courier')
-    courierSelect.empty()
-
-    for (var index = 0; index < courierData.length; index++) {
-      var element = courierData[index]
-      courierSelect.append(
-        '<option value="' + index + '">' + element.name + '</option>'
-      )
-    }
-
-    // Show modal window
-    $('#relayModal').modal({
       show: true,
     })
   })
@@ -198,6 +181,32 @@ $(document).ready(function() {
         alert('An error occurred while confirm couriering')
         hideLoadingScreen()
       })
+  })
+
+  // Show modal window for package relay
+  var packageIdForRelay = null
+  $('#tablePackages tbody').on('click', 'button.relay', function() {
+    packageIdForRelay = this.attributes.id.value
+
+    $('#relayModal #packageId')
+      .empty()
+      .append(packageIdForRelay.substr(packageIdForRelay.length - 3))
+
+    // Display courier
+    var courierSelect = $('#relayModal #courier')
+    courierSelect.empty()
+
+    for (var index = 0; index < courierData.length; index++) {
+      var element = courierData[index]
+      courierSelect.append(
+        '<option value="' + index + '">' + element.name + '</option>'
+      )
+    }
+
+    // Show modal window
+    $('#relayModal').modal({
+      show: true,
+    })
   })
 
   $('#relayModal #relayPackage').click(function() {
@@ -267,6 +276,86 @@ $(document).ready(function() {
         hideLoadingScreen()
       })
     */
+  })
+
+  // Show modal window for package receive
+  var packageIdForReceive = null
+  $('#tablePackages tbody').on('click', 'button.receive', function() {
+    packageIdForReceive = this.attributes.id.value
+
+    $('#receiveModal #packageId')
+      .empty()
+      .append(packageIdForReceive.substr(packageIdForReceive.length - 3))
+
+    // Show modal window
+    $('#receiveModal').modal({
+      show: true,
+    })
+  })
+
+  $('#receiveModal #receivePackage').click(function() {
+    showLoadingScreen('Starting')
+
+    // Get val from Recipient address field
+    var addressVal = $('#launchModal #address').val()
+
+    // Get place
+    var place = courierAddressAutocompleteOnLaunchModal.getPlace()
+    if (!addressVal || !place) {
+      alert('Data is not valid. Please enter the recipient address.')
+      hideLoadingScreen()
+      return
+    }
+
+    // Get location
+    var location =
+      place.geometry.location.lat().toFixed(7) +
+      ',' +
+      place.geometry.location.lng().toFixed(7)
+
+    // Get package
+    var packageCurent = null
+    var packages = getKeypairForPackage()
+
+    for (var index = 0; index < packages.length; index++) {
+      packageCurent = packages[index]
+
+      if (packageCurent.escrow.publicKey == packageIdForLaunch) {
+        break
+      }
+    }
+
+    if (!packageCurent) {
+      alert('Sorry, this package was not found in local storage.')
+      hideLoadingScreen()
+      return
+    }
+
+    /*
+    requests.router
+      .acceptPackage(
+        packageCurent.courier.privateKey,
+        packageCurent.courier.publicKey,
+        {
+          escrow_pubkey: packageIdForLaunch,
+          location: location,
+          leg_price: 1,
+          photo: photoForlaunchModal,
+        }
+      )
+      .done(function(response) {
+        console.log(response)
+        hideLoadingScreen()
+
+        // Hide modal window
+        $('#launchModal').modal('hide')
+      })
+      .catch(function(error) {
+        console.error(error)
+        alert('An error occurred while confirm couriering')
+        hideLoadingScreen()
+      })
+      */
   })
 
   // Show modal window for package details
