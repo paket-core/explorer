@@ -416,7 +416,7 @@ $(document).ready(function() {
     for (var index = 0; index < packages.length; index++) {
       packageCurent = packages[index]
 
-      if (packageCurent.escrow.publicKey == packageIdForLaunch) {
+      if (packageCurent.escrow.publicKey == packageIdForChangeLocation) {
         break
       }
     }
@@ -430,15 +430,13 @@ $(document).ready(function() {
     $('#changeLocationModal').modal('hide')
     hideLoadingScreen()
 
-    /*
     requests.router
-      .acceptPackage(
+      .changedLocation(
         packageCurent.courier.privateKey,
         packageCurent.courier.publicKey,
         {
-          escrow_pubkey: packageIdForLaunch,
+          escrow_pubkey: packageIdForChangeLocation,
           location: location,
-          leg_price: 1,
           photo: photoForlaunchModal,
         }
       )
@@ -454,7 +452,6 @@ $(document).ready(function() {
         alert('An error occurred while confirm couriering')
         hideLoadingScreen()
       })
-      */
   })
 
   // Show modal window for package details
@@ -1633,6 +1630,20 @@ var requests = {
           escrow_pubkey, // escrow pubkey (the package ID)
           location, // location of place where user accepted package
           leg_price, // leg price
+          // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
+        },
+      })
+    },
+    changedLocation: function(
+      userSecret,
+      userPubkey,
+      { escrow_pubkey, location, photo }
+    ) {
+      return new_requestToServer(userSecret, userPubkey, {
+        url: this.baseUrl + '/changed_location',
+        data: {
+          escrow_pubkey, // pubkey of package escrow
+          location, // GPS coordinates where user is at this moment
           // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
         },
       })
