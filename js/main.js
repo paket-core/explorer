@@ -245,6 +245,10 @@ $(document).ready(function() {
       return
     }
 
+    $('#relayModal').modal('hide')
+    hideLoadingScreen()
+    return
+    /*
     // Get package
     requests.router
       .getPackage({ escrow_pubkey: packageIdForReceive })
@@ -278,7 +282,7 @@ $(document).ready(function() {
         alert('An error occurred while confirm couriering')
         hideLoadingScreen()
       })
-
+*/
     /*
     requests.router
       .acceptPackage(
