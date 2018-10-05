@@ -1225,18 +1225,18 @@ $(document).ready(function() {
                     infoLoadingScreen('6/19 Create new pubkey for sub courier')
                     var subCourierKeypair = StellarBase.Keypair.random()
                     var subCourierPubkey = subCourierKeypair.publicKey()
-                    var subCourierSecret = subCourierKeypair.secret()
 
                     // 3.2) Call prepare_account on bridge as current user (sub courier), sign and submit the tx to bridge
                     infoLoadingScreen('7/19 Prepare account for sub courier')
                     requests.bridge
                       .prepareAccount({
-                        from_pubkey: courier.keypairStellar.publicKey(),
+                        from_pubkey: courierUser.keypairStellar.publicKey(),
                         new_pubkey: subCourierPubkey,
                       })
                       .done(function(responsePrepareAccountForSubCourier) {
                         console.debug('prepare_account for sub courier', responsePrepareAccountForSubCourier)
-                        var signedTransaction = signTransaction(responsePrepareAccountForSubCourier.transaction, subCourierKeypair)
+
+                        var signedTransaction = signTransaction(responsePrepareAccountForSubCourier.transaction, courierUser.keypairStellar)
                         // Submit transaction
                         infoLoadingScreen('8/19 Submit Prepare account for sub courier')
                         requests.bridge
@@ -1252,7 +1252,7 @@ $(document).ready(function() {
                               })
                               .done(function(responsePrepareTrustForSubCourier) {
                                 console.debug('prepare_trust', responsePrepareTrustForSubCourier)
-                                var signedTransaction = signTransaction(responsePrepareTrustForSubCourier.transaction, escrowKeypair)
+                                var signedTransaction = signTransaction(responsePrepareTrustForSubCourier.transaction, subCourierKeypair)
 
                                 // Submit transaction
                                 infoLoadingScreen('10/19 Submit Prepare trust for sub courier')
