@@ -1598,10 +1598,6 @@ function displayPackagesForLauncher() {
       console.error(error)
       alert('Failed to get data from server')
     })
-    .always(function(data) {
-      console.error('always')
-      console.error(data)
-    })
 }
 
 function addRowPackagesToDataTable(package) {
