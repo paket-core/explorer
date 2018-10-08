@@ -1786,7 +1786,6 @@ function new_requestToServer(userSecret, userPublic, { url, data }) {
       processData: false,
       contentType: false,
       beforeSend: function(xhr) {
-        xhr.setRequestHeader('access-control-allow-origin', '*')
         xhr.setRequestHeader('Pubkey', userPublic)
         xhr.setRequestHeader('Fingerprint', unescape(encodeURIComponent(fingerprint)))
         xhr.setRequestHeader('Signature', signature)
