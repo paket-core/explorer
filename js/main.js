@@ -1582,9 +1582,18 @@ function displayPackagesForLauncher() {
         addRowPackagesToDataTable(packageItem)
       }
     })
+    .fail(function(error) {
+      console.error('fail')
+      console.error(error)
+    })
     .catch(function(error) {
+      console.error('catch')
       console.error(error)
       alert('Failed to get data from server')
+    })
+    .always(function(data) {
+      console.error('always')
+      console.error(data)
     })
 }
 
