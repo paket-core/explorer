@@ -1400,14 +1400,64 @@
                             >
                         </div>
                     </div>
+
                     <div class="row featurette">
                         <div class="col-md-12">
-                            <div
-                                id="map"
-                                style="margin-top: 20px;width: 100%;height: 500px;position: relative;overflow: hidden;"
-                            ></div>
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a
+                                        data-toggle="tab"
+                                        href="#tab-map"
+                                    >Map</a>
+                                </li>
+                                <li>
+                                    <a
+                                        data-toggle="tab"
+                                        href="#tab-events"
+                                    >Events</a>
+                                </li>
+                            </ul>
+
+                            <br>
+
+                            <div class="tab-content">
+                                <div
+                                    id="tab-map"
+                                    class="tab-pane fade in active"
+                                >
+                                    <div
+                                        id="map"
+                                        style="margin-top: 20px;width: 100%;height: 500px;position: relative;overflow: hidden;"
+                                    ></div>
+                                </div>
+
+                                <div
+                                    id="tab-events"
+                                    class="tab-pane fade"
+                                >
+                                    <div style="overflow-x:auto;">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th style="min-width: 200px;">Type</th>
+                                                    <th style="min-width: 200px;">Location</th>
+                                                    <th style="min-width: 250px;">Timestamp</th>
+                                                    <th style="min-width: 100px;">User pubkey</th>
+                                                    <th style="min-width: 200px;">Photo id</th>
+                                                    <th>Kwargs</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
+
                 </div>
 
                 <div class="modal-footer">
