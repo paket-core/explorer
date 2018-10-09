@@ -560,12 +560,6 @@ $(document).ready(function() {
           }
           markersOnPackageDetailsModal = []
 
-          // Display marker on map
-          var location = package.from_location.split(',')
-          var marker = L.marker([location[0], location[1]]).addTo(mapOnPackageDetailsModal)
-          mapOnPackageDetailsModal.setView([location[0], location[1]], 7)
-          markersOnPackageDetailsModal.push(marker)
-
           // Display text
           var packageId = package.escrow_pubkey
           var shortPackageId = package.from_address.split(' ')[0] + '-' + packageId.substr(packageId.length - 3)
@@ -586,12 +580,25 @@ $(document).ready(function() {
 
           // Display events
           var tabEvents = $('#packageDetailsModal #tab-events tbody')
+          tabEvents.empty()
 
           for (let index = 0; index < package.events.length; index++) {
             var event = package.events[index]
 
+            // Display marker on map
+            var location = event.location.split(',')
+            console.log('location: ' + event.location)
+
+            var marker = L.marker([location[0], location[1]])
+            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.')
+            marker.addTo(mapOnPackageDetailsModal)
+            markersOnPackageDetailsModal.push(marker)
+
+            // Add rows
             tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***-' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
           }
+
+          mapOnPackageDetailsModal.setView([markersOnPackageDetailsModal[0]._latlng.lat, markersOnPackageDetailsModal[0]._latlng.lng], 7)
 
           // Get all packages for this user
           requests.router
@@ -1615,6 +1622,8 @@ function changeSelectedLauncher(user) {
 }
 
 function displayPackagesForLauncher() {
+  showLoadingScreen()
+
   // Get all packages for this user
   requests.router
     .getMyPackages()
@@ -1623,15 +1632,15 @@ function displayPackagesForLauncher() {
         var packageItem = data.packages[index]
         addRowPackagesToDataTable(packageItem)
       }
-    })
-    .fail(function(error) {
-      console.error('fail')
-      console.error(error)
+
+      hideLoadingScreen()
     })
     .catch(function(error) {
       console.error('catch')
       console.error(error)
       alert('Failed to get data from server')
+
+      hideLoadingScreen()
     })
 }
 
