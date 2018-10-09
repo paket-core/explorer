@@ -1351,29 +1351,16 @@
                     >
                         <span aria-hidden="true">×</span>
                     </button>
-                    <h4
-                        class="modal-title"
-                        id="packageDetailsModalLabel"
-                    >Details about the package</h4>
+                    <h4 class="modal-title" id="packageDetailsModalLabel">
+                        <span id="name"></span>
+                        <span id="status" class="text-muted"></span>
+                    </h4>
                 </div>
-
                 <div class="modal-body">
                     <div class="row featurette">
                         <div class="col-md-8">
-                            <h2 class="featurette-heading">Name:
-                                <span
-                                    id="name"
-                                    class="text-muted"
-                                ></span>
-                            </h2>
-
-                            <p class="lead">Links to the
-                                <a
-                                    id="paketUrl"
-                                    href=""
-                                >package</a>
-                            </p>
-
+                            <p class="lead">Explore package in
+                            <a id="explorerUrl" href="" target='_blank'>external explorer</a>
                             <p class="lead">Description: <span
                                     id="description"
                                     style="color: #777;"
