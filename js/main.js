@@ -1738,24 +1738,34 @@ var requests = {
       })
     },
     acceptPackage: function(userSecret, userPubkey, { escrow_pubkey, location, leg_price, photo }) {
+      var data = {
+        escrow_pubkey, // escrow pubkey (the package ID)
+        location, // location of place where user accepted package
+        kwargs: JSON.stringify({ leg_price, leg_price }),
+      }
+
+      if (photo) {
+        data.photo = photo
+      }
+
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/accept_package',
-        data: {
-          escrow_pubkey, // escrow pubkey (the package ID)
-          location, // location of place where user accepted package
-          leg_price, // leg price
-          // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
-        },
+        data: data,
       })
     },
     changedLocation: function(userSecret, userPubkey, { escrow_pubkey, location, photo }) {
+      var data = {
+        escrow_pubkey, // pubkey of package escrow
+        location, // GPS coordinates where user is at this moment
+      }
+
+      if (photo) {
+        data.photo = photo
+      }
+
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/changed_location',
-        data: {
-          escrow_pubkey, // pubkey of package escrow
-          location, // GPS coordinates where user is at this moment
-          // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
-        },
+        data: data,
       })
     },
   },
