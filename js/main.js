@@ -37,29 +37,19 @@ $(document).ready(function() {
   StellarBase.Network.use(network)
 
   // Places autocomplete on create package modal
-  recipientAddressAutocomplete = new google.maps.places.Autocomplete(
-    $('#createPackageModal #recipientAddress')[0]
-  )
+  recipientAddressAutocomplete = new google.maps.places.Autocomplete($('#createPackageModal #recipientAddress')[0])
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnLaunchModal = new google.maps.places.Autocomplete(
-    $('#launchModal #address')[0]
-  )
+  courierAddressAutocompleteOnLaunchModal = new google.maps.places.Autocomplete($('#launchModal #address')[0])
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnRelayModal = new google.maps.places.Autocomplete(
-    $('#relayModal #address')[0]
-  )
+  courierAddressAutocompleteOnRelayModal = new google.maps.places.Autocomplete($('#relayModal #address')[0])
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnReceiveModal = new google.maps.places.Autocomplete(
-    $('#receiveModal #address')[0]
-  )
+  courierAddressAutocompleteOnReceiveModal = new google.maps.places.Autocomplete($('#receiveModal #address')[0])
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnChangeLocationModal = new google.maps.places.Autocomplete(
-    $('#changeLocationModal #address')[0]
-  )
+  courierAddressAutocompleteOnChangeLocationModal = new google.maps.places.Autocomplete($('#changeLocationModal #address')[0])
 
   // Description autocomplete
   var inputDescription = $('#createPackageModal #description')
@@ -120,6 +110,8 @@ $(document).ready(function() {
     ],
   })
 
+  dataTablePackage.clear().draw()
+
   // Show modal window for package launch
   var packageIdForLaunch = null
   $('#tablePackages tbody').on('click', 'button.launch', function() {
@@ -149,10 +141,7 @@ $(document).ready(function() {
       return
     }
 
-    var location =
-      place.geometry.location.lat().toFixed(7) +
-      ',' +
-      place.geometry.location.lng().toFixed(7)
+    var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
 
     var packageCurent = null
     var packages = getKeypairForPackage()
@@ -172,16 +161,12 @@ $(document).ready(function() {
     }
 
     requests.router
-      .acceptPackage(
-        packageCurent.courier.privateKey,
-        packageCurent.courier.publicKey,
-        {
-          escrow_pubkey: packageIdForLaunch,
-          location: location,
-          leg_price: 1,
-          photo: photoForLaunchModal,
-        }
-      )
+      .acceptPackage(packageCurent.courier.privateKey, packageCurent.courier.publicKey, {
+        escrow_pubkey: packageIdForLaunch,
+        location: location,
+        leg_price: 1,
+        photo: photoForLaunchModal,
+      })
       .done(function(response) {
         console.log(response)
         hideLoadingScreen()
@@ -211,9 +196,7 @@ $(document).ready(function() {
 
     for (var index = 0; index < courierData.length; index++) {
       var element = courierData[index]
-      courierSelect.append(
-        '<option value="' + index + '">' + element.name + '</option>'
-      )
+      courierSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
 
     // Show modal window
@@ -241,10 +224,7 @@ $(document).ready(function() {
     var newCourier = courierData[courierId]
 
     // Get location
-    var location =
-      place.geometry.location.lat().toFixed(7) +
-      ',' +
-      place.geometry.location.lng().toFixed(7)
+    var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
 
     // Get package
     var packageCurent = null
@@ -266,7 +246,42 @@ $(document).ready(function() {
 
     $('#relayModal').modal('hide')
     hideLoadingScreen()
+    return
+    /*
+    // Get package
+    requests.router
+      .getPackage({ escrow_pubkey: packageIdForReceive })
+      .done(function(response) {
+        console.log('get package', response)
 
+        // Call prepare_escrow
+        requests.bridge
+          .prepareEscrow(packageCurent.escrow.privateKey, packageCurent.escrow.publicKey, {
+            launcher_pubkey: packageCurent.launcher.publicKey,
+            courier_pubkey: packageCurent.courier.publicKey,
+            recipient_pubkey: packageCurent.recipient.publicKey,
+            payment_buls: paymentBuls,
+            collateral_buls: collateralBuls,
+            deadline_timestamp: deadlineUnixTimestamp,
+          })
+          .done(function(response) {
+            console.log('get package', response)
+
+            $('#relayModal').modal('hide')
+            hideLoadingScreen()
+          })
+          .catch(function(error) {
+            console.error(error)
+            alert('An error occurred while confirm couriering')
+            hideLoadingScreen()
+          })
+      })
+      .catch(function(error) {
+        console.error(error)
+        alert('An error occurred while confirm couriering')
+        hideLoadingScreen()
+      })
+*/
     /*
     requests.router
       .acceptPackage(
@@ -324,10 +339,7 @@ $(document).ready(function() {
     }
 
     // Get location
-    var location =
-      place.geometry.location.lat().toFixed(7) +
-      ',' +
-      place.geometry.location.lng().toFixed(7)
+    var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
 
     // Get package
     var packageCurent = null
@@ -368,10 +380,7 @@ $(document).ready(function() {
 
         var paymentTransaction = escrowXdrsForPackage.payment_transaction
 
-        var signedTransaction = signTransaction(
-          paymentTransaction,
-          StellarBase.Keypair.fromSecret(packageCurent.recipient.privateKey)
-        )
+        var signedTransaction = signTransaction(paymentTransaction, StellarBase.Keypair.fromSecret(packageCurent.recipient.privateKey))
 
         requests.bridge
           .submitTransaction({ signedTransaction })
@@ -379,16 +388,12 @@ $(document).ready(function() {
             console.debug('submit payment transaction', response)
 
             requests.router
-              .acceptPackage(
-                packageCurent.recipient.privateKey,
-                packageCurent.recipient.publicKey,
-                {
-                  escrow_pubkey: packageIdForReceive,
-                  location: location,
-                  leg_price: 1,
-                  photo: photoForReceiveModal,
-                }
-              )
+              .acceptPackage(packageCurent.recipient.privateKey, packageCurent.recipient.publicKey, {
+                escrow_pubkey: packageIdForReceive,
+                location: location,
+                leg_price: 1,
+                photo: photoForReceiveModal,
+              })
               .done(function(response) {
                 console.debug('submit payment transaction', response)
 
@@ -423,9 +428,7 @@ $(document).ready(function() {
 
     $('#changeLocationModal #packageId')
       .empty()
-      .append(
-        packageIdForChangeLocation.substr(packageIdForChangeLocation.length - 3)
-      )
+      .append(packageIdForChangeLocation.substr(packageIdForChangeLocation.length - 3))
 
     // Show modal window
     $('#changeLocationModal').modal({
@@ -448,10 +451,7 @@ $(document).ready(function() {
     }
 
     // Get location
-    var location =
-      place.geometry.location.lat().toFixed(7) +
-      ',' +
-      place.geometry.location.lng().toFixed(7)
+    var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
 
     // Get package
     var packageCurent = null
@@ -475,15 +475,11 @@ $(document).ready(function() {
     hideLoadingScreen()
 
     requests.router
-      .changedLocation(
-        packageCurent.courier.privateKey,
-        packageCurent.courier.publicKey,
-        {
-          escrow_pubkey: packageIdForChangeLocation,
-          location: location,
-          photo: photoForChangeLocationModal,
-        }
-      )
+      .changedLocation(packageCurent.courier.privateKey, packageCurent.courier.publicKey, {
+        escrow_pubkey: packageIdForChangeLocation,
+        location: location,
+        photo: photoForChangeLocationModal,
+      })
       .done(function(response) {
         console.log(response)
         hideLoadingScreen()
@@ -518,18 +514,13 @@ $(document).ready(function() {
             mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
             var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
               maxZoom: 18,
-              attribution:
-                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+              attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             })
             mapOnPackageDetailsModal.addLayer(tiles)
           }
 
           // Remove all markers
-          for (
-            let index = 0;
-            index < markersOnPackageDetailsModal.length;
-            index++
-          ) {
+          for (let index = 0; index < markersOnPackageDetailsModal.length; index++) {
             const element = markersOnPackageDetailsModal[index]
             mapOnPackageDetailsModal.removeLayer(element)
           }
@@ -537,18 +528,13 @@ $(document).ready(function() {
 
           // Display marker on map
           var location = package.from_location.split(',')
-          var marker = L.marker([location[0], location[1]]).addTo(
-            mapOnPackageDetailsModal
-          )
+          var marker = L.marker([location[0], location[1]]).addTo(mapOnPackageDetailsModal)
           mapOnPackageDetailsModal.setView([location[0], location[1]], 7)
           markersOnPackageDetailsModal.push(marker)
 
           // Display text
           var packageId = package.escrow_pubkey
-          var shortPackageId =
-            package.from_address.split(' ')[0] +
-            '-' +
-            packageId.substr(packageId.length - 3)
+          var shortPackageId = package.from_address.split(' ')[0] + '-' + packageId.substr(packageId.length - 3)
 
           $('#packageDetailsModal #name')
             .empty()
@@ -568,14 +554,9 @@ $(document).ready(function() {
           requests.router
             .getPackagePhoto({ escrow_pubkey: packageId })
             .done(function(data) {
-              var photo = data.package_photo
-                ? data.package_photo.photo
-                : imgSrcBase64
+              var photo = data.package_photo ? data.package_photo.photo : imgSrcBase64
 
-              $('#packageDetailsModal #img').attr(
-                'src',
-                'data:image/png;base64,' + photo
-              )
+              $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + photo)
             })
             .catch(function(error) {
               alert('Error getting Packages info')
@@ -599,9 +580,7 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $(
-        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='.json, .txt'>"
-      )
+      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='.json, .txt'>")
       element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
@@ -662,9 +641,7 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $(
-        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
-      )
+      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
       element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
@@ -710,9 +687,7 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $(
-        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
-      )
+      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
       element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
@@ -758,9 +733,7 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $(
-        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
-      )
+      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
       element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
@@ -806,9 +779,7 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $(
-        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
-      )
+      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
       element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
@@ -854,9 +825,7 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $(
-        "<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>"
-      )
+      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
       element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
@@ -913,11 +882,11 @@ $(document).ready(function() {
     for (var index = 0; index < launcherData.length; index++) {
       var item = launcherData[index]
 
-      $('#dropdownUsers').append(
-        '<li><a href="#" id="' + index + '">' + item.name + '</a></li>'
-      )
+      $('#dropdownUsers').append('<li><a href="#" id="' + index + '">' + item.name + '</a></li>')
 
       $('#dropdownUsers li a:eq(' + index + ')').click(item, function(event) {
+        dataTablePackage.clear().draw()
+
         changeSelectedLauncher(event.data)
         displayPackagesForLauncher()
       })
@@ -1138,23 +1107,17 @@ $(document).ready(function() {
     for (var index = 0; index < recipientData.length; index++) {
       var element = recipientData[index]
 
-      recipientSelect.append(
-        '<option value="' + index + '">' + element.name + '</option>'
-      )
+      recipientSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
 
     // Courier in modal window
     for (var index = 0; index < courierData.length; index++) {
       var element = courierData[index]
-      courierSelect.append(
-        '<option value="' + index + '">' + element.name + '</option>'
-      )
+      courierSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
 
     // Set new description to autocomplete
-    $('#createPackageModal #description').data(
-      'typeahead'
-    ).source = getDescriptionForCreatePackage()
+    $('#createPackageModal #description').data('typeahead').source = getDescriptionForCreatePackage()
 
     // Show modal window
     $('#createPackageModal').modal()
@@ -1181,10 +1144,7 @@ $(document).ready(function() {
     }
 
     var recipientAddress = recipientPlace.formatted_address
-    var recipientLocation =
-      recipientPlace.geometry.location.lat().toFixed(7) +
-      ',' +
-      recipientPlace.geometry.location.lng().toFixed(7)
+    var recipientLocation = recipientPlace.geometry.location.lat().toFixed(7) + ',' + recipientPlace.geometry.location.lng().toFixed(7)
 
     // Get courier
     var courierId = $(selectorPanel + '#courier').val()
@@ -1197,313 +1157,304 @@ $(document).ready(function() {
     var today = new Date()
     if (deadline == '1Day') {
       // 1 day from now
-      var deadlineUnixTimestamp =
-        new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + 1
-        ).getTime() / 1000
+      var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime() / 1000
     } else if (deadline == '1Week') {
       // 1 week from now
-      var deadlineUnixTimestamp =
-        new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + 7
-        ).getTime() / 1000
+      var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7).getTime() / 1000
     } else if (deadline == '2Week') {
       // 2 week from now
-      var deadlineUnixTimestamp =
-        new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + 14
-        ).getTime() / 1000
+      var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 14).getTime() / 1000
     }
 
     // Get values
     var paymentBuls = $(selectorPanel + 'input[name=paymentBuls]:checked').val()
-    var collateralBuls = $(
-      selectorPanel + 'input[name=collateralBuls]:checked'
-    ).val()
+    var collateralBuls = $(selectorPanel + 'input[name=collateralBuls]:checked').val()
 
     // Get fragile
     var fragile = $(selectorPanel + '#isFragile')[0].checked ? 'fragile' : null
 
     // Get description type
-    var descriptionType = $(
-      selectorPanel + 'input[name=descriptionType]:checked'
-    ).val()
+    var descriptionType = $(selectorPanel + 'input[name=descriptionType]:checked').val()
 
     // Get description
-    var descriptionText = $(selectorPanel + '#enterMessageCheckBox')[0].checked
-      ? $(selectorPanel + '#description').val()
-      : null
+    var descriptionText = $(selectorPanel + '#enterMessageCheckBox')[0].checked ? $(selectorPanel + '#description').val() : null
 
     saveDescriptionForCreatePackage(descriptionText)
 
     // Message for a descriptive
-    var description = [descriptionType, fragile, descriptionText]
-      .filter(Boolean)
-      .join(', ')
+    var description = [descriptionType, fragile, descriptionText].filter(Boolean).join(', ')
 
     // 1) Create a pubkey for the escrow
     // generate new Keypair
-    infoLoadingScreen('1/14 Create a pubkey for the escrow')
+    infoLoadingScreen('1/19 Create a pubkey for the escrow')
     var escrowKeypair = StellarBase.Keypair.random()
     var escrowPubkey = escrowKeypair.publicKey()
     var escrowSecret = escrowKeypair.secret()
     console.debug('escrowKeypair', escrowKeypair)
 
     // 2) Call prepare_account on bridge as current user (launcher), sign and submit the tx to bridge
-    infoLoadingScreen('2/14 Prepare account')
+    infoLoadingScreen('2/19 Prepare account')
     requests.bridge
       .prepareAccount({
         from_pubkey: launcher.keypairStellar.publicKey(),
         new_pubkey: escrowPubkey,
       })
-      .done(function(response) {
-        console.debug('prepare_account', response)
-        var signedTransaction = signTransaction(
-          response.transaction,
-          launcher.keypairStellar
-        )
+      .done(function(responsePrepareAccount) {
+        console.debug('prepare_account', responsePrepareAccount)
+        var signedTransaction = signTransaction(responsePrepareAccount.transaction, launcher.keypairStellar)
         // Submit transaction
-        infoLoadingScreen('3/14 Submit Prepare account')
+        infoLoadingScreen('3/19 Submit Prepare account')
         requests.bridge
           .submitTransaction({ signedTransaction })
           .done(function(response) {
             console.debug('submit prepare_account', response)
             // 3) Call prepare_trust on bridge as escrow account (launcher), sign and submit the tx to bridge
-            infoLoadingScreen('4/14 Prepare trust')
+            infoLoadingScreen('4/19 Prepare trust')
             requests.bridge
               .prepareTrust({
                 from_pubkey: escrowPubkey,
               })
-              .done(function(response) {
-                console.debug('prepare_trust', response)
-                var signedTransaction = signTransaction(
-                  response.transaction,
-                  escrowKeypair
-                )
+              .done(function(responsePrepareTrust) {
+                console.debug('prepare_trust', responsePrepareTrust)
+                var signedTransaction = signTransaction(responsePrepareTrust.transaction, escrowKeypair)
                 // Submit transaction
-                infoLoadingScreen('5/14 Submit Prepare trust')
+                infoLoadingScreen('5/19 Submit Prepare trust')
                 requests.bridge
                   .submitTransaction({ signedTransaction })
                   .done(function(response) {
                     console.debug('submit prepare_trust', response)
-                    // 4) Call prepare_escrow on bridge as escrow account, sign and submit the tx to bridge
-                    infoLoadingScreen('6/14 Prepare escrow')
+
+                    // 3.1) Create new pubkey for sub courier
+                    infoLoadingScreen('6/19 Create new pubkey for sub courier')
+                    var subCourierKeypair = StellarBase.Keypair.random()
+                    var subCourierPubkey = subCourierKeypair.publicKey()
+
+                    // 3.2) Call prepare_account on bridge as current user (sub courier), sign and submit the tx to bridge
+                    infoLoadingScreen('7/19 Prepare account for sub courier')
                     requests.bridge
-                      .prepareEscrow(escrowSecret, escrowPubkey, {
-                        launcher_pubkey: launcher.keypairStellar.publicKey(),
-                        courier_pubkey: courierUser.keypairStellar.publicKey(),
-                        recipient_pubkey: recipientUser.keypairStellar.publicKey(),
-                        payment_buls: paymentBuls,
-                        collateral_buls: collateralBuls,
-                        deadline_timestamp: deadlineUnixTimestamp,
+                      .prepareAccount({
+                        from_pubkey: courierUser.keypairStellar.publicKey(),
+                        new_pubkey: subCourierPubkey,
                       })
-                      .done(function(response) {
-                        var signedTransaction = signTransaction(
-                          response.escrow_details.set_options_transaction,
-                          escrowKeypair
-                        )
+                      .done(function(responsePrepareAccountForSubCourier) {
+                        console.debug('prepare_account for sub courier', responsePrepareAccountForSubCourier)
 
-                        console.debug('prepare_escrow', response)
-
-                        var XDRs = {
-                          escrow_xdrs: {
-                            merge_transaction:
-                              response.escrow_details.merge_transaction,
-                            payment_transaction:
-                              response.escrow_details.payment_transaction,
-                            refund_transaction:
-                              response.escrow_details.refund_transaction,
-                            set_options_transaction:
-                              response.escrow_details.set_options_transaction,
-                          },
-                        }
-
+                        var signedTransaction = signTransaction(responsePrepareAccountForSubCourier.transaction, courierUser.keypairStellar)
                         // Submit transaction
-                        infoLoadingScreen('7/14 Submit Prepare escrow')
+                        infoLoadingScreen('8/19 Submit Prepare account for sub courier')
                         requests.bridge
                           .submitTransaction({ signedTransaction })
                           .done(function(response) {
-                            console.debug('submit prepare_escrow', response)
-                            // 5) Call prepare_send_buls on bridge with the payment amount as the current user (launcher), sign and submit the tx to bridge
-                            infoLoadingScreen('8/14 Prepare send buls')
+                            console.debug('submit prepare_account for sub courier', response)
+
+                            // 2.4) Call prepare_trust on bridge as escrow account (sub courier), sign and submit the tx to bridge
+                            infoLoadingScreen('9/19 Prepare trust for sub courier')
                             requests.bridge
-                              .prepareSendBuls({
-                                from_pubkey: launcher.keypairStellar.publicKey(),
-                                to_pubkey: escrowPubkey,
-                                amount_buls: paymentBuls,
+                              .prepareTrust({
+                                from_pubkey: subCourierPubkey,
                               })
-                              .done(function(response) {
-                                var signedTransaction = signTransaction(
-                                  response.transaction,
-                                  launcher.keypairStellar
-                                )
-                                console.debug(
-                                  'prepare_send_buls (payment)',
-                                  response
-                                )
+                              .done(function(responsePrepareTrustForSubCourier) {
+                                console.debug('prepare_trust', responsePrepareTrustForSubCourier)
+                                var signedTransaction = signTransaction(responsePrepareTrustForSubCourier.transaction, subCourierKeypair)
+
                                 // Submit transaction
-                                infoLoadingScreen(
-                                  '9/14 Submit Prepare send buls'
-                                )
+                                infoLoadingScreen('10/19 Submit Prepare trust for sub courier')
                                 requests.bridge
                                   .submitTransaction({ signedTransaction })
                                   .done(function(response) {
-                                    console.debug(
-                                      'submit prepare_send_buls (payment)',
-                                      response
-                                    )
-                                    // 6) Call prepare_send_buls on bridge with the collateral amount as the designated courier, sign and submit the tx to bridge
-                                    infoLoadingScreen(
-                                      '10/14 Second Prepare send buls'
-                                    )
+                                    console.debug('submit prepare_trust for sub courier', response)
+
+                                    // 4) Call prepare_escrow on bridge as escrow account, sign and submit the tx to bridge
+                                    infoLoadingScreen('11/19 Prepare escrow')
                                     requests.bridge
-                                      .prepareSendBuls({
-                                        from_pubkey: courierUser.keypairStellar.publicKey(),
-                                        to_pubkey: escrowPubkey,
-                                        amount_buls: collateralBuls,
+                                      .prepareEscrow(escrowSecret, escrowPubkey, {
+                                        launcher_pubkey: launcher.keypairStellar.publicKey(),
+                                        courier_pubkey: subCourierPubkey,
+                                        recipient_pubkey: recipientUser.keypairStellar.publicKey(),
+                                        payment_buls: paymentBuls,
+                                        collateral_buls: collateralBuls,
+                                        deadline_timestamp: deadlineUnixTimestamp,
                                       })
-                                      .done(function(response) {
-                                        var signedTransaction = signTransaction(
-                                          response.transaction,
-                                          courierUser.keypairStellar
-                                        )
-                                        console.debug(
-                                          'prepare_send_buls (collateral)',
-                                          response
-                                        )
+                                      .done(function(responsePrepareEscrow) {
+                                        console.debug('prepare_escrow', responsePrepareEscrow)
+                                        var signedTransaction = signTransaction(responsePrepareEscrow.escrow_details.set_options_transaction, escrowKeypair)
+
+                                        var XDRs = {
+                                          escrow_xdrs: {
+                                            merge_transaction: responsePrepareEscrow.escrow_details.merge_transaction,
+                                            payment_transaction: responsePrepareEscrow.escrow_details.payment_transaction,
+                                            refund_transaction: responsePrepareEscrow.escrow_details.refund_transaction,
+                                            set_options_transaction: responsePrepareEscrow.escrow_details.set_options_transaction,
+                                          },
+                                        }
+
                                         // Submit transaction
-                                        infoLoadingScreen(
-                                          '11/14 Submit Second Prepare send buls'
-                                        )
+                                        infoLoadingScreen('12/19 Submit Prepare escrow')
                                         requests.bridge
                                           .submitTransaction({
                                             signedTransaction,
                                           })
                                           .done(function(response) {
-                                            console.debug(
-                                              'submit prepare_send_buls (collateral)',
-                                              response
-                                            )
-                                            // 7) Call create_package on router
-                                            infoLoadingScreen(
-                                              '12/14 Create package'
-                                            )
-                                            requests.router
-                                              .createPackage({
-                                                escrow_pubkey: escrowPubkey,
-                                                recipient_pubkey: recipientUser.keypairStellar.publicKey(),
-                                                launcher_phone_number:
-                                                  launcher.phoneNumber,
-                                                recipient_phone_number:
-                                                  recipientUser.phoneNumber,
-                                                payment_buls: paymentBuls,
-                                                collateral_buls: collateralBuls,
-                                                deadline_timestamp: deadlineUnixTimestamp,
-                                                description: description,
-                                                from_location:
-                                                  launcher.location,
-                                                to_location: recipientLocation,
-                                                from_address: launcher.address,
-                                                to_address: recipientAddress,
-                                                event_location:
-                                                  launcher.location,
-                                                photo: photoForCreateProject,
+                                            console.debug('submit prepare_escrow', response)
+                                            // 5) Call prepare_send_buls on bridge with the payment amount as the current user (launcher), sign and submit the tx to bridge
+                                            infoLoadingScreen('13/19 Prepare send buls')
+                                            requests.bridge
+                                              .prepareSendBuls({
+                                                from_pubkey: launcher.keypairStellar.publicKey(),
+                                                to_pubkey: escrowPubkey,
+                                                amount_buls: paymentBuls,
                                               })
-                                              .done(function(response) {
-                                                // Save escrow Pubkey/Secret (escrowKeypair) to local storage
-                                                saveKeypairForPackage(
-                                                  escrowKeypair,
-                                                  courierUser.keypairStellar,
-                                                  launcher.keypairStellar,
-                                                  recipientUser.keypairStellar
-                                                )
-                                                console.debug(
-                                                  'create_package',
-                                                  response
-                                                )
-
-                                                addRowPackagesToDataTable(
-                                                  response.package
-                                                )
-
-                                                // clear field for photo
-                                                photoForCreateProject = null
-
-                                                // 8) Call confirm_couriering on router
-                                                infoLoadingScreen(
-                                                  '13/14 Confirming package by courier'
-                                                )
-                                                requests.router
-                                                  .confirmCouriering(
-                                                    courierUser.keypairStellar.secret(),
-                                                    courierUser.keypairStellar.publicKey(),
-                                                    {
-                                                      escrow_pubkey: escrowPubkey,
-                                                      location:
-                                                        launcher.location,
-                                                    }
-                                                  )
+                                              .done(function(responsePrepareSendBuls) {
+                                                var signedTransaction = signTransaction(responsePrepareSendBuls.transaction, launcher.keypairStellar)
+                                                console.debug('prepare_send_buls (payment)', responsePrepareSendBuls)
+                                                // Submit transaction
+                                                infoLoadingScreen('14/19 Submit Prepare send buls')
+                                                requests.bridge
+                                                  .submitTransaction({
+                                                    signedTransaction,
+                                                  })
                                                   .done(function(response) {
-                                                    // 9) Call assign_xdrs on router
-                                                    infoLoadingScreen(
-                                                      '14/14 Preparing escrow and assigning XDRs'
-                                                    )
-                                                    requests.router
-                                                      .assignXdrs(
-                                                        launcher.keypairStellar.secret(),
-                                                        launcher.keypairStellar.publicKey(),
-                                                        {
-                                                          escrow_pubkey: escrowPubkey,
-                                                          location:
-                                                            launcher.location,
-                                                          kwargs: JSON.stringify(
-                                                            XDRs
-                                                          ),
-                                                        }
-                                                      )
-                                                      .done(function(response) {
-                                                        assignXdrs
+                                                    console.debug('submit prepare_send_buls (payment)', response)
+                                                    // 6) Call prepare_send_buls on bridge with the collateral amount as the designated courier, sign and submit the tx to bridge
+                                                    infoLoadingScreen('15/19 Second Prepare send buls')
+                                                    requests.bridge
+                                                      .prepareSendBuls({
+                                                        from_pubkey: courierUser.keypairStellar.publicKey(),
+                                                        to_pubkey: escrowPubkey,
+                                                        amount_buls: collateralBuls,
+                                                      })
+                                                      .done(function(responsePrepareSendBuls) {
+                                                        var signedTransaction = signTransaction(responsePrepareSendBuls.transaction, courierUser.keypairStellar)
+                                                        console.debug('prepare_send_buls (collateral)', responsePrepareSendBuls)
+                                                        // Submit transaction
+                                                        infoLoadingScreen('16/19 Submit Second Prepare send buls')
+                                                        requests.bridge
+                                                          .submitTransaction({
+                                                            signedTransaction,
+                                                          })
+                                                          .done(function(response) {
+                                                            console.debug('submit prepare_send_buls (collateral)', response)
+                                                            // 7) Call create_package on router
+                                                            infoLoadingScreen('17/19 Create package')
+                                                            requests.router
+                                                              .createPackage({
+                                                                escrow_pubkey: escrowPubkey,
+                                                                recipient_pubkey: recipientUser.keypairStellar.publicKey(),
+                                                                launcher_phone_number: launcher.phoneNumber,
+                                                                recipient_phone_number: recipientUser.phoneNumber,
+                                                                payment_buls: paymentBuls,
+                                                                collateral_buls: collateralBuls,
+                                                                deadline_timestamp: deadlineUnixTimestamp,
+                                                                description: description,
+                                                                from_location: launcher.location,
+                                                                to_location: recipientLocation,
+                                                                from_address: launcher.address,
+                                                                to_address: recipientAddress,
+                                                                event_location: launcher.location,
+                                                                photo: photoForCreateProject,
+                                                              })
+                                                              .done(function(responseCreatePackage) {
+                                                                console.debug('create_package', responseCreatePackage)
 
-                                                        // Hide modal window
-                                                        $(
-                                                          '#createPackageModal'
-                                                        ).modal('hide')
+                                                                // Save escrow Pubkey/Secret (escrowKeypair) to local storage
+                                                                savePackageToLocalStorage(escrowKeypair, launcher.keypairStellar, courierUser.keypairStellar, subCourierKeypair, recipientUser.keypairStellar, {
+                                                                  responsePrepareAccount,
+                                                                  responsePrepareTrust,
+                                                                  responsePrepareAccountForSubCourier,
+                                                                  responsePrepareTrustForSubCourier,
+                                                                  responsePrepareEscrow,
+                                                                  responsePrepareSendBuls,
+                                                                  responsePrepareSendBuls,
+                                                                  responseCreatePackage,
+                                                                })
 
-                                                        hideLoadingScreen()
+                                                                addRowPackagesToDataTable(responseCreatePackage.package)
+
+                                                                // clear field for photo
+                                                                photoForCreateProject = null
+
+                                                                // 8) Call confirm_couriering on router
+                                                                infoLoadingScreen('18/19 Confirming package by courier')
+                                                                requests.router
+                                                                  .confirmCouriering(courierUser.keypairStellar.secret(), courierUser.keypairStellar.publicKey(), {
+                                                                    escrow_pubkey: escrowPubkey,
+                                                                    location: launcher.location,
+                                                                  })
+                                                                  .done(function(response) {
+                                                                    // 9) Call assign_xdrs on router
+                                                                    infoLoadingScreen('19/19 Preparing escrow and assigning XDRs')
+                                                                    requests.router
+                                                                      .assignXdrs(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+                                                                        escrow_pubkey: escrowPubkey,
+                                                                        location: launcher.location,
+                                                                        kwargs: JSON.stringify(XDRs),
+                                                                      })
+                                                                      .done(function(response) {
+                                                                        // Hide modal window
+                                                                        $('#createPackageModal').modal('hide')
+
+                                                                        hideLoadingScreen()
+                                                                      })
+                                                                      .catch(function(error) {
+                                                                        console.error(error)
+                                                                        alert('An error occurred while confirm couriering')
+                                                                        hideLoadingScreen()
+                                                                      })
+                                                                  })
+                                                                  .catch(function(error) {
+                                                                    console.error(error)
+                                                                    alert('An error occurred while confirm couriering')
+                                                                    hideLoadingScreen()
+                                                                  })
+                                                              })
+                                                              .catch(function(error) {
+                                                                console.error(error)
+                                                                alert('An error occurred while creating the Package')
+                                                                hideLoadingScreen()
+                                                              })
+                                                          })
+                                                          .catch(function(error) {
+                                                            var errorMessage = 'Error on step: "Submit transaction -> Prepare send buls"'
+
+                                                            console.error(errorMessage)
+                                                            console.error(error)
+
+                                                            alert(errorMessage)
+                                                            hideLoadingScreen()
+                                                          })
                                                       })
                                                       .catch(function(error) {
+                                                        var errorMessage = 'Error on step: "Prepare send buls"'
+
+                                                        console.error(errorMessage)
                                                         console.error(error)
-                                                        alert(
-                                                          'An error occurred while confirm couriering'
-                                                        )
+
+                                                        alert(errorMessage)
                                                         hideLoadingScreen()
                                                       })
                                                   })
                                                   .catch(function(error) {
+                                                    var errorMessage = 'Error on step: "Submit transaction -> Prepare send buls"'
+
+                                                    console.error(errorMessage)
                                                     console.error(error)
-                                                    alert(
-                                                      'An error occurred while confirm couriering'
-                                                    )
+
+                                                    alert(errorMessage)
                                                     hideLoadingScreen()
                                                   })
                                               })
                                               .catch(function(error) {
+                                                var errorMessage = 'Error on step: "Prepare send buls"'
+
+                                                console.error(errorMessage)
                                                 console.error(error)
-                                                alert(
-                                                  'An error occurred while creating the Package'
-                                                )
+
+                                                alert(errorMessage)
                                                 hideLoadingScreen()
                                               })
                                           })
                                           .catch(function(error) {
-                                            var errorMessage =
-                                              'Error on step: "Submit transaction -> prepare_account on bridge"'
+                                            var errorMessage = 'Error on step: "Submit transaction -> prepare escrow"'
 
                                             console.error(errorMessage)
                                             console.error(error)
@@ -1513,8 +1464,7 @@ $(document).ready(function() {
                                           })
                                       })
                                       .catch(function(error) {
-                                        var errorMessage =
-                                          'Error on step: "Submit transaction -> prepare_account on bridge"'
+                                        var errorMessage = 'Error on step: "Prepare escrow"'
 
                                         console.error(errorMessage)
                                         console.error(error)
@@ -1524,8 +1474,7 @@ $(document).ready(function() {
                                       })
                                   })
                                   .catch(function(error) {
-                                    var errorMessage =
-                                      'Error on step: "Submit transaction -> prepare_account on bridge"'
+                                    var errorMessage = 'Error on step: "Submit transaction -> Prepare trust for sub courier"'
 
                                     console.error(errorMessage)
                                     console.error(error)
@@ -1535,8 +1484,7 @@ $(document).ready(function() {
                                   })
                               })
                               .catch(function(error) {
-                                var errorMessage =
-                                  'Error on step: "Submit transaction -> prepare_account on bridge"'
+                                var errorMessage = 'Error on step: "Send Prepare trust for sub courier"'
 
                                 console.error(errorMessage)
                                 console.error(error)
@@ -1546,8 +1494,7 @@ $(document).ready(function() {
                               })
                           })
                           .catch(function(error) {
-                            var errorMessage =
-                              'Error on step: "Submit transaction -> prepare_account on bridge"'
+                            var errorMessage = 'Error on step: "Submit transaction -> prepare account for sub courier"'
 
                             console.error(errorMessage)
                             console.error(error)
@@ -1557,8 +1504,7 @@ $(document).ready(function() {
                           })
                       })
                       .catch(function(error) {
-                        var errorMessage =
-                          'Error on step: "Submit transaction -> prepare_account on bridge"'
+                        var errorMessage = 'Error on step: "Send prepare account for sub courier"'
 
                         console.error(errorMessage)
                         console.error(error)
@@ -1568,8 +1514,7 @@ $(document).ready(function() {
                       })
                   })
                   .catch(function(error) {
-                    var errorMessage =
-                      'Error on step: "Submit transaction -> prepare_account on bridge"'
+                    var errorMessage = 'Error on step: "Submit transaction for prepare_trust"'
 
                     console.error(errorMessage)
                     console.error(error)
@@ -1579,8 +1524,7 @@ $(document).ready(function() {
                   })
               })
               .catch(function(error) {
-                var errorMessage =
-                  'Error on step: "Submit transaction -> prepare_account on bridge"'
+                var errorMessage = 'Error on step: "Call prepare_trust"'
 
                 console.error(errorMessage)
                 console.error(error)
@@ -1590,8 +1534,7 @@ $(document).ready(function() {
               })
           })
           .catch(function(error) {
-            var errorMessage =
-              'Error on step: "Submit transaction -> prepare_account on bridge"'
+            var errorMessage = 'Error on step: "Submit transaction -> prepare_account on bridge"'
 
             console.error(errorMessage)
             console.error(error)
@@ -1638,7 +1581,12 @@ function displayPackagesForLauncher() {
         addRowPackagesToDataTable(packageItem)
       }
     })
+    .fail(function(error) {
+      console.error('fail')
+      console.error(error)
+    })
     .catch(function(error) {
+      console.error('catch')
       console.error(error)
       alert('Failed to get data from server')
     })
@@ -1647,10 +1595,7 @@ function displayPackagesForLauncher() {
 function addRowPackagesToDataTable(package) {
   var packageId = package.escrow_pubkey
 
-  var shortPackageId =
-    package.from_address.split(' ')[0] +
-    '-' +
-    packageId.substr(packageId.length - 3)
+  var shortPackageId = package.from_address.split(' ')[0] + '-' + packageId.substr(packageId.length - 3)
 
   var userRole = package.user_role || 'launcher'
 
@@ -1658,34 +1603,15 @@ function addRowPackagesToDataTable(package) {
 
   var recipientsLocation = package.from_location
 
-  var courieredEvent = package.events
-    .filter(event => event.event_type == 'couriered')
-    .last()
+  var courieredEvent = package.events.filter(event => event.event_type == 'couriered').last()
 
-  var receivedEvent = package.events
-    .filter(event => event.event_type == 'received')
-    .last()
+  var receivedEvent = package.events.filter(event => event.event_type == 'received').last()
 
-  var launchedEvent = package.events
-    .filter(event => event.event_type == 'launched')
-    .last()
+  var launchedEvent = package.events.filter(event => event.event_type == 'launched').last()
 
-  var currentCustodianPackage = (
-    courieredEvent ||
-    receivedEvent ||
-    launchedEvent
-  ).user_pubkey
+  var currentCustodianPackage = (courieredEvent || receivedEvent || launchedEvent).user_pubkey
 
-  dataTablePackage.row
-    .add([
-      packageId,
-      shortPackageId,
-      userRole,
-      launchDate,
-      recipientsLocation,
-      currentCustodianPackage,
-    ])
-    .draw(true)
+  dataTablePackage.row.add([packageId, shortPackageId, userRole, launchDate, recipientsLocation, currentCustodianPackage]).draw(true)
 }
 
 function generateKeypairStellar(user) {
@@ -1704,54 +1630,27 @@ var requests = {
   router: {
     baseUrl: baseUrlRouter,
     getMyPackages: function() {
-      return new_requestToServer(
-        launcher.keypairStellar.secret(),
-        launcher.keypairStellar.publicKey(),
-        {
-          url: this.baseUrl + '/my_packages',
-        }
-      )
+      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+        url: this.baseUrl + '/my_packages',
+      })
     },
     getPackage: function({ escrow_pubkey }) {
-      return new_requestToServer(
-        launcher.keypairStellar.secret(),
-        launcher.keypairStellar.publicKey(),
-        {
-          url: this.baseUrl + '/package',
-          data: {
-            escrow_pubkey,
-          },
-        }
-      )
+      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+        url: this.baseUrl + '/package',
+        data: {
+          escrow_pubkey,
+        },
+      })
     },
     getPackagePhoto: function({ escrow_pubkey }) {
-      return new_requestToServer(
-        launcher.keypairStellar.secret(),
-        launcher.keypairStellar.publicKey(),
-        {
-          url: this.baseUrl + '/package_photo',
-          data: {
-            escrow_pubkey,
-          },
-        }
-      )
+      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+        url: this.baseUrl + '/package_photo',
+        data: {
+          escrow_pubkey,
+        },
+      })
     },
-    createPackage: function({
-      escrow_pubkey,
-      recipient_pubkey,
-      launcher_phone_number,
-      recipient_phone_number,
-      payment_buls,
-      collateral_buls,
-      deadline_timestamp,
-      description,
-      from_location,
-      to_location,
-      from_address,
-      to_address,
-      event_location,
-      photo,
-    }) {
+    createPackage: function({ escrow_pubkey, recipient_pubkey, launcher_phone_number, recipient_phone_number, payment_buls, collateral_buls, deadline_timestamp, description, from_location, to_location, from_address, to_address, event_location, photo }) {
       var data = {
         escrow_pubkey,
         recipient_pubkey,
@@ -1771,20 +1670,12 @@ var requests = {
         data.photo = photo
       }
 
-      return new_requestToServer(
-        launcher.keypairStellar.secret(),
-        launcher.keypairStellar.publicKey(),
-        {
-          url: this.baseUrl + '/create_package',
-          data: data,
-        }
-      )
+      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+        url: this.baseUrl + '/create_package',
+        data: data,
+      })
     },
-    confirmCouriering: function(
-      userSecret,
-      userPubkey,
-      { escrow_pubkey, location }
-    ) {
+    confirmCouriering: function(userSecret, userPubkey, { escrow_pubkey, location }) {
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/confirm_couriering',
         data: {
@@ -1793,11 +1684,7 @@ var requests = {
         },
       })
     },
-    assignXdrs: function(
-      userSecret,
-      userPubkey,
-      { escrow_pubkey, location, kwargs }
-    ) {
+    assignXdrs: function(userSecret, userPubkey, { escrow_pubkey, location, kwargs }) {
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/assign_xdrs',
         data: {
@@ -1807,11 +1694,7 @@ var requests = {
         },
       })
     },
-    acceptPackage: function(
-      userSecret,
-      userPubkey,
-      { escrow_pubkey, location, leg_price, photo }
-    ) {
+    acceptPackage: function(userSecret, userPubkey, { escrow_pubkey, location, leg_price, photo }) {
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/accept_package',
         data: {
@@ -1822,11 +1705,7 @@ var requests = {
         },
       })
     },
-    changedLocation: function(
-      userSecret,
-      userPubkey,
-      { escrow_pubkey, location, photo }
-    ) {
+    changedLocation: function(userSecret, userPubkey, { escrow_pubkey, location, photo }) {
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/changed_location',
         data: {
@@ -1840,54 +1719,31 @@ var requests = {
   bridge: {
     baseUrl: baseUrlBridge,
     submitTransaction: function({ signedTransaction }) {
-      return new_requestToServer(
-        launcher.keypairStellar.secret(),
-        launcher.keypairStellar.publicKey(),
-        {
-          url: this.baseUrl + '/submit_transaction',
-          data: {
-            transaction: signedTransaction,
-          },
-        }
-      )
+      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+        url: this.baseUrl + '/submit_transaction',
+        data: {
+          transaction: signedTransaction,
+        },
+      })
     },
     prepareAccount: function({ from_pubkey, new_pubkey }) {
-      return new_requestToServer(
-        launcher.keypairStellar.secret(),
-        launcher.keypairStellar.publicKey(),
-        {
-          url: this.baseUrl + '/prepare_account',
-          data: {
-            from_pubkey,
-            new_pubkey,
-          },
-        }
-      )
+      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+        url: this.baseUrl + '/prepare_account',
+        data: {
+          from_pubkey,
+          new_pubkey,
+        },
+      })
     },
     prepareTrust: function({ from_pubkey }) {
-      return new_requestToServer(
-        launcher.keypairStellar.secret(),
-        launcher.keypairStellar.publicKey(),
-        {
-          url: this.baseUrl + '/prepare_trust',
-          data: {
-            from_pubkey,
-          },
-        }
-      )
+      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+        url: this.baseUrl + '/prepare_trust',
+        data: {
+          from_pubkey,
+        },
+      })
     },
-    prepareEscrow: function(
-      userSecret,
-      userPubkey,
-      {
-        launcher_pubkey,
-        courier_pubkey,
-        recipient_pubkey,
-        payment_buls,
-        collateral_buls,
-        deadline_timestamp,
-      }
-    ) {
+    prepareEscrow: function(userSecret, userPubkey, { launcher_pubkey, courier_pubkey, recipient_pubkey, payment_buls, collateral_buls, deadline_timestamp }) {
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/prepare_escrow',
         data: {
@@ -1901,18 +1757,14 @@ var requests = {
       })
     },
     prepareSendBuls: function({ from_pubkey, to_pubkey, amount_buls }) {
-      return new_requestToServer(
-        launcher.keypairStellar.secret(),
-        launcher.keypairStellar.publicKey(),
-        {
-          url: this.baseUrl + '/prepare_send_buls',
-          data: {
-            from_pubkey,
-            to_pubkey,
-            amount_buls,
-          },
-        }
-      )
+      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+        url: this.baseUrl + '/prepare_send_buls',
+        data: {
+          from_pubkey,
+          to_pubkey,
+          amount_buls,
+        },
+      })
     },
   },
   fund: {
@@ -1939,10 +1791,7 @@ function new_requestToServer(userSecret, userPublic, { url, data }) {
       contentType: false,
       beforeSend: function(xhr) {
         xhr.setRequestHeader('Pubkey', userPublic)
-        xhr.setRequestHeader(
-          'Fingerprint',
-          unescape(encodeURIComponent(fingerprint))
-        )
+        xhr.setRequestHeader('Fingerprint', unescape(encodeURIComponent(fingerprint)))
         xhr.setRequestHeader('Signature', signature)
       },
     })
@@ -1959,10 +1808,7 @@ function requestToServer({ uri, data, response }) {
     var url = baseUrl + uri
 
     var fingerprint = generateFingerprint(url, data)
-    var signature = signFingerprint(
-      fingerprint,
-      launcher.keypairStellar.secret()
-    )
+    var signature = signFingerprint(fingerprint, launcher.keypairStellar.secret())
 
     var formData = objectToFormData(data)
 
@@ -2059,12 +1905,7 @@ function arrayBufferToBase64(buffer) {
 }
 
 // Save escrow Pubkey/Secret (escrowKeypair) to local storage
-function saveKeypairForPackage(
-  escrowKeypair,
-  courierKeypair,
-  launcherKeypair,
-  recipientKeypair
-) {
+function savePackageToLocalStorage(escrowKeypair, launcherKeypair, courierKeypair, subCourierKeypair, recipientKeypair, packageData) {
   var listKeypair = getKeypairForPackage()
   listKeypair.push({
     escrow: {
@@ -2079,10 +1920,15 @@ function saveKeypairForPackage(
       privateKey: courierKeypair.secret(),
       publicKey: courierKeypair.publicKey(),
     },
+    subCourier: {
+      privateKey: subCourierKeypair.secret(),
+      publicKey: subCourierKeypair.publicKey(),
+    },
     recipient: {
       privateKey: recipientKeypair.secret(),
       publicKey: recipientKeypair.publicKey(),
     },
+    packageData: packageData,
   })
   localStorage.setItem('keypairForPackages', JSON.stringify(listKeypair))
 }
@@ -2103,8 +1949,7 @@ function saveDescriptionForCreatePackage(description) {
 }
 
 function getDescriptionForCreatePackage() {
-  var descriptions =
-    JSON.parse(localStorage.getItem('descriptionAutofill')) || []
+  var descriptions = JSON.parse(localStorage.getItem('descriptionAutofill')) || []
   return descriptions
 }
 
@@ -2129,20 +1974,7 @@ function hideLoadingScreen() {
 
 // Conwert date time
 function dateToYMD(date) {
-  var strArray = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ]
+  var strArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   var d = date.getDate()
   var m = strArray[date.getMonth()]
   var y = date.getFullYear()
