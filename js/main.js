@@ -125,9 +125,20 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.launch', function() {
     packageIdForLaunch = this.attributes.id.value
 
+    // Get short package id
+    var shortPackageId = undefined
+    for (let index = 0; index < allPackagesForLauncher.length; index++) {
+      var package = allPackagesForLauncher[index]
+      if (package.escrow_pubkey === packageIdForLaunch) {
+        shortPackageId = package.short_package_id
+        break
+      }
+    }
+
+    // Change title
     $('#launchModal #packageId')
       .empty()
-      .append(packageIdForLaunch.substr(packageIdForLaunch.length - 3))
+      .append(shortPackageId)
 
     // Show modal window
     $('#launchModal').modal({
@@ -214,9 +225,20 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.relay', function() {
     packageIdForRelay = this.attributes.id.value
 
+    // Get short package id
+    var shortPackageId = undefined
+    for (let index = 0; index < allPackagesForLauncher.length; index++) {
+      var package = allPackagesForLauncher[index]
+      if (package.escrow_pubkey === packageIdForRelay) {
+        shortPackageId = package.short_package_id
+        break
+      }
+    }
+
+    // Change title
     $('#relayModal #packageId')
       .empty()
-      .append(packageIdForRelay.substr(packageIdForRelay.length - 3))
+      .append(shortPackageId)
 
     // Display courier
     var courierSelect = $('#relayModal #courier')
@@ -279,9 +301,20 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.receive', function() {
     packageIdForReceive = this.attributes.id.value
 
+    // Get short package id
+    var shortPackageId = undefined
+    for (let index = 0; index < allPackagesForLauncher.length; index++) {
+      var package = allPackagesForLauncher[index]
+      if (package.escrow_pubkey === packageIdForReceive) {
+        shortPackageId = package.short_package_id
+        break
+      }
+    }
+
+    // Change title
     $('#receiveModal #packageId')
       .empty()
-      .append(packageIdForReceive.substr(packageIdForReceive.length - 3))
+      .append(shortPackageId)
 
     // Show modal window
     $('#receiveModal').modal({
@@ -405,9 +438,20 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.changeLocation', function() {
     packageIdForChangeLocation = this.attributes.id.value
 
+    // Get short package id
+    var shortPackageId = undefined
+    for (let index = 0; index < allPackagesForLauncher.length; index++) {
+      var package = allPackagesForLauncher[index]
+      if (package.escrow_pubkey === packageIdForChangeLocation) {
+        shortPackageId = package.short_package_id
+        break
+      }
+    }
+
+    // Change title
     $('#changeLocationModal #packageId')
       .empty()
-      .append(packageIdForChangeLocation.substr(packageIdForChangeLocation.length - 3))
+      .append(shortPackageId)
 
     // Show modal window
     $('#changeLocationModal').modal({
@@ -539,7 +583,7 @@ $(document).ready(function() {
           markersOnPackageDetailsModal = []
 
           // Display text
-            console.log(package);
+          console.log(package)
           var packageId = package.escrow_pubkey
           var shortPackageId = package.short_package_id
 
@@ -578,7 +622,7 @@ $(document).ready(function() {
             markersOnPackageDetailsModal.push(marker)
 
             // Add rows
-            tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***-' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
+            tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
           }
 
           mapOnPackageDetailsModal.setView([markersOnPackageDetailsModal[0]._latlng.lat, markersOnPackageDetailsModal[0]._latlng.lng], 7)
@@ -1540,7 +1584,7 @@ function displayPackagesForLauncher() {
 function addRowPackagesToDataTable(package) {
   var packageId = package.escrow_pubkey
 
-  var shortPackageId = package.from_address.split(' ')[0] + '-' + packageId.substr(packageId.length - 3)
+  var shortPackageId = package.short_package_id
 
   var userRole = package.user_role || 'launcher'
 
