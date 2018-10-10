@@ -232,6 +232,22 @@ $(document).ready(function() {
     // Get location
     var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
 
+    // Get vehicle
+    var vehicle = $('#relayModal #vehicle').val()
+    if (!vehicle) {
+      alert('Data is not valid. Please enter the vehicle.')
+      hideLoadingScreen()
+      return
+    }
+
+    // Get cost
+    var cost = $('#relayModal #cost').val()
+    if (!cost) {
+      alert('Data is not valid. Please enter the cost.')
+      hideLoadingScreen()
+      return
+    }
+
     // Get package
     var packageCurent = null
     var packages = getPackagesFromLocalStorage()
@@ -375,6 +391,22 @@ $(document).ready(function() {
     // Get location
     var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
 
+    // Get vehicle
+    var vehicle = $('#receiveModal #vehicle').val()
+    if (!vehicle) {
+      alert('Data is not valid. Please enter the vehicle.')
+      hideLoadingScreen()
+      return
+    }
+
+    // Get cost
+    var cost = $('#receiveModal #cost').val()
+    if (!cost) {
+      alert('Data is not valid. Please enter the cost.')
+      hideLoadingScreen()
+      return
+    }
+
     // Get package
     var packageCurent = null
     var packages = getPackagesFromLocalStorage()
@@ -426,6 +458,8 @@ $(document).ready(function() {
                 escrow_pubkey: packageIdForReceive,
                 location: location,
                 leg_price: 1,
+                vehicle: vehicle,
+                cost: cost,
                 photo: photoForReceiveModal,
               })
               .done(function(response) {
@@ -487,6 +521,22 @@ $(document).ready(function() {
     // Get location
     var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
 
+    // Get vehicle
+    var vehicle = $('#changeLocationModal #vehicle').val()
+    if (!vehicle) {
+      alert('Data is not valid. Please enter the vehicle.')
+      hideLoadingScreen()
+      return
+    }
+
+    // Get cost
+    var cost = $('#changeLocationModal #cost').val()
+    if (!cost) {
+      alert('Data is not valid. Please enter the cost.')
+      hideLoadingScreen()
+      return
+    }
+
     // Get package
     var packageCurent = null
     var packages = getPackagesFromLocalStorage()
@@ -505,21 +555,20 @@ $(document).ready(function() {
       return
     }
 
-    $('#changeLocationModal').modal('hide')
-    hideLoadingScreen()
-
     requests.router
       .changedLocation(packageCurent.courier.privateKey, packageCurent.courier.publicKey, {
         escrow_pubkey: packageIdForChangeLocation,
         location: location,
         photo: photoForChangeLocationModal,
+        vehicle: vehicle,
+        cost: cost,
       })
       .done(function(response) {
         console.log(response)
-        hideLoadingScreen()
 
         // Hide modal window
-        $('#launchModal').modal('hide')
+        $('#changeLocationModal').modal('hide')
+        hideLoadingScreen()
       })
       .catch(function(error) {
         console.error(error)
@@ -1746,11 +1795,25 @@ var requests = {
         },
       })
     },
-    acceptPackage: function(userSecret, userPubkey, { escrow_pubkey, location, leg_price, photo }) {
+    acceptPackage: function(userSecret, userPubkey, { escrow_pubkey, location, leg_price, vehicle, cost, photo }) {
       var data = {
         escrow_pubkey, // escrow pubkey (the package ID)
         location, // location of place where user accepted package
-        kwargs: JSON.stringify({ leg_price, leg_price }),
+      }
+
+      if (leg_price || vehicle || cost) {
+        var kwargsObj = {}
+        if (leg_price) {
+          kwargsObj.leg_price = leg_price
+        }
+        if (vehicle) {
+          kwargsObj.vehicle = vehicle
+        }
+        if (cost) {
+          kwargsObj.cost = cost
+        }
+
+        data.kwargs = JSON.stringify(kwargsObj)
       }
 
       if (photo) {
@@ -1762,10 +1825,11 @@ var requests = {
         data: data,
       })
     },
-    changedLocation: function(userSecret, userPubkey, { escrow_pubkey, location, photo }) {
+    changedLocation: function(userSecret, userPubkey, { escrow_pubkey, location, photo, vehicle, cost }) {
       var data = {
         escrow_pubkey, // pubkey of package escrow
         location, // GPS coordinates where user is at this moment
+        kwargs: JSON.stringify({ vehicle, cost }),
       }
 
       if (photo) {
