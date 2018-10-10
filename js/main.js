@@ -539,18 +539,23 @@ $(document).ready(function() {
           markersOnPackageDetailsModal = []
 
           // Display text
+            console.log(package);
           var packageId = package.escrow_pubkey
-          var shortPackageId = package.from_address.split(' ')[0] + '-' + packageId.substr(packageId.length - 3)
+          var shortPackageId = package.short_package_id
 
           $('#packageDetailsModal #name')
             .empty()
             .append(shortPackageId)
 
+          $('#packageDetailsModal #status')
+            .empty()
+            .append(package.status)
+
           $('#packageDetailsModal #description')
             .empty()
             .append(package.description)
 
-          $('#packageDetailsModal #paketUrl').attr('href', package.paket_url)
+          $('#packageDetailsModal #explorerUrl').attr('href', package.blockchain_url)
 
           $('#packageDetailsModal #deadline')
             .empty()
