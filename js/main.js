@@ -569,7 +569,7 @@ $(document).ready(function() {
           // Display text
             console.log(package);
           var packageId = package.escrow_pubkey
-          var shortPackageId = package.from_address.split(' ')[0] + '-' + packageId.substr(packageId.length - 3)
+          var shortPackageId = package.short_package_id
 
           $('#packageDetailsModal #name')
             .empty()
