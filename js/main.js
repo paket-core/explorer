@@ -374,6 +374,31 @@ $(document).ready(function() {
           }
         }
 
+        // Get courier pub key
+        var courierPubKey = undefined
+        for (let index = 0; index < response.package.events.length; index++) {
+          var event = response.package.events[index]
+          if (event.event_type === 'courier confirmed') {
+            courierPubKey = event.user_pubkey
+            break
+          }
+        }
+
+        if (!courierPubKey) {
+          alert('Package has no courier')
+          return
+        }
+
+        // Get courier private key
+        var courierPrivateKey = undefined
+        for (let index = 0; index < courierData.length; index++) {
+          let courier = courierData[index]
+          if (courier.publicKey === courierPubKey) {
+            courierPrivateKey = courier.privateKey
+            break
+          }
+        }
+
         // Get escrowXdrsForPackage
         var escrowXdrsForPackage = null
         for (let index = 0; index < package.events.length; index++) {
@@ -392,31 +417,47 @@ $(document).ready(function() {
 
         var signedTransaction = signTransaction(paymentTransaction, StellarBase.Keypair.fromSecret(recipientPrivateKey))
 
+        // Submit transaction
         requests.bridge
           .submitTransaction({ signedTransaction })
           .done(function(response) {
             console.debug('submit payment transaction', response)
 
+            // Changed location
             requests.router
-              .acceptPackage(recipientPrivateKey, recipientPubkey, {
+              .changedLocation(courierPrivateKey, courierPubKey, {
                 escrow_pubkey: packageIdForReceive,
                 location: location,
-                leg_price: 1,
                 vehicle: vehicle,
                 cost: cost,
-                photo: photoForReceiveModal,
               })
               .done(function(response) {
-                console.debug('submit payment transaction', response)
+                console.debug('changed location', response)
 
-                hideLoadingScreen()
+                // Accept package
+                requests.router
+                  .acceptPackage(recipientPrivateKey, recipientPubkey, {
+                    escrow_pubkey: packageIdForReceive,
+                    location: location,
+                    photo: photoForReceiveModal,
+                  })
+                  .done(function(response) {
+                    console.debug('submit payment transaction', response)
 
-                // Hide modal window
-                $('#receiveModal').modal('hide')
+                    hideLoadingScreen()
+
+                    // Hide modal window
+                    $('#receiveModal').modal('hide')
+                  })
+                  .catch(function(error) {
+                    console.error(error)
+                    alert('An error occurred while submit payment transaction')
+                    hideLoadingScreen()
+                  })
               })
               .catch(function(error) {
                 console.error(error)
-                alert('An error occurred while submit payment transaction')
+                alert('An error occurred while confirm couriering')
                 hideLoadingScreen()
               })
           })
