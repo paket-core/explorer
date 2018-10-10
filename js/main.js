@@ -88,25 +88,26 @@ $(document).ready(function() {
         searchable: false,
         orderable: false,
         render: function($data, $type, $row) {
-          return (
-            '<div class="btn-group">' +
-            '<button type="button" class="launch btn btn-success" id="' +
-            $row[0] +
-            '">Launch</button>' +
-            '<button type="button" class="relay btn btn-success" id="' +
-            $row[0] +
-            '">Relay</button>' +
-            '<button type="button" class="receive btn btn-success" id="' +
-            $row[0] +
-            '">Receive</button>' +
-            '<button type="button" class="changeLocation btn btn-success" id="' +
-            $row[0] +
-            '">Change location</button>' +
-            '<button type="button" class="details btn btn-info" id="' +
-            $row[0] +
-            '">Details</button>' +
-            '</div>'
-          )
+          // Get status package
+          var statusPackage = undefined
+          for (let index = 0; index < allPackagesForLauncher.length; index++) {
+            var package = allPackagesForLauncher[index]
+            if (package.escrow_pubkey === $row[0]) {
+              statusPackage = package.status
+              break
+            }
+          }
+
+          var buttonsHtml = ''
+
+          if (statusPackage == 'waiting pickup') {
+            buttonsHtml += '<button type="button" class="launch btn btn-success" id="' + $row[0] + '">Launch</button>'
+          } else if (statusPackage == 'in transit') {
+            buttonsHtml += '<button type="button" class="relay btn btn-success" id="' + $row[0] + '">Relay</button>' + '<button type="button" class="receive btn btn-success" id="' + $row[0] + '">Receive</button>' + '<button type="button" class="changeLocation btn btn-success" id="' + $row[0] + '">Change location</button>'
+          } else if (statusPackage == 'delivered') {
+          }
+
+          return '<div class="btn-group">' + buttonsHtml + '<button type="button" class="details btn btn-info" id="' + $row[0] + '">Details</button>' + '</div>'
         },
       },
     ],
@@ -119,9 +120,25 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.launch', function() {
     packageIdForLaunch = this.attributes.id.value
 
+    // Get short package id
+    var packageDetail = undefined
+    for (let index = 0; index < allPackagesForLauncher.length; index++) {
+      var package = allPackagesForLauncher[index]
+      if (package.escrow_pubkey === packageIdForLaunch) {
+        packageDetail = package
+        break
+      }
+    }
+
+    // Change title
     $('#launchModal #packageId')
       .empty()
-      .append(packageIdForLaunch.substr(packageIdForLaunch.length - 3))
+      .append(packageDetail.short_package_id)
+
+    // Change status
+    $('#launchModal #status')
+      .empty()
+      .append(packageDetail.status)
 
     // Show modal window
     $('#launchModal').modal({
@@ -189,6 +206,8 @@ $(document).ready(function() {
             // Hide modal window
             $('#launchModal').modal('hide')
             hideLoadingScreen()
+
+            displayPackagesForLauncher()
           })
           .catch(function(error) {
             console.error(error)
@@ -208,9 +227,25 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.relay', function() {
     packageIdForRelay = this.attributes.id.value
 
+    // Get short package id
+    var packageDetail = undefined
+    for (let index = 0; index < allPackagesForLauncher.length; index++) {
+      var package = allPackagesForLauncher[index]
+      if (package.escrow_pubkey === packageIdForRelay) {
+        packageDetail = package
+        break
+      }
+    }
+
+    // Change title
     $('#relayModal #packageId')
       .empty()
-      .append(packageIdForRelay.substr(packageIdForRelay.length - 3))
+      .append(packageDetail.short_package_id)
+
+    // Change status
+    $('#relayModal #status')
+      .empty()
+      .append(packageDetail.status)
 
     // Display courier
     var courierSelect = $('#relayModal #courier')
@@ -266,99 +301,7 @@ $(document).ready(function() {
 
     $('#relayModal').modal('hide')
     hideLoadingScreen()
-
-    /*
-    // Call prepare_escrow
-    infoLoadingScreen('1/99 Prepare escrow')
-    requests.bridge
-      .prepareEscrow(packageCurent.escrow.privateKey, packageCurent.escrow.publicKey, {
-        launcher_pubkey: packageCurent.launcher.publicKey,
-        courier_pubkey: packageCurent.courier.publicKey,
-        recipient_pubkey: packageCurent.recipient.publicKey,
-        payment_buls: paymentBuls,
-        collateral_buls: collateralBuls,
-        deadline_timestamp: deadlineUnixTimestamp,
-      })
-      .done(function(response) {
-        console.debug('prepare_escrow', response)
-        var signedTransaction = signTransaction(responsePrepareEscrow.escrow_details.set_options_transaction, escrowKeypair)
-
-        // Submit transaction
-        infoLoadingScreen('2/99 Submit Prepare escrow')
-        requests.bridge
-          .submitTransaction({
-            signedTransaction,
-          })
-          .done(function(response) {
-
-*/
-
-    /*
-            infoLoadingScreen('3/99 Prepare send buls')
-            requests.bridge
-              .prepareSendBuls({
-                from_pubkey: launcher.keypairStellar.publicKey(),
-                to_pubkey: escrowPubkey,
-                amount_buls: paymentBuls,
-              })
-              .done(function(responsePrepareSendBuls) {
-                var signedTransaction = signTransaction(responsePrepareSendBuls.transaction, launcher.keypairStellar)
-                console.debug('prepare_send_buls (payment)', responsePrepareSendBuls)
-                // Submit transaction
-                infoLoadingScreen('4/99 Submit Prepare send buls')
-                requests.bridge
-                  .submitTransaction({
-                    signedTransaction,
-                  })
-                  .done(function(response) {
-                    console.debug('submit prepare_send_buls (payment)', response)
-
-*/
-    /*
-
-            $('#relayModal').modal('hide')
-            hideLoadingScreen()
-
-
-
-          })
-          .catch(function(error) {
-            console.error(error)
-            alert('An error occurred while Submit Prepare escrow')
-            hideLoadingScreen()
-          })
-      })
-      .catch(function(error) {
-        console.error(error)
-        alert('An error occurred while Prepare escrow')
-        hideLoadingScreen()
-      })
-*/
-    /*
-    requests.router
-      .acceptPackage(
-        packageCurent.courier.privateKey,
-        packageCurent.courier.publicKey,
-        {
-          escrow_pubkey: packageIdForRelay,
-          location: location,
-          leg_price: 1,
-          photo: photoForLaunchModal,
-        }
-      )
-      .done(function(response) {
-        console.log(response)
-        hideLoadingScreen()
-
-        // Hide modal window
-        $('#launchModal').modal('hide')
-      })
-      .catch(function(error) {
-        console.error(error)
-        alert('An error occurred while confirm couriering')
-        hideLoadingScreen()
-      })
-    */
+    // displayPackagesForLauncher()
   })
 
   // Show modal window for package receive
@@ -366,9 +309,25 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.receive', function() {
     packageIdForReceive = this.attributes.id.value
 
+    // Get short package id
+    var packageDetail = undefined
+    for (let index = 0; index < allPackagesForLauncher.length; index++) {
+      var package = allPackagesForLauncher[index]
+      if (package.escrow_pubkey === packageIdForReceive) {
+        packageDetail = package
+        break
+      }
+    }
+
+    // Change title
     $('#receiveModal #packageId')
       .empty()
-      .append(packageIdForReceive.substr(packageIdForReceive.length - 3))
+      .append(packageDetail.short_package_id)
+
+    // Change status
+    $('#receiveModal #status')
+      .empty()
+      .append(packageDetail.status)
 
     // Show modal window
     $('#receiveModal').modal({
@@ -428,6 +387,31 @@ $(document).ready(function() {
           }
         }
 
+        // Get courier pub key
+        var courierPubKey = undefined
+        for (let index = 0; index < response.package.events.length; index++) {
+          var event = response.package.events[index]
+          if (event.event_type === 'courier confirmed') {
+            courierPubKey = event.user_pubkey
+            break
+          }
+        }
+
+        if (!courierPubKey) {
+          alert('Package has no courier')
+          return
+        }
+
+        // Get courier private key
+        var courierPrivateKey = undefined
+        for (let index = 0; index < courierData.length; index++) {
+          let courier = courierData[index]
+          if (courier.publicKey === courierPubKey) {
+            courierPrivateKey = courier.privateKey
+            break
+          }
+        }
+
         // Get escrowXdrsForPackage
         var escrowXdrsForPackage = null
         for (let index = 0; index < package.events.length; index++) {
@@ -446,31 +430,48 @@ $(document).ready(function() {
 
         var signedTransaction = signTransaction(paymentTransaction, StellarBase.Keypair.fromSecret(recipientPrivateKey))
 
+        // Submit transaction
         requests.bridge
           .submitTransaction({ signedTransaction })
           .done(function(response) {
             console.debug('submit payment transaction', response)
 
+            // Changed location
             requests.router
-              .acceptPackage(recipientPrivateKey, recipientPubkey, {
+              .changedLocation(courierPrivateKey, courierPubKey, {
                 escrow_pubkey: packageIdForReceive,
                 location: location,
-                leg_price: 1,
                 vehicle: vehicle,
                 cost: cost,
-                photo: photoForReceiveModal,
               })
               .done(function(response) {
-                console.debug('submit payment transaction', response)
+                console.debug('changed location', response)
 
-                hideLoadingScreen()
+                // Accept package
+                requests.router
+                  .acceptPackage(recipientPrivateKey, recipientPubkey, {
+                    escrow_pubkey: packageIdForReceive,
+                    location: location,
+                    photo: photoForReceiveModal,
+                  })
+                  .done(function(response) {
+                    console.debug('submit payment transaction', response)
 
-                // Hide modal window
-                $('#receiveModal').modal('hide')
+                    // Hide modal window
+                    $('#receiveModal').modal('hide')
+                    hideLoadingScreen()
+
+                    displayPackagesForLauncher()
+                  })
+                  .catch(function(error) {
+                    console.error(error)
+                    alert('An error occurred while submit payment transaction')
+                    hideLoadingScreen()
+                  })
               })
               .catch(function(error) {
                 console.error(error)
-                alert('An error occurred while submit payment transaction')
+                alert('An error occurred while confirm couriering')
                 hideLoadingScreen()
               })
           })
@@ -492,9 +493,25 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.changeLocation', function() {
     packageIdForChangeLocation = this.attributes.id.value
 
+    // Get short package id
+    var packageDetail = undefined
+    for (let index = 0; index < allPackagesForLauncher.length; index++) {
+      var package = allPackagesForLauncher[index]
+      if (package.escrow_pubkey === packageIdForChangeLocation) {
+        packageDetail = package
+        break
+      }
+    }
+
+    // Change title
     $('#changeLocationModal #packageId')
       .empty()
-      .append(packageIdForChangeLocation.substr(packageIdForChangeLocation.length - 3))
+      .append(packageDetail.short_package_id)
+
+    // Change status
+    $('#changeLocationModal #status')
+      .empty()
+      .append(packageDetail.status)
 
     // Show modal window
     $('#changeLocationModal').modal({
@@ -579,6 +596,7 @@ $(document).ready(function() {
             // Hide modal window
             $('#changeLocationModal').modal('hide')
             hideLoadingScreen()
+            // displayPackagesForLauncher()
           })
           .catch(function(error) {
             console.error(error)
@@ -626,7 +644,7 @@ $(document).ready(function() {
           markersOnPackageDetailsModal = []
 
           // Display text
-            console.log(package);
+          console.log(package)
           var packageId = package.escrow_pubkey
           var shortPackageId = package.short_package_id
 
@@ -665,7 +683,7 @@ $(document).ready(function() {
             markersOnPackageDetailsModal.push(marker)
 
             // Add rows
-            tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***-' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
+            tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
           }
 
           mapOnPackageDetailsModal.setView([markersOnPackageDetailsModal[0]._latlng.lat, markersOnPackageDetailsModal[0]._latlng.lng], 7)
@@ -1005,8 +1023,6 @@ $(document).ready(function() {
       $('#dropdownUsers').append('<li><a href="#" id="' + index + '">' + item.name + '</a></li>')
 
       $('#dropdownUsers li a:eq(' + index + ')').click(item, function(event) {
-        dataTablePackage.clear().draw()
-
         changeSelectedLauncher(event.data)
         displayPackagesForLauncher()
       })
@@ -1602,6 +1618,8 @@ function changeSelectedLauncher(user) {
 function displayPackagesForLauncher() {
   showLoadingScreen()
 
+  dataTablePackage.clear().draw()
+
   // Get all packages for this user
   requests.router
     .getMyPackages()
@@ -1627,9 +1645,11 @@ function displayPackagesForLauncher() {
 function addRowPackagesToDataTable(package) {
   var packageId = package.escrow_pubkey
 
-  var shortPackageId = package.from_address.split(' ')[0] + '-' + packageId.substr(packageId.length - 3)
+  var shortPackageId = package.short_package_id
 
   var userRole = package.user_role || 'launcher'
+
+  var statusRole = package.status
 
   var launchDate = package.launch_date
 
@@ -1643,7 +1663,7 @@ function addRowPackagesToDataTable(package) {
 
   var currentCustodianPackage = (courieredEvent || receivedEvent || launchedEvent).user_pubkey
 
-  dataTablePackage.row.add([packageId, shortPackageId, userRole, launchDate, recipientsLocation, currentCustodianPackage]).draw(true)
+  dataTablePackage.row.add([packageId, shortPackageId, statusRole, userRole, launchDate, recipientsLocation, currentCustodianPackage]).draw(true)
 }
 
 function generateKeypairStellar(user) {
