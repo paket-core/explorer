@@ -270,6 +270,9 @@ $(document).ready(function() {
       return
     }
 
+    $('#relayModal').modal('hide')
+    hideLoadingScreen()
+
     /*
     // Call prepare_escrow
     infoLoadingScreen('1/99 Prepare escrow')
