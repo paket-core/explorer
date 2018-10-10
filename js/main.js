@@ -94,25 +94,26 @@ $(document).ready(function() {
         searchable: false,
         orderable: false,
         render: function($data, $type, $row) {
-          return (
-            '<div class="btn-group">' +
-            '<button type="button" class="launch btn btn-success" id="' +
-            $row[0] +
-            '">Launch</button>' +
-            '<button type="button" class="relay btn btn-success" id="' +
-            $row[0] +
-            '">Relay</button>' +
-            '<button type="button" class="receive btn btn-success" id="' +
-            $row[0] +
-            '">Receive</button>' +
-            '<button type="button" class="changeLocation btn btn-success" id="' +
-            $row[0] +
-            '">Change location</button>' +
-            '<button type="button" class="details btn btn-info" id="' +
-            $row[0] +
-            '">Details</button>' +
-            '</div>'
-          )
+          // Get status package
+          var statusPackage = undefined
+          for (let index = 0; index < allPackagesForLauncher.length; index++) {
+            var package = allPackagesForLauncher[index]
+            if (package.escrow_pubkey === $row[0]) {
+              statusPackage = package.status
+              break
+            }
+          }
+
+          var buttonsHtml = ''
+
+          if (statusPackage == 'waiting pickup') {
+            buttonsHtml += '<button type="button" class="launch btn btn-success" id="' + $row[0] + '">Launch</button>'
+          } else if (statusPackage == 'in transit') {
+            buttonsHtml += '<button type="button" class="relay btn btn-success" id="' + $row[0] + '">Relay</button>' + '<button type="button" class="receive btn btn-success" id="' + $row[0] + '">Receive</button>' + '<button type="button" class="changeLocation btn btn-success" id="' + $row[0] + '">Change location</button>'
+          } else if (statusPackage == 'delivered') {
+          }
+
+          return '<div class="btn-group">' + buttonsHtml + '<button type="button" class="details btn btn-info" id="' + $row[0] + '">Details</button>' + '</div>'
         },
       },
     ],
@@ -126,11 +127,11 @@ $(document).ready(function() {
     packageIdForLaunch = this.attributes.id.value
 
     // Get short package id
-    var shortPackageId = undefined
+    var packageDetail = undefined
     for (let index = 0; index < allPackagesForLauncher.length; index++) {
       var package = allPackagesForLauncher[index]
       if (package.escrow_pubkey === packageIdForLaunch) {
-        shortPackageId = package.short_package_id
+        packageDetail = package
         break
       }
     }
@@ -138,7 +139,12 @@ $(document).ready(function() {
     // Change title
     $('#launchModal #packageId')
       .empty()
-      .append(shortPackageId)
+      .append(packageDetail.short_package_id)
+
+    // Change status
+    $('#launchModal #status')
+      .empty()
+      .append(packageDetail.status)
 
     // Show modal window
     $('#launchModal').modal({
@@ -206,6 +212,8 @@ $(document).ready(function() {
             // Hide modal window
             $('#launchModal').modal('hide')
             hideLoadingScreen()
+
+            displayPackagesForLauncher()
           })
           .catch(function(error) {
             console.error(error)
@@ -226,11 +234,11 @@ $(document).ready(function() {
     packageIdForRelay = this.attributes.id.value
 
     // Get short package id
-    var shortPackageId = undefined
+    var packageDetail = undefined
     for (let index = 0; index < allPackagesForLauncher.length; index++) {
       var package = allPackagesForLauncher[index]
       if (package.escrow_pubkey === packageIdForRelay) {
-        shortPackageId = package.short_package_id
+        packageDetail = package
         break
       }
     }
@@ -238,7 +246,12 @@ $(document).ready(function() {
     // Change title
     $('#relayModal #packageId')
       .empty()
-      .append(shortPackageId)
+      .append(packageDetail.short_package_id)
+
+    // Change status
+    $('#relayModal #status')
+      .empty()
+      .append(packageDetail.status)
 
     // Display courier
     var courierSelect = $('#relayModal #courier')
@@ -294,6 +307,7 @@ $(document).ready(function() {
 
     $('#relayModal').modal('hide')
     hideLoadingScreen()
+    // displayPackagesForLauncher()
   })
 
   // Show modal window for package receive
@@ -302,11 +316,11 @@ $(document).ready(function() {
     packageIdForReceive = this.attributes.id.value
 
     // Get short package id
-    var shortPackageId = undefined
+    var packageDetail = undefined
     for (let index = 0; index < allPackagesForLauncher.length; index++) {
       var package = allPackagesForLauncher[index]
       if (package.escrow_pubkey === packageIdForReceive) {
-        shortPackageId = package.short_package_id
+        packageDetail = package
         break
       }
     }
@@ -314,7 +328,12 @@ $(document).ready(function() {
     // Change title
     $('#receiveModal #packageId')
       .empty()
-      .append(shortPackageId)
+      .append(packageDetail.short_package_id)
+
+    // Change status
+    $('#receiveModal #status')
+      .empty()
+      .append(packageDetail.status)
 
     // Show modal window
     $('#receiveModal').modal({
@@ -444,10 +463,11 @@ $(document).ready(function() {
                   .done(function(response) {
                     console.debug('submit payment transaction', response)
 
-                    hideLoadingScreen()
-
                     // Hide modal window
                     $('#receiveModal').modal('hide')
+                    hideLoadingScreen()
+
+                    displayPackagesForLauncher()
                   })
                   .catch(function(error) {
                     console.error(error)
@@ -480,11 +500,11 @@ $(document).ready(function() {
     packageIdForChangeLocation = this.attributes.id.value
 
     // Get short package id
-    var shortPackageId = undefined
+    var packageDetail = undefined
     for (let index = 0; index < allPackagesForLauncher.length; index++) {
       var package = allPackagesForLauncher[index]
       if (package.escrow_pubkey === packageIdForChangeLocation) {
-        shortPackageId = package.short_package_id
+        packageDetail = package
         break
       }
     }
@@ -492,7 +512,12 @@ $(document).ready(function() {
     // Change title
     $('#changeLocationModal #packageId')
       .empty()
-      .append(shortPackageId)
+      .append(packageDetail.short_package_id)
+
+    // Change status
+    $('#changeLocationModal #status')
+      .empty()
+      .append(packageDetail.status)
 
     // Show modal window
     $('#changeLocationModal').modal({
@@ -577,6 +602,7 @@ $(document).ready(function() {
             // Hide modal window
             $('#changeLocationModal').modal('hide')
             hideLoadingScreen()
+            // displayPackagesForLauncher()
           })
           .catch(function(error) {
             console.error(error)
@@ -1003,8 +1029,6 @@ $(document).ready(function() {
       $('#dropdownUsers').append('<li><a href="#" id="' + index + '">' + item.name + '</a></li>')
 
       $('#dropdownUsers li a:eq(' + index + ')').click(item, function(event) {
-        dataTablePackage.clear().draw()
-
         changeSelectedLauncher(event.data)
         displayPackagesForLauncher()
       })
@@ -1600,6 +1624,8 @@ function changeSelectedLauncher(user) {
 function displayPackagesForLauncher() {
   showLoadingScreen()
 
+  dataTablePackage.clear().draw()
+
   // Get all packages for this user
   requests.router
     .getMyPackages()
@@ -1629,6 +1655,8 @@ function addRowPackagesToDataTable(package) {
 
   var userRole = package.user_role || 'launcher'
 
+  var statusRole = package.status
+
   var launchDate = package.launch_date
 
   var recipientsLocation = package.from_location
@@ -1641,7 +1669,7 @@ function addRowPackagesToDataTable(package) {
 
   var currentCustodianPackage = (courieredEvent || receivedEvent || launchedEvent).user_pubkey
 
-  dataTablePackage.row.add([packageId, shortPackageId, userRole, launchDate, recipientsLocation, currentCustodianPackage]).draw(true)
+  dataTablePackage.row.add([packageId, shortPackageId, statusRole, userRole, launchDate, recipientsLocation, currentCustodianPackage]).draw(true)
 }
 
 function generateKeypairStellar(user) {
