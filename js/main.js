@@ -3,6 +3,8 @@ var imgSrcBase64 =
 
 var jsonData = null
 
+var allPackagesForLauncher = []
+
 var launcherData = []
 var recipientData = []
 var courierData = []
@@ -147,42 +149,62 @@ $(document).ready(function() {
       return
     }
 
+    // Get location
     var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
 
-    var packageCurent = null
-    var packages = getPackagesFromLocalStorage()
-
-    for (var index = 0; index < packages.length; index++) {
-      packageCurent = packages[index]
-
-      if (packageCurent.escrow.publicKey == packageIdForLaunch) {
-        break
-      }
-    }
-
-    if (!packageCurent) {
-      alert('Sorry, this package was not found in local storage.')
-      hideLoadingScreen()
-      return
-    }
-
     requests.router
-      .acceptPackage(packageCurent.courier.privateKey, packageCurent.courier.publicKey, {
-        escrow_pubkey: packageIdForLaunch,
-        location: location,
-        leg_price: 1,
-        photo: photoForLaunchModal,
-      })
+      .getPackage({ escrow_pubkey: packageIdForLaunch })
       .done(function(response) {
-        console.log(response)
-        hideLoadingScreen()
+        console.log('get package', response)
 
-        // Hide modal window
-        $('#launchModal').modal('hide')
+        // Get courier pub key
+        var courierPubKey = undefined
+        for (let index = 0; index < response.package.events.length; index++) {
+          var event = response.package.events[index]
+          if (event.event_type === 'courier confirmed') {
+            courierPubKey = event.user_pubkey
+            break
+          }
+        }
+
+        if (!courierPubKey) {
+          alert('Package has no courier')
+          return
+        }
+
+        // Get courier private key
+        var courierPrivateKey = undefined
+        for (let index = 0; index < courierData.length; index++) {
+          let courier = courierData[index]
+          if (courier.publicKey === courierPubKey) {
+            courierPrivateKey = courier.privateKey
+            break
+          }
+        }
+
+        requests.router
+          .acceptPackage(courierPrivateKey, courierPubKey, {
+            escrow_pubkey: packageIdForLaunch,
+            location: location,
+            leg_price: 1,
+            photo: photoForLaunchModal,
+          })
+          .done(function(response) {
+            console.log(response)
+
+            // Hide modal window
+            $('#launchModal').modal('hide')
+            hideLoadingScreen()
+          })
+          .catch(function(error) {
+            console.error(error)
+            alert('An error occurred while confirm couriering')
+            hideLoadingScreen()
+          })
       })
       .catch(function(error) {
         console.error(error)
-        alert('An error occurred while confirm couriering')
+        alert('An error occurred while get package')
         hideLoadingScreen()
       })
   })
@@ -248,23 +270,6 @@ $(document).ready(function() {
       return
     }
 
-    // Get package
-    var packageCurent = null
-    var packages = getPackagesFromLocalStorage()
-
-    for (var index = 0; index < packages.length; index++) {
-      packageCurent = packages[index]
-
-      if (packageCurent.escrow.publicKey == packageIdForRelay) {
-        break
-      }
-    }
-
-    if (!packageCurent) {
-      alert('Sorry, this package was not found in local storage.')
-      hideLoadingScreen()
-      return
-    }
     /*
     // Call prepare_escrow
     infoLoadingScreen('1/99 Prepare escrow')
@@ -407,30 +412,26 @@ $(document).ready(function() {
       return
     }
 
-    // Get package
-    var packageCurent = null
-    var packages = getPackagesFromLocalStorage()
-
-    for (var index = 0; index < packages.length; index++) {
-      packageCurent = packages[index]
-
-      if (packageCurent.escrow.publicKey == packageIdForReceive) {
-        break
-      }
-    }
-
-    if (!packageCurent) {
-      alert('Sorry, this package was not found in local storage.')
-      hideLoadingScreen()
-      return
-    }
-
     requests.router
       .getPackage({ escrow_pubkey: packageIdForReceive })
       .done(function(response) {
         console.log('get package', response)
         var package = response.package
 
+        // Get recipient pub key
+        var recipientPubkey = response.package.recipient_pubkey
+
+        // Get recipient private key
+        var recipientPrivateKey = undefined
+        for (let index = 0; index < recipientData.length; index++) {
+          let recipient = recipientData[index]
+          if (recipient.publicKey === recipientPubkey) {
+            recipientPrivateKey = recipient.privateKey
+            break
+          }
+        }
+
+        // Get escrowXdrsForPackage
         var escrowXdrsForPackage = null
         for (let index = 0; index < package.events.length; index++) {
           const event = package.events[index]
@@ -446,7 +447,7 @@ $(document).ready(function() {
 
         var paymentTransaction = escrowXdrsForPackage.payment_transaction
 
-        var signedTransaction = signTransaction(paymentTransaction, StellarBase.Keypair.fromSecret(packageCurent.recipient.privateKey))
+        var signedTransaction = signTransaction(paymentTransaction, StellarBase.Keypair.fromSecret(recipientPrivateKey))
 
         requests.bridge
           .submitTransaction({ signedTransaction })
@@ -454,7 +455,7 @@ $(document).ready(function() {
             console.debug('submit payment transaction', response)
 
             requests.router
-              .acceptPackage(packageCurent.recipient.privateKey, packageCurent.recipient.publicKey, {
+              .acceptPackage(recipientPrivateKey, recipientPubkey, {
                 escrow_pubkey: packageIdForReceive,
                 location: location,
                 leg_price: 1,
@@ -537,42 +538,60 @@ $(document).ready(function() {
       return
     }
 
-    // Get package
-    var packageCurent = null
-    var packages = getPackagesFromLocalStorage()
-
-    for (var index = 0; index < packages.length; index++) {
-      packageCurent = packages[index]
-
-      if (packageCurent.escrow.publicKey == packageIdForChangeLocation) {
-        break
-      }
-    }
-
-    if (!packageCurent) {
-      alert('Sorry, this package was not found in local storage.')
-      hideLoadingScreen()
-      return
-    }
-
     requests.router
-      .changedLocation(packageCurent.courier.privateKey, packageCurent.courier.publicKey, {
-        escrow_pubkey: packageIdForChangeLocation,
-        location: location,
-        photo: photoForChangeLocationModal,
-        vehicle: vehicle,
-        cost: cost,
-      })
+      .getPackage({ escrow_pubkey: packageIdForChangeLocation })
       .done(function(response) {
-        console.log(response)
+        console.log('get package', response)
 
-        // Hide modal window
-        $('#changeLocationModal').modal('hide')
-        hideLoadingScreen()
+        // Get courier pub key
+        var courierPubKey = undefined
+        for (let index = 0; index < response.package.events.length; index++) {
+          var event = response.package.events[index]
+          if (event.event_type === 'courier confirmed') {
+            courierPubKey = event.user_pubkey
+            break
+          }
+        }
+
+        if (!courierPubKey) {
+          alert('Package has no courier')
+          return
+        }
+
+        // Get courier private key
+        var courierPrivateKey = undefined
+        for (let index = 0; index < courierData.length; index++) {
+          let courier = courierData[index]
+          if (courier.publicKey === courierPubKey) {
+            courierPrivateKey = courier.privateKey
+            break
+          }
+        }
+
+        requests.router
+          .changedLocation(courierPrivateKey, courierPubKey, {
+            escrow_pubkey: packageIdForChangeLocation,
+            location: location,
+            photo: photoForChangeLocationModal,
+            vehicle: vehicle,
+            cost: cost,
+          })
+          .done(function(response) {
+            console.log(response)
+
+            // Hide modal window
+            $('#changeLocationModal').modal('hide')
+            hideLoadingScreen()
+          })
+          .catch(function(error) {
+            console.error(error)
+            alert('An error occurred while confirm couriering')
+            hideLoadingScreen()
+          })
       })
       .catch(function(error) {
         console.error(error)
-        alert('An error occurred while confirm couriering')
+        alert('An error occurred while get package')
         hideLoadingScreen()
       })
   })
@@ -1455,18 +1474,6 @@ $(document).ready(function() {
                                                               .done(function(responseCreatePackage) {
                                                                 console.debug('create_package', responseCreatePackage)
 
-                                                                // Save escrow Pubkey/Secret (escrowKeypair) to local storage
-                                                                savePackageToLocalStorage(escrowKeypair, launcher.keypairStellar, courierUser.keypairStellar, subCourierKeypair, recipientUser.keypairStellar, {
-                                                                  responsePrepareAccount,
-                                                                  responsePrepareTrust,
-                                                                  responsePrepareAccountForSubCourier,
-                                                                  responsePrepareTrustForSubCourier,
-                                                                  responsePrepareEscrow,
-                                                                  responsePrepareSendBuls,
-                                                                  responsePrepareSendBuls,
-                                                                  responseCreatePackage,
-                                                                })
-
                                                                 addRowPackagesToDataTable(responseCreatePackage.package)
 
                                                                 // clear field for photo
@@ -1677,8 +1684,10 @@ function displayPackagesForLauncher() {
   requests.router
     .getMyPackages()
     .done(function(data) {
-      for (var index = 0; index < data.packages.length; index++) {
-        var packageItem = data.packages[index]
+      allPackagesForLauncher = data.packages
+
+      for (var index = 0; index < allPackagesForLauncher.length; index++) {
+        var packageItem = allPackagesForLauncher[index]
         addRowPackagesToDataTable(packageItem)
       }
 
@@ -2028,40 +2037,6 @@ function arrayBufferToBase64(buffer) {
     binary += String.fromCharCode(bytes[i])
   }
   return window.btoa(binary)
-}
-
-// Save escrow Pubkey/Secret (escrowKeypair) to local storage
-function savePackageToLocalStorage(escrowKeypair, launcherKeypair, courierKeypair, subCourierKeypair, recipientKeypair, packageData) {
-  var packages = getPackagesFromLocalStorage()
-  packages.push({
-    escrow: {
-      privateKey: escrowKeypair.secret(),
-      publicKey: escrowKeypair.publicKey(),
-    },
-    launcher: {
-      privateKey: launcherKeypair.secret(),
-      publicKey: launcherKeypair.publicKey(),
-    },
-    courier: {
-      privateKey: courierKeypair.secret(),
-      publicKey: courierKeypair.publicKey(),
-    },
-    subCourier: {
-      privateKey: subCourierKeypair.secret(),
-      publicKey: subCourierKeypair.publicKey(),
-    },
-    recipient: {
-      privateKey: recipientKeypair.secret(),
-      publicKey: recipientKeypair.publicKey(),
-    },
-    packageData: packageData,
-  })
-  localStorage.setItem('keypairForPackages', JSON.stringify(packages))
-}
-
-function getPackagesFromLocalStorage() {
-  var listKeypair = JSON.parse(localStorage.getItem('keypairForPackages')) || []
-  return listKeypair
 }
 
 // Save description for create package
