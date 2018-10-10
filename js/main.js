@@ -669,6 +669,25 @@ $(document).ready(function() {
             .val('')
         })
       $(this)
+        .find('button.btn-guest')
+        .click(function() {
+            $.ajax({
+            type: 'POST',
+            url: baseUrlRouter + '/events',
+            //data: formData,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function(result) {
+                console.log('!!!');
+                console.log(result.events.packages_events);
+            },
+            error: function(result) {
+                console.error(result)
+            },
+            })
+        })
+      $(this)
         .find('input')
         .css('cursor', 'pointer')
       $(this)
