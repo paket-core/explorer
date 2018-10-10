@@ -554,12 +554,6 @@ $(document).ready(function() {
           }
           markersOnPackageDetailsModal = []
 
-          // Display marker on map
-          var location = package.from_location.split(',')
-          var marker = L.marker([location[0], location[1]]).addTo(mapOnPackageDetailsModal)
-          mapOnPackageDetailsModal.setView([location[0], location[1]], 7)
-          markersOnPackageDetailsModal.push(marker)
-
           // Display text
             console.log(package);
           var packageId = package.escrow_pubkey
@@ -585,12 +579,25 @@ $(document).ready(function() {
 
           // Display events
           var tabEvents = $('#packageDetailsModal #tab-events tbody')
+          tabEvents.empty()
 
           for (let index = 0; index < package.events.length; index++) {
             var event = package.events[index]
 
+            // Display marker on map
+            var location = event.location.split(',')
+            console.log('location: ' + event.location)
+
+            var marker = L.marker([location[0], location[1]])
+            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.')
+            marker.addTo(mapOnPackageDetailsModal)
+            markersOnPackageDetailsModal.push(marker)
+
+            // Add rows
             tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***-' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
           }
+
+          mapOnPackageDetailsModal.setView([markersOnPackageDetailsModal[0]._latlng.lat, markersOnPackageDetailsModal[0]._latlng.lng], 7)
 
           // Get all packages for this user
           requests.router
@@ -1614,6 +1621,8 @@ function changeSelectedLauncher(user) {
 }
 
 function displayPackagesForLauncher() {
+  showLoadingScreen()
+
   // Get all packages for this user
   requests.router
     .getMyPackages()
@@ -1622,15 +1631,15 @@ function displayPackagesForLauncher() {
         var packageItem = data.packages[index]
         addRowPackagesToDataTable(packageItem)
       }
-    })
-    .fail(function(error) {
-      console.error('fail')
-      console.error(error)
+
+      hideLoadingScreen()
     })
     .catch(function(error) {
       console.error('catch')
       console.error(error)
       alert('Failed to get data from server')
+
+      hideLoadingScreen()
     })
 }
 
@@ -1737,24 +1746,34 @@ var requests = {
       })
     },
     acceptPackage: function(userSecret, userPubkey, { escrow_pubkey, location, leg_price, photo }) {
+      var data = {
+        escrow_pubkey, // escrow pubkey (the package ID)
+        location, // location of place where user accepted package
+        kwargs: JSON.stringify({ leg_price, leg_price }),
+      }
+
+      if (photo) {
+        data.photo = photo
+      }
+
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/accept_package',
-        data: {
-          escrow_pubkey, // escrow pubkey (the package ID)
-          location, // location of place where user accepted package
-          leg_price, // leg price
-          // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
-        },
+        data: data,
       })
     },
     changedLocation: function(userSecret, userPubkey, { escrow_pubkey, location, photo }) {
+      var data = {
+        escrow_pubkey, // pubkey of package escrow
+        location, // GPS coordinates where user is at this moment
+      }
+
+      if (photo) {
+        data.photo = photo
+      }
+
       return new_requestToServer(userSecret, userPubkey, {
         url: this.baseUrl + '/changed_location',
-        data: {
-          escrow_pubkey, // pubkey of package escrow
-          location, // GPS coordinates where user is at this moment
-          // photo, // Comment this because I get an error: "accept_package_handler() got an unexpected keyword argument 'photo'"
-        },
+        data: data,
       })
     },
   },
