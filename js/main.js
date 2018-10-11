@@ -614,102 +614,7 @@ $(document).ready(function() {
   // Show modal window for package details
   $('#tablePackages tbody').on('click', 'button.details', function() {
     showLoadingScreen()
-
-    var escrow_pubkey = this.attributes.id.value
-    requests.router
-      .getPackage({ escrow_pubkey })
-      .done(function(response) {
-        var package = response.package
-
-        // Show modal window
-        $('#packageDetailsModal').modal({
-          show: true,
-        })
-
-        $('#packageDetailsModal').on('shown.bs.modal', function() {
-          if (!mapOnPackageDetailsModal) {
-            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
-            var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-              maxZoom: 18,
-              attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-            })
-            mapOnPackageDetailsModal.addLayer(tiles)
-          }
-
-          // Remove all markers
-          for (let index = 0; index < markersOnPackageDetailsModal.length; index++) {
-            const element = markersOnPackageDetailsModal[index]
-            mapOnPackageDetailsModal.removeLayer(element)
-          }
-          markersOnPackageDetailsModal = []
-
-          // Display text
-          console.log(package)
-          var packageId = package.escrow_pubkey
-          var shortPackageId = package.short_package_id
-
-          $('#packageDetailsModal #name')
-            .empty()
-            .append(shortPackageId)
-
-          $('#packageDetailsModal #status')
-            .empty()
-            .append(package.status)
-
-          $('#packageDetailsModal #description')
-            .empty()
-            .append(package.description)
-
-          $('#packageDetailsModal #explorerUrl').attr('href', package.blockchain_url)
-
-          $('#packageDetailsModal #deadline')
-            .empty()
-            .append(dateToYMD(new Date(package.deadline * 1000)))
-
-          // Display events
-          var tabEvents = $('#packageDetailsModal #tab-events tbody')
-          tabEvents.empty()
-
-          for (let index = 0; index < package.events.length; index++) {
-            var event = package.events[index]
-
-            // Display marker on map
-            var location = event.location.split(',')
-            console.log('location: ' + event.location)
-
-            var marker = L.marker([location[0], location[1]])
-            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.')
-            marker.addTo(mapOnPackageDetailsModal)
-            markersOnPackageDetailsModal.push(marker)
-
-            // Add rows
-            tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
-          }
-
-          mapOnPackageDetailsModal.setView([markersOnPackageDetailsModal[0]._latlng.lat, markersOnPackageDetailsModal[0]._latlng.lng], 7)
-
-          // Get all packages for this user
-          requests.router
-            .getPackagePhoto({ escrow_pubkey: packageId })
-            .done(function(data) {
-              var photo = data.package_photo ? data.package_photo.photo : imgSrcBase64
-
-              $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + photo)
-            })
-            .catch(function(error) {
-              alert('Error getting Packages info')
-              hideLoadingScreen()
-              console.error(error)
-            })
-
-          hideLoadingScreen()
-        })
-      })
-      .catch(function(error) {
-        alert('Error getting Packages info')
-        hideLoadingScreen()
-        console.error(error)
-      })
+    showPackageDetails(this.attributes.id.value);
   })
 
   $('#panelCustomerData .input-file').before(function() {
@@ -1606,6 +1511,9 @@ $(document).ready(function() {
         hideLoadingScreen()
       })
   })
+    if(window.location.hash != 'login'){
+        $(this).find('button.btn-guest').click();
+    }
 })
 
 function changeSelectedLauncher(user) {
@@ -1696,7 +1604,7 @@ var requests = {
       })
     },
     getPackage: function({ escrow_pubkey }) {
-      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+      return anon_requestToServer({
         url: this.baseUrl + '/package',
         data: {
           escrow_pubkey,
@@ -1704,7 +1612,7 @@ var requests = {
       })
     },
     getPackagePhoto: function({ escrow_pubkey }) {
-      return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+      return anon_requestToServer({
         url: this.baseUrl + '/package_photo',
         data: {
           escrow_pubkey,
@@ -1861,6 +1769,25 @@ var requests = {
   },
 }
 
+function anon_requestToServer({ url, data }) {
+  try {
+    var formData = objectToFormData(data)
+
+    return $.ajax({
+      type: 'POST',
+      url: url,
+      data: formData,
+      dataType: 'json',
+      processData: false,
+      contentType: false,
+    })
+  } catch (error) {
+    console.error(error)
+    alert('An error has occurred. Details in the Developer Console.')
+
+    return null
+  }
+}
 function new_requestToServer(userSecret, userPublic, { url, data }) {
   try {
     var fingerprint = generateFingerprint(url, data)
@@ -2059,6 +1986,11 @@ function FillAllPackages(){
                     packages.hasOwnProperty(events[index].escrow_pubkey) ||
                     ! events[index].hasOwnProperty('escrow_pubkey')
                 ){continue;}
+
+                if(window.location.hash.substring(1) === events[index].escrow_pubkey){
+                    showPackageDetails(events[index].escrow_pubkey);
+                }
+
                 packages[events[index].escrow_pubkey] = true;
                 $.ajax({
                     type: 'POST',
@@ -2082,4 +2014,102 @@ function FillAllPackages(){
             console.error(result)
         }
     });
+}
+
+
+function showPackageDetails(escrow_pubkey){
+    requests.router
+      .getPackage({ escrow_pubkey })
+      .done(function(response) {
+        var package = response.package
+
+        // Show modal window
+        $('#packageDetailsModal').modal({
+          show: true,
+        })
+
+        $('#packageDetailsModal').on('shown.bs.modal', function() {
+          if (!mapOnPackageDetailsModal) {
+            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
+            var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+              maxZoom: 18,
+              attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            })
+            mapOnPackageDetailsModal.addLayer(tiles)
+          }
+
+          // Remove all markers
+          for (let index = 0; index < markersOnPackageDetailsModal.length; index++) {
+            const element = markersOnPackageDetailsModal[index]
+            mapOnPackageDetailsModal.removeLayer(element)
+          }
+          markersOnPackageDetailsModal = []
+
+          // Display text
+          console.log(package)
+          var packageId = package.escrow_pubkey
+          var shortPackageId = package.short_package_id
+
+          $('#packageDetailsModal #name')
+            .empty()
+            .append(shortPackageId)
+
+          $('#packageDetailsModal #status')
+            .empty()
+            .append(package.status)
+
+          $('#packageDetailsModal #description')
+            .empty()
+            .append(package.description)
+
+          $('#packageDetailsModal #explorerUrl').attr('href', package.blockchain_url)
+
+          $('#packageDetailsModal #deadline')
+            .empty()
+            .append(dateToYMD(new Date(package.deadline * 1000)))
+
+          // Display events
+          var tabEvents = $('#packageDetailsModal #tab-events tbody')
+          tabEvents.empty()
+
+          for (let index = 0; index < package.events.length; index++) {
+            var event = package.events[index]
+
+            // Display marker on map
+            var location = event.location.split(',')
+            console.log('location: ' + event.location)
+
+            var marker = L.marker([location[0], location[1]])
+            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.')
+            marker.addTo(mapOnPackageDetailsModal)
+            markersOnPackageDetailsModal.push(marker)
+
+            // Add rows
+            tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
+          }
+
+          mapOnPackageDetailsModal.setView([markersOnPackageDetailsModal[0]._latlng.lat, markersOnPackageDetailsModal[0]._latlng.lng], 7)
+
+          // Get all packages for this user
+          requests.router
+            .getPackagePhoto({ escrow_pubkey: packageId })
+            .done(function(data) {
+              var photo = data.package_photo ? data.package_photo.photo : imgSrcBase64
+
+              $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + photo)
+            })
+            .catch(function(error) {
+              alert('Error getting Packages info')
+              hideLoadingScreen()
+              console.error(error)
+            })
+
+          hideLoadingScreen()
+        })
+      })
+      .catch(function(error) {
+        alert('Error getting Packages info')
+        hideLoadingScreen()
+        console.error(error)
+      })
 }
