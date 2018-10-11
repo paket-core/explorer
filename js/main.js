@@ -760,22 +760,12 @@ $(document).ready(function() {
       $(this)
         .find('button.btn-guest')
         .click(function() {
-            $.ajax({
-            type: 'POST',
-            url: baseUrlRouter + '/events',
-            //data: formData,
-            dataType: 'json',
-            processData: false,
-            contentType: false,
-            success: function(result) {
-                console.log('!!!');
-                console.log(result.events.packages_events);
-            },
-            error: function(result) {
-                console.error(result)
-            },
-            })
-        })
+            FillAllPackages();
+            $('#panelCustomerData').hide()
+            $('.panel-heading').hide()
+            $('.panel-body .highlight').hide()
+            $('#panelRequests').show()
+        });
       $(this)
         .find('input')
         .css('cursor', 'pointer')
@@ -2049,4 +2039,47 @@ function changesCheckBoxEnterDescription(checkBox) {
   } else {
     $('#createPackageModal #description').hide()
   }
+}
+
+function FillAllPackages(){
+  showLoadingScreen()
+  dataTablePackage.clear().draw()
+    $.ajax({
+        type: 'POST',
+        url: baseUrlRouter + '/events',
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        success: function(result) {
+            var events = result.events.packages_events;
+            var packages = [];
+            var index;
+            for(index = 0; index < events.length; index++){
+                if(
+                    packages.hasOwnProperty(events[index].escrow_pubkey) ||
+                    ! events[index].hasOwnProperty('escrow_pubkey')
+                ){continue;}
+                packages[events[index].escrow_pubkey] = true;
+                $.ajax({
+                    type: 'POST',
+                    url: baseUrlRouter + '/package',
+                    dataType: 'json',
+                    data: objectToFormData({escrow_pubkey: events[index].escrow_pubkey}),
+                    processData: false,
+                    contentType: false,
+                    success: function(result) {
+                        addRowPackagesToDataTable(result.package);
+                    },
+                    error: function(result) {
+                        console.error(result)
+                    }
+                });
+            }
+            hideLoadingScreen()
+        },
+        error: function(result) {
+            hideLoadingScreen()
+            console.error(result)
+        }
+    });
 }
