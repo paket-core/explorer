@@ -33,6 +33,9 @@ var courierAddressAutocompleteOnReceiveModal = null
 var courierAddressAutocompleteOnChangeLocationModal = null
 
 $(document).ready(function() {
+  // Reset first form (Select file with Customer Data)
+  $('#firstForm')[0].reset()
+
   // Configuration Stellar Network
   // StellarBase.Network.useTestNetwork()
   var network = new StellarBase.Network('Test SDF Network ; September 2015')
@@ -119,6 +122,9 @@ $(document).ready(function() {
   var packageIdForLaunch = null
   $('#tablePackages tbody').on('click', 'button.launch', function() {
     packageIdForLaunch = this.attributes.id.value
+
+    // Reset form
+    $('#launchModal form')[0].reset()
 
     // Get short package id
     var packageDetail = undefined
@@ -227,6 +233,9 @@ $(document).ready(function() {
   $('#tablePackages tbody').on('click', 'button.relay', function() {
     packageIdForRelay = this.attributes.id.value
 
+    // Reset form
+    $('#relayModal form')[0].reset()
+
     // Get short package id
     var packageDetail = undefined
     for (let index = 0; index < allPackagesForLauncher.length; index++) {
@@ -308,6 +317,9 @@ $(document).ready(function() {
   var packageIdForReceive = null
   $('#tablePackages tbody').on('click', 'button.receive', function() {
     packageIdForReceive = this.attributes.id.value
+
+    // Reset form
+    $('#receiveModal form')[0].reset()
 
     // Get short package id
     var packageDetail = undefined
@@ -492,6 +504,9 @@ $(document).ready(function() {
   var packageIdForChangeLocation = null
   $('#tablePackages tbody').on('click', 'button.changeLocation', function() {
     packageIdForChangeLocation = this.attributes.id.value
+
+    // Reset form
+    $('#changeLocationModal form')[0].reset()
 
     // Get short package id
     var packageDetail = undefined
@@ -1230,23 +1245,19 @@ $(document).ready(function() {
   })
 
   $('#info #openCreatePackageModal').click(function() {
-    $('#createPackageModal #description').val('')
-    $('#createPackageModal #recipientAddress').val('')
-
-    var recipientSelect = $('#createPackageModal #recipient')
-    recipientSelect.empty()
-
-    var courierSelect = $('#createPackageModal #courier')
-    courierSelect.empty()
+    // Reset form
+    $('#createPackageModal form')[0].reset()
+    changesCheckBoxEnterDescription($('#createPackageModal #enterMessageCheckBox'))
 
     // Recipient in modal window
+    var recipientSelect = $('#createPackageModal #recipient').empty()
     for (var index = 0; index < recipientData.length; index++) {
       var element = recipientData[index]
-
       recipientSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
 
     // Courier in modal window
+    var courierSelect = $('#createPackageModal #courier').empty()
     for (var index = 0; index < courierData.length; index++) {
       var element = courierData[index]
       courierSelect.append('<option value="' + index + '">' + element.name + '</option>')
