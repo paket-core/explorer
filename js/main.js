@@ -2051,6 +2051,10 @@ function showPackageDetails(escrow_pubkey){
           }
 
           // Remove all markers
+          for (let index = 0; index < locationsOnPackageDetailsModal.length; index++) {
+            const element = locationsOnPackageDetailsModal[index]
+            mapOnPackageDetailsModal.removeLayer(element)
+          }
           for (let index = 0; index < markersOnPackageDetailsModal.length; index++) {
             const element = markersOnPackageDetailsModal[index]
             mapOnPackageDetailsModal.removeLayer(element)
