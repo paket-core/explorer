@@ -35,34 +35,34 @@ let courierAddressAutocompleteOnChangeLocationModal = null;
 
 $(document).ready(function() {
   // Reset first form (Select file with Customer Data)
-  $('#firstForm')[0].reset()
+  $('#firstForm')[0].reset();
 
   // Configuration Stellar Network
   // StellarBase.Network.useTestNetwork()
     const network = new StellarBase.Network('Test SDF Network ; September 2015');
-    StellarBase.Network.use(network)
+    StellarBase.Network.use(network);
 
   // Places autocomplete on create package modal
-  recipientAddressAutocomplete = new google.maps.places.Autocomplete($('#createPackageModal #recipientAddress')[0])
+  recipientAddressAutocomplete = new google.maps.places.Autocomplete($('#createPackageModal #recipientAddress')[0]);
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnLaunchModal = new google.maps.places.Autocomplete($('#launchModal #address')[0])
+  courierAddressAutocompleteOnLaunchModal = new google.maps.places.Autocomplete($('#launchModal #address')[0]);
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnRelayModal = new google.maps.places.Autocomplete($('#relayModal #address')[0])
+  courierAddressAutocompleteOnRelayModal = new google.maps.places.Autocomplete($('#relayModal #address')[0]);
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnReceiveModal = new google.maps.places.Autocomplete($('#receiveModal #address')[0])
+  courierAddressAutocompleteOnReceiveModal = new google.maps.places.Autocomplete($('#receiveModal #address')[0]);
 
   // Places autocomplete on launch modal
-  courierAddressAutocompleteOnChangeLocationModal = new google.maps.places.Autocomplete($('#changeLocationModal #address')[0])
+  courierAddressAutocompleteOnChangeLocationModal = new google.maps.places.Autocomplete($('#changeLocationModal #address')[0]);
 
   // Description autocomplete
     const inputDescription = $('#createPackageModal #description');
     inputDescription.typeahead({
     source: [],
     autoSelect: true,
-  })
+  });
 
   inputDescription.change(function() {
       const current = inputDescription.typeahead('getActive');
@@ -77,7 +77,7 @@ $(document).ready(function() {
     } else {
       // Nothing is active so it is a new value (or maybe empty value)
     }
-  })
+  });
 
   // Refresh DataTable
   dataTablePackage = $('#tablePackages').DataTable({
@@ -97,7 +97,7 @@ $(document).ready(function() {
             for (let index = 0; index < allPackagesForLauncher.length; index++) {
               const pckg = allPackagesForLauncher[index];
               if (pckg.escrow_pubkey === $row[0]) {
-              statusPackage = pckg.status
+              statusPackage = pckg.status;
               break
             }
           }
@@ -115,24 +115,24 @@ $(document).ready(function() {
         },
       },
     ],
-  })
+  });
 
-  dataTablePackage.clear().draw()
+  dataTablePackage.clear().draw();
 
   // Show modal window for package launch
     let packageIdForLaunch = null;
     $('#tablePackages tbody').on('click', 'button.launch', function() {
-    packageIdForLaunch = this.attributes.id.value
+    packageIdForLaunch = this.attributes.id.value;
 
     // Reset form
-    $('#launchModal form')[0].reset()
+    $('#launchModal form')[0].reset();
 
     // Get short package id
       let packageDetail = undefined;
       for (let index = 0; index < allPackagesForLauncher.length; index++) {
-        const package = allPackagesForLauncher[index];
-        if (package.escrow_pubkey === packageIdForLaunch) {
-        packageDetail = package
+        const pckg = allPackagesForLauncher[index];
+        if (pckg.escrow_pubkey === packageIdForLaunch) {
+        packageDetail = pckg;
         break
       }
     }
@@ -140,21 +140,21 @@ $(document).ready(function() {
     // Change title
     $('#launchModal #packageId')
       .empty()
-      .append(packageDetail.short_package_id)
+      .append(packageDetail.short_package_id);
 
     // Change status
     $('#launchModal #status')
       .empty()
-      .append(packageDetail.status)
+      .append(packageDetail.status);
 
     // Show modal window
     $('#launchModal').modal({
       show: true,
     })
-  })
+  });
 
   $('#launchModal #launchPackage').click(function() {
-    showLoadingScreen('Starting')
+    showLoadingScreen('Starting');
 
     // Get val from Recipient address field
       let addressVal = $('#launchModal #address').val();
@@ -162,8 +162,8 @@ $(document).ready(function() {
       // Get place
       let place = courierAddressAutocompleteOnLaunchModal.getPlace();
       if (!addressVal || !place) {
-      alert('Data is not valid. Please enter the recipient address.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the recipient address.');
+      hideLoadingScreen();
       return
     }
 
@@ -173,29 +173,29 @@ $(document).ready(function() {
       requests.router
       .getPackage({ escrow_pubkey: packageIdForLaunch })
       .done(function(response) {
-        console.log('get package', response)
+        console.log('get package', response);
 
         // Get courier pub key
         let courierPubKey = undefined;
         for (let index = 0; index < response.package.events.length; index++) {
             const event = response.package.events[index];
             if (event.event_type === 'courier confirmed') {
-            courierPubKey = event.user_pubkey
+            courierPubKey = event.user_pubkey;
             break
           }
         }
 
         if (!courierPubKey) {
-          alert('Package has no courier')
+          alert('Package has no courier');
           return
         }
 
         // Get courier private key
         let courierPrivateKey = undefined;
         for (let index = 0; index < courierData.length; index++) {
-          let courier = courierData[index]
+          let courier = courierData[index];
           if (courier.publicKey === courierPubKey) {
-            courierPrivateKey = courier.privateKey
+            courierPrivateKey = courier.privateKey;
             break
           }
         }
@@ -208,41 +208,41 @@ $(document).ready(function() {
             photo: photoForLaunchModal,
           })
           .done(function(response) {
-            console.log(response)
+            console.log(response);
 
             // Hide modal window
-            $('#launchModal').modal('hide')
-            hideLoadingScreen()
+            $('#launchModal').modal('hide');
+            hideLoadingScreen();
 
             displayPackagesForLauncher()
           })
           .catch(function(error) {
-            console.error(error)
-            alert('An error occurred while confirm couriering')
+            console.error(error);
+            alert('An error occurred while confirm couriering');
             hideLoadingScreen()
           })
       })
       .catch(function(error) {
-        console.error(error)
-        alert('An error occurred while get package')
+        console.error(error);
+        alert('An error occurred while get package');
         hideLoadingScreen()
       })
-  })
+  });
 
   // Show modal window for package relay
     let packageIdForRelay = null;
     $('#tablePackages tbody').on('click', 'button.relay', function() {
-    packageIdForRelay = this.attributes.id.value
+    packageIdForRelay = this.attributes.id.value;
 
     // Reset form
-    $('#relayModal form')[0].reset()
+    $('#relayModal form')[0].reset();
 
     // Get short package id
       let packageDetail = undefined;
       for (let index = 0; index < allPackagesForLauncher.length; index++) {
-        const package = allPackagesForLauncher[index];
-        if (package.escrow_pubkey === packageIdForRelay) {
-        packageDetail = package
+        const ackg = allPackagesForLauncher[index];
+        if (ackg.escrow_pubkey === packageIdForRelay) {
+        packageDetail = ackg;
         break
       }
     }
@@ -250,18 +250,18 @@ $(document).ready(function() {
     // Change title
     $('#relayModal #packageId')
       .empty()
-      .append(packageDetail.short_package_id)
+      .append(packageDetail.short_package_id);
 
     // Change status
     $('#relayModal #status')
       .empty()
-      .append(packageDetail.status)
+      .append(packageDetail.status);
 
     // Display courier
       const courierSelect = $('#relayModal #courier');
-      courierSelect.empty()
+      courierSelect.empty();
 
-    for (var index = 0; index < courierData.length; index++) {
+    for (let index = 0; index < courierData.length; index++) {
         const element = courierData[index];
         courierSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
@@ -270,10 +270,10 @@ $(document).ready(function() {
     $('#relayModal').modal({
       show: true,
     })
-  })
+  });
 
   $('#relayModal #relayPackage').click(function() {
-    showLoadingScreen('Starting')
+    showLoadingScreen('Starting');
 
     // Get val from Recipient address field
       let addressVal = $('#relayModal #address').val();
@@ -281,8 +281,8 @@ $(document).ready(function() {
       // Get place
       let place = courierAddressAutocompleteOnRelayModal.getPlace();
       if (!addressVal || !place) {
-      alert('Data is not valid. Please enter the recipient address.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the recipient address.');
+      hideLoadingScreen();
       return
     }
 
@@ -296,38 +296,38 @@ $(document).ready(function() {
       // Get vehicle
       let vehicle = $('#relayModal #vehicle').val();
       if (!vehicle) {
-      alert('Data is not valid. Please enter the vehicle.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the vehicle.');
+      hideLoadingScreen();
       return
     }
 
     // Get cost
       let cost = $('#relayModal #cost').val();
       if (!cost) {
-      alert('Data is not valid. Please enter the cost.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the cost.');
+      hideLoadingScreen();
       return
     }
 
-    $('#relayModal').modal('hide')
+    $('#relayModal').modal('hide');
     hideLoadingScreen()
     // displayPackagesForLauncher()
-  })
+  });
 
   // Show modal window for package receive
     let packageIdForReceive = null;
     $('#tablePackages tbody').on('click', 'button.receive', function() {
-    packageIdForReceive = this.attributes.id.value
+    packageIdForReceive = this.attributes.id.value;
 
     // Reset form
-    $('#receiveModal form')[0].reset()
+    $('#receiveModal form')[0].reset();
 
     // Get short package id
       let packageDetail = undefined;
       for (let index = 0; index < allPackagesForLauncher.length; index++) {
-        const package = allPackagesForLauncher[index];
-        if (package.escrow_pubkey === packageIdForReceive) {
-        packageDetail = package
+        const pkg = allPackagesForLauncher[index];
+        if (pkg.escrow_pubkey === packageIdForReceive) {
+        packageDetail = pkg;
         break
       }
     }
@@ -335,21 +335,21 @@ $(document).ready(function() {
     // Change title
     $('#receiveModal #packageId')
       .empty()
-      .append(packageDetail.short_package_id)
+      .append(packageDetail.short_package_id);
 
     // Change status
     $('#receiveModal #status')
       .empty()
-      .append(packageDetail.status)
+      .append(packageDetail.status);
 
     // Show modal window
     $('#receiveModal').modal({
       show: true,
     })
-  })
+  });
 
   $('#receiveModal #receivePackage').click(function() {
-    showLoadingScreen()
+    showLoadingScreen();
 
     // Get val from Recipient address field
       let addressVal = $('#receiveModal #address').val();
@@ -357,8 +357,8 @@ $(document).ready(function() {
       // Get place
       let place = courierAddressAutocompleteOnReceiveModal.getPlace();
       if (!addressVal || !place) {
-      alert('Data is not valid. Please enter the recipient address.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the recipient address.');
+      hideLoadingScreen();
       return
     }
 
@@ -368,24 +368,24 @@ $(document).ready(function() {
       // Get vehicle
       let vehicle = $('#receiveModal #vehicle').val();
       if (!vehicle) {
-      alert('Data is not valid. Please enter the vehicle.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the vehicle.');
+      hideLoadingScreen();
       return
     }
 
     // Get cost
       let cost = $('#receiveModal #cost').val();
       if (!cost) {
-      alert('Data is not valid. Please enter the cost.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the cost.');
+      hideLoadingScreen();
       return
     }
 
     requests.router
       .getPackage({ escrow_pubkey: packageIdForReceive })
       .done(function(response) {
-        console.log('get package', response)
-        const package = response.package;
+        console.log('get package', response);
+        const pckg = response.package;
 
         // Get recipient pub key
         const recipientPubkey = response.package.recipient_pubkey;
@@ -393,9 +393,9 @@ $(document).ready(function() {
         // Get recipient private key
         let recipientPrivateKey = undefined;
         for (let index = 0; index < recipientData.length; index++) {
-          let recipient = recipientData[index]
+          let recipient = recipientData[index];
           if (recipient.publicKey === recipientPubkey) {
-            recipientPrivateKey = recipient.privateKey
+            recipientPrivateKey = recipient.privateKey;
             break
           }
         }
@@ -403,39 +403,39 @@ $(document).ready(function() {
         // Get courier pub key
         let courierPubKey = undefined;
         for (let index = 0; index < response.package.events.length; index++) {
-          var event = response.package.events[index]
+          var event = response.package.events[index];
           if (event.event_type === 'courier confirmed') {
-            courierPubKey = event.user_pubkey
+            courierPubKey = event.user_pubkey;
             break
           }
         }
 
         if (!courierPubKey) {
-          alert('Package has no courier')
+          alert('Package has no courier');
           return
         }
 
         // Get courier private key
         let courierPrivateKey = undefined;
         for (let index = 0; index < courierData.length; index++) {
-          let courier = courierData[index]
+          let courier = courierData[index];
           if (courier.publicKey === courierPubKey) {
-            courierPrivateKey = courier.privateKey
+            courierPrivateKey = courier.privateKey;
             break
           }
         }
 
         // Get escrowXdrsForPackage
         let escrowXdrsForPackage = null;
-        for (let index = 0; index < package.events.length; index++) {
-          const event = package.events[index]
+        for (let index = 0; index < pckg.events.length; index++) {
+          const event = pckg.events[index];
           if (event.event_type === 'escrow XDRs assigned') {
             escrowXdrsForPackage = JSON.parse(event.kwargs).escrow_xdrs
           }
         }
 
         if (escrowXdrsForPackage == null) {
-          alert('The package still does not have escrow xdrs')
+          alert('The package still does not have escrow xdrs');
           return
         }
 
@@ -448,7 +448,7 @@ $(document).ready(function() {
         requests.bridge
           .submitTransaction({ signedTransaction })
           .done(function(response) {
-            console.debug('submit payment transaction', response)
+            console.debug('submit payment transaction', response);
 
             // Changed location
             requests.router
@@ -459,7 +459,7 @@ $(document).ready(function() {
                 cost: cost,
               })
               .done(function(response) {
-                console.debug('changed location', response)
+                console.debug('changed location', response);
 
                 // Accept package
                 requests.router
@@ -469,53 +469,53 @@ $(document).ready(function() {
                     photo: photoForReceiveModal,
                   })
                   .done(function(response) {
-                    console.debug('submit payment transaction', response)
+                    console.debug('submit payment transaction', response);
 
                     // Hide modal window
-                    $('#receiveModal').modal('hide')
-                    hideLoadingScreen()
+                    $('#receiveModal').modal('hide');
+                    hideLoadingScreen();
 
                     displayPackagesForLauncher()
                   })
                   .catch(function(error) {
-                    console.error(error)
-                    alert('An error occurred while submit payment transaction')
+                    console.error(error);
+                    alert('An error occurred while submit payment transaction');
                     hideLoadingScreen()
                   })
               })
               .catch(function(error) {
-                console.error(error)
-                alert('An error occurred while confirm couriering')
+                console.error(error);
+                alert('An error occurred while confirm couriering');
                 hideLoadingScreen()
               })
           })
           .catch(function(error) {
-            console.error(error)
-            alert('An error occurred while submit payment transaction')
+            console.error(error);
+            alert('An error occurred while submit payment transaction');
             hideLoadingScreen()
           })
       })
       .catch(function(error) {
-        console.error(error)
-        alert('An error occurred while get package')
+        console.error(error);
+        alert('An error occurred while get package');
         hideLoadingScreen()
       })
-  })
+  });
 
   // Show modal window for package change location
     let packageIdForChangeLocation = null;
     $('#tablePackages tbody').on('click', 'button.changeLocation', function() {
-    packageIdForChangeLocation = this.attributes.id.value
+    packageIdForChangeLocation = this.attributes.id.value;
 
     // Reset form
-    $('#changeLocationModal form')[0].reset()
+    $('#changeLocationModal form')[0].reset();
 
     // Get short package id
       let packageDetail = undefined;
       for (let index = 0; index < allPackagesForLauncher.length; index++) {
-        const package = allPackagesForLauncher[index];
-        if (package.escrow_pubkey === packageIdForChangeLocation) {
-        packageDetail = package
+        const pckg = allPackagesForLauncher[index];
+        if (pckg.escrow_pubkey === packageIdForChangeLocation) {
+        packageDetail = pckg;
         break
       }
     }
@@ -523,21 +523,21 @@ $(document).ready(function() {
     // Change title
     $('#changeLocationModal #packageId')
       .empty()
-      .append(packageDetail.short_package_id)
+      .append(packageDetail.short_package_id);
 
     // Change status
     $('#changeLocationModal #status')
       .empty()
-      .append(packageDetail.status)
+      .append(packageDetail.status);
 
     // Show modal window
     $('#changeLocationModal').modal({
       show: true,
     })
-  })
+  });
 
   $('#changeLocationModal #changeLocationPackage').click(function() {
-    showLoadingScreen('Starting')
+    showLoadingScreen('Starting');
 
     // Get val from Recipient address field
       let addressVal = $('#changeLocationModal #address').val();
@@ -545,8 +545,8 @@ $(document).ready(function() {
       // Get place
       let place = courierAddressAutocompleteOnChangeLocationModal.getPlace();
       if (!addressVal || !place) {
-      alert('Data is not valid. Please enter the recipient address.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the recipient address.');
+      hideLoadingScreen();
       return
     }
 
@@ -556,45 +556,45 @@ $(document).ready(function() {
       // Get vehicle
       let vehicle = $('#changeLocationModal #vehicle').val();
       if (!vehicle) {
-      alert('Data is not valid. Please enter the vehicle.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the vehicle.');
+      hideLoadingScreen();
       return
     }
 
     // Get cost
       let cost = $('#changeLocationModal #cost').val();
       if (!cost) {
-      alert('Data is not valid. Please enter the cost.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the cost.');
+      hideLoadingScreen();
       return
     }
 
     requests.router
       .getPackage({ escrow_pubkey: packageIdForChangeLocation })
       .done(function(response) {
-        console.log('get package', response)
+        console.log('get package', response);
 
         // Get courier pub key
         let courierPubKey = undefined;
         for (let index = 0; index < response.package.events.length; index++) {
             const event = response.package.events[index];
             if (event.event_type === 'courier confirmed') {
-            courierPubKey = event.user_pubkey
+            courierPubKey = event.user_pubkey;
             break
           }
         }
 
         if (!courierPubKey) {
-          alert('Package has no courier')
+          alert('Package has no courier');
           return
         }
 
         // Get courier private key
         let courierPrivateKey = undefined;
         for (let index = 0; index < courierData.length; index++) {
-          let courier = courierData[index]
+          let courier = courierData[index];
           if (courier.publicKey === courierPubKey) {
-            courierPrivateKey = courier.privateKey
+            courierPrivateKey = courier.privateKey;
             break
           }
         }
@@ -608,31 +608,31 @@ $(document).ready(function() {
             cost: cost,
           })
           .done(function(response) {
-            console.log(response)
+            console.log(response);
 
             // Hide modal window
-            $('#changeLocationModal').modal('hide')
+            $('#changeLocationModal').modal('hide');
             hideLoadingScreen()
             // displayPackagesForLauncher()
           })
           .catch(function(error) {
-            console.error(error)
-            alert('An error occurred while confirm couriering')
+            console.error(error);
+            alert('An error occurred while confirm couriering');
             hideLoadingScreen()
           })
       })
       .catch(function(error) {
-        console.error(error)
-        alert('An error occurred while get package')
+        console.error(error);
+        alert('An error occurred while get package');
         hideLoadingScreen()
       })
-  })
+  });
 
   // Show modal window for package details
   $('#tablePackages tbody').on('click', 'button.details', function() {
-    showLoadingScreen()
+    showLoadingScreen();
     showPackageDetails(this.attributes.id.value);
-  })
+  });
 
   $('#panelCustomerData .input-file').before(function() {
     if (
@@ -642,7 +642,7 @@ $(document).ready(function() {
     ) {
         const element = $(
             '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'.json, .txt\'>');
-        element.attr('name', $(this).attr('name'))
+        element.attr('name', $(this).attr('name'));
       element.change(function(e) {
         element
           .next(element)
@@ -652,7 +652,7 @@ $(document).ready(function() {
               .val()
               .split('\\')
               .pop()
-          )
+          );
 
           const fileReader = new FileReader();
           fileReader.onload = function(progressEvent) {
@@ -660,50 +660,50 @@ $(document).ready(function() {
               const json = progressEvent.target.result;
               jsonData = JSON.parse(json)
           } catch (error) {
-            alert('Problems reading the JSON file. Details in console.')
+            alert('Problems reading the JSON file. Details in console.');
             console.error(error)
           }
-        }
+        };
         fileReader.readAsText(e.target.files[0], 'UTF-8')
-      })
+      });
       $(this)
         .find('button.btn-choose')
         .click(function() {
           element.click()
-        })
+        });
       $(this)
         .find('button.btn-reset')
         .click(function() {
-          element.val(null)
+          element.val(null);
           $(this)
             .parents('.input-file')
             .find('input')
             .val('')
-        })
+        });
       $(this)
         .find('button.btn-guest')
         .click(function() {
             FillAllPackages();
-            $('#panelCustomerData').hide()
-            $('.panel-heading').hide()
-            $('.panel-body .highlight').hide()
+            $('#panelCustomerData').hide();
+            $('.panel-heading').hide();
+            $('.panel-body .highlight').hide();
             $('#panelRequests').show()
         });
       $(this)
         .find('input')
-        .css('cursor', 'pointer')
+        .css('cursor', 'pointer');
       $(this)
         .find('input')
         .mousedown(function() {
           $(this)
             .parents('.input-file')
             .prev()
-            .click()
+            .click();
           return false
-        })
+        });
       return element
     }
-  })
+  });
 
   $('#createPackageModal .uploadPhoto').before(function() {
     if (
@@ -713,7 +713,7 @@ $(document).ready(function() {
     ) {
         const element = $(
             '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
-        element.attr('name', $(this).attr('name'))
+        element.attr('name', $(this).attr('name'));
       element.change(function(e) {
         element
           .next(element)
@@ -723,20 +723,20 @@ $(document).ready(function() {
               .val()
               .split('\\')
               .pop()
-          )
+          );
 
         photoForCreateProject = e.target.files[0]
-      })
+      });
 
       $(this)
         .find('button.btn-choose')
         .click(function() {
           element.click()
-        })
+        });
 
       $(this)
         .find('input')
-        .css('cursor', 'pointer')
+        .css('cursor', 'pointer');
 
       $(this)
         .find('input')
@@ -744,13 +744,13 @@ $(document).ready(function() {
           $(this)
             .parents('.uploadPhoto')
             .prev()
-            .click()
+            .click();
           return false
-        })
+        });
 
       return element
     }
-  })
+  });
 
   $('#launchModal .uploadPhoto').before(function() {
     if (
@@ -760,7 +760,7 @@ $(document).ready(function() {
     ) {
         const element = $(
             '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
-        element.attr('name', $(this).attr('name'))
+        element.attr('name', $(this).attr('name'));
       element.change(function(e) {
         element
           .next(element)
@@ -770,20 +770,20 @@ $(document).ready(function() {
               .val()
               .split('\\')
               .pop()
-          )
+          );
 
         photoForLaunchModal = e.target.files[0]
-      })
+      });
 
       $(this)
         .find('button.btn-choose')
         .click(function() {
           element.click()
-        })
+        });
 
       $(this)
         .find('input')
-        .css('cursor', 'pointer')
+        .css('cursor', 'pointer');
 
       $(this)
         .find('input')
@@ -791,13 +791,13 @@ $(document).ready(function() {
           $(this)
             .parents('.uploadPhoto')
             .prev()
-            .click()
+            .click();
           return false
-        })
+        });
 
       return element
     }
-  })
+  });
 
   $('#relayModal .uploadPhoto').before(function() {
     if (
@@ -807,7 +807,7 @@ $(document).ready(function() {
     ) {
         const element = $(
             '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
-        element.attr('name', $(this).attr('name'))
+        element.attr('name', $(this).attr('name'));
       element.change(function(e) {
         element
           .next(element)
@@ -817,20 +817,20 @@ $(document).ready(function() {
               .val()
               .split('\\')
               .pop()
-          )
+          );
 
         photoForRelayModal = e.target.files[0]
-      })
+      });
 
       $(this)
         .find('button.btn-choose')
         .click(function() {
           element.click()
-        })
+        });
 
       $(this)
         .find('input')
-        .css('cursor', 'pointer')
+        .css('cursor', 'pointer');
 
       $(this)
         .find('input')
@@ -838,13 +838,13 @@ $(document).ready(function() {
           $(this)
             .parents('.uploadPhoto')
             .prev()
-            .click()
+            .click();
           return false
-        })
+        });
 
       return element
     }
-  })
+  });
 
   $('#receiveModal .uploadPhoto').before(function() {
     if (
@@ -854,7 +854,7 @@ $(document).ready(function() {
     ) {
         const element = $(
             '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
-        element.attr('name', $(this).attr('name'))
+        element.attr('name', $(this).attr('name'));
       element.change(function(e) {
         element
           .next(element)
@@ -864,20 +864,20 @@ $(document).ready(function() {
               .val()
               .split('\\')
               .pop()
-          )
+          );
 
         photoForReceiveModal = e.target.files[0]
-      })
+      });
 
       $(this)
         .find('button.btn-choose')
         .click(function() {
           element.click()
-        })
+        });
 
       $(this)
         .find('input')
-        .css('cursor', 'pointer')
+        .css('cursor', 'pointer');
 
       $(this)
         .find('input')
@@ -885,13 +885,13 @@ $(document).ready(function() {
           $(this)
             .parents('.uploadPhoto')
             .prev()
-            .click()
+            .click();
           return false
-        })
+        });
 
       return element
     }
-  })
+  });
 
   $('#changeLocationModal .uploadPhoto').before(function() {
     if (
@@ -901,7 +901,7 @@ $(document).ready(function() {
     ) {
         const element = $(
             '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
-        element.attr('name', $(this).attr('name'))
+        element.attr('name', $(this).attr('name'));
       element.change(function(e) {
         element
           .next(element)
@@ -911,20 +911,20 @@ $(document).ready(function() {
               .val()
               .split('\\')
               .pop()
-          )
+          );
 
         photoForChangeLocationModal = e.target.files[0]
-      })
+      });
 
       $(this)
         .find('button.btn-choose')
         .click(function() {
           element.click()
-        })
+        });
 
       $(this)
         .find('input')
-        .css('cursor', 'pointer')
+        .css('cursor', 'pointer');
 
       $(this)
         .find('input')
@@ -932,18 +932,18 @@ $(document).ready(function() {
           $(this)
             .parents('.uploadPhoto')
             .prev()
-            .click()
+            .click();
           return false
-        })
+        });
 
       return element
     }
-  })
+  });
 
   $('#applyCustomerData').click(function() {
     for (var index = 0; index < jsonData.length; index++) {
-      var item = jsonData[index]
-      jsonData[index].keypairStellar = generateKeypairStellar(item)
+      let item = jsonData[index];
+      jsonData[index].keypairStellar = generateKeypairStellar(item);
 
       if (item.type === 'LAUNCHER') {
         launcherData.push(item)
@@ -955,24 +955,24 @@ $(document).ready(function() {
     }
 
     for (var index = 0; index < launcherData.length; index++) {
-      var item = launcherData[index]
+        let item = launcherData[index];
 
-      $('#dropdownUsers').append('<li><a href="#" id="' + index + '">' + item.name + '</a></li>')
+        $('#dropdownUsers').append('<li><a href="#" id="' + index + '">' + item.name + '</a></li>');
 
       $('#dropdownUsers li a:eq(' + index + ')').click(item, function(event) {
-        changeSelectedLauncher(event.data)
+        changeSelectedLauncher(event.data);
         displayPackagesForLauncher()
       })
     }
 
     // the first user is selected by default
-    changeSelectedLauncher(launcherData[0])
-    displayPackagesForLauncher()
+    changeSelectedLauncher(launcherData[0]);
+    displayPackagesForLauncher();
 
-    $('.dropdown-toggle').dropdown()
-    $('#panelCustomerData').hide()
+    $('.dropdown-toggle').dropdown();
+    $('#panelCustomerData').hide();
     $('#panelRequests').show()
-  })
+  });
 
   $('#addEvent #tryItOut').click(function() {
       const selectorPanel = '#addEvent ';
@@ -989,7 +989,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#acceptPackage #tryItOut').click(function() {
       const selectorPanel = '#acceptPackage ';
@@ -1006,7 +1006,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#assignPackage #tryItOut').click(function() {
       const selectorPanel = '#assignPackage ';
@@ -1023,7 +1023,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#assignXdrs #tryItOut').click(function() {
       const selectorPanel = '#assignXdrs ';
@@ -1041,7 +1041,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#availablePackages #tryItOut').click(function() {
       const selectorPanel = '#availablePackages ';
@@ -1059,7 +1059,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#changedLocation #tryItOut').click(function() {
       const selectorPanel = '#changedLocation ';
@@ -1076,7 +1076,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#createPackage #tryItOut').click(function() {
       const selectorPanel = '#createPackage ';
@@ -1104,7 +1104,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#events #tryItOut').click(function() {
       const selectorPanel = '#events ';
@@ -1118,7 +1118,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#myPackages #tryItOut').click(function() {
       const selectorPanel = '#myPackages ';
@@ -1132,7 +1132,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#package #tryItOut').click(function() {
       const selectorPanel = '#package ';
@@ -1148,7 +1148,7 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#packagePhoto #tryItOut').click(function() {
       const selectorPanel = '#packagePhoto ';
@@ -1164,36 +1164,36 @@ $(document).ready(function() {
         printResponse(selectorPanel, result)
       },
     })
-  })
+  });
 
   $('#info #openCreatePackageModal').click(function() {
     // Reset form
-    $('#createPackageModal form')[0].reset()
-    changesCheckBoxEnterDescription($('#createPackageModal #enterMessageCheckBox'))
+    $('#createPackageModal form')[0].reset();
+    changesCheckBoxEnterDescription($('#createPackageModal #enterMessageCheckBox'));
 
     // Recipient in modal window
       const recipientSelect = $('#createPackageModal #recipient').empty();
       for (var index = 0; index < recipientData.length; index++) {
-      var element = recipientData[index]
+      var element = recipientData[index];
       recipientSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
 
     // Courier in modal window
       const courierSelect = $('#createPackageModal #courier').empty();
       for (var index = 0; index < courierData.length; index++) {
-      var element = courierData[index]
+      var element = courierData[index];
       courierSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
 
     // Set new description to autocomplete
-    $('#createPackageModal #description').data('typeahead').source = getDescriptionForCreatePackage()
+    $('#createPackageModal #description').data('typeahead').source = getDescriptionForCreatePackage();
 
     // Show modal window
     $('#createPackageModal').modal()
-  })
+  });
 
   $('#createPackageModal #createPackage').click(function() {
-    showLoadingScreen('Starting')
+      showLoadingScreen('Starting');
 
       const selectorPanel = '#createPackageModal ';
 
@@ -1207,8 +1207,8 @@ $(document).ready(function() {
       // Get recipient place
       let recipientPlace = recipientAddressAutocomplete.getPlace();
       if (!recipientAddressVal || !recipientPlace) {
-      alert('Data is not valid. Please enter the recipient address.')
-      hideLoadingScreen()
+      alert('Data is not valid. Please enter the recipient address.');
+      hideLoadingScreen();
       return
     }
 
@@ -1225,15 +1225,16 @@ $(document).ready(function() {
 
       // Get date
       const today = new Date();
+      let deadlineUnixTimestamp;
       if (deadline === '1Day') {
       // 1 day from now
-      var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime() / 1000
+      deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime() / 1000;
     } else if (deadline === '1Week') {
       // 1 week from now
-      var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7).getTime() / 1000
-    } else if (deadline === '2Week') {
+          deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7).getTime() / 1000;
+      } else if (deadline === '2Week') {
       // 2 week from now
-      var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 14).getTime() / 1000
+      deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 14).getTime() / 1000;
     }
 
     // Get values
@@ -1250,53 +1251,53 @@ $(document).ready(function() {
       const descriptionText = $(selectorPanel + '#enterMessageCheckBox')[0].checked ? $(selectorPanel + '#description').
           val() : null;
 
-      saveDescriptionForCreatePackage(descriptionText)
+      saveDescriptionForCreatePackage(descriptionText);
 
     // Message for a descriptive
       const description = [descriptionType, fragile, descriptionText].filter(Boolean).join(', ');
 
       // 1) Create a pubkey for the escrow
     // generate new Keypair
-    infoLoadingScreen('1/14 Create a pubkey for the escrow')
+    infoLoadingScreen('1/14 Create a pubkey for the escrow');
       const escrowKeypair = StellarBase.Keypair.random();
       const escrowPubkey = escrowKeypair.publicKey();
       const escrowSecret = escrowKeypair.secret();
-      console.debug('escrowKeypair', escrowKeypair)
+      console.debug('escrowKeypair', escrowKeypair);
 
     // 2) Call prepare_account on bridge as current user (launcher), sign and submit the tx to bridge
-    infoLoadingScreen('2/14 Prepare account')
+    infoLoadingScreen('2/14 Prepare account');
     requests.bridge
       .prepareAccount({
         from_pubkey: launcher.keypairStellar.publicKey(),
         new_pubkey: escrowPubkey,
       })
       .done(function(responsePrepareAccount) {
-        console.debug('prepare_account', responsePrepareAccount)
+        console.debug('prepare_account', responsePrepareAccount);
         const signedTransaction = signTransaction(responsePrepareAccount.transaction, launcher.keypairStellar);
         // Submit transaction
-        infoLoadingScreen('3/14 Submit Prepare account')
+        infoLoadingScreen('3/14 Submit Prepare account');
         requests.bridge
           .submitTransaction({ signedTransaction })
           .done(function(response) {
-            console.debug('submit prepare_account', response)
+            console.debug('submit prepare_account', response);
             // 3) Call prepare_trust on bridge as escrow account (launcher), sign and submit the tx to bridge
-            infoLoadingScreen('4/14 Prepare trust')
+            infoLoadingScreen('4/14 Prepare trust');
             requests.bridge
               .prepareTrust({
                 from_pubkey: escrowPubkey,
               })
               .done(function(responsePrepareTrust) {
-                console.debug('prepare_trust', responsePrepareTrust)
+                console.debug('prepare_trust', responsePrepareTrust);
                 const signedTransaction = signTransaction(responsePrepareTrust.transaction, escrowKeypair);
                 // Submit transaction
-                infoLoadingScreen('5/14 Submit Prepare trust')
+                infoLoadingScreen('5/14 Submit Prepare trust');
                 requests.bridge
                   .submitTransaction({ signedTransaction })
                   .done(function(response) {
-                    console.debug('submit prepare_trust', response)
+                    console.debug('submit prepare_trust', response);
 
                     // 4) Call prepare_escrow on bridge as escrow account, sign and submit the tx to bridge
-                    infoLoadingScreen('6/14 Prepare escrow')
+                    infoLoadingScreen('6/14 Prepare escrow');
                     requests.bridge
                       .prepareEscrow(escrowSecret, escrowPubkey, {
                         launcher_pubkey: launcher.keypairStellar.publicKey(),
@@ -1307,7 +1308,7 @@ $(document).ready(function() {
                         deadline_timestamp: deadlineUnixTimestamp,
                       })
                       .done(function(responsePrepareEscrow) {
-                        console.debug('prepare_escrow', responsePrepareEscrow)
+                        console.debug('prepare_escrow', responsePrepareEscrow);
                         const signedTransaction = signTransaction(
                             responsePrepareEscrow.escrow_details.set_options_transaction, escrowKeypair);
 
@@ -1321,15 +1322,15 @@ $(document).ready(function() {
                         };
 
                         // Submit transaction
-                        infoLoadingScreen('7/14 Submit Prepare escrow')
+                        infoLoadingScreen('7/14 Submit Prepare escrow');
                         requests.bridge
                           .submitTransaction({
                             signedTransaction,
                           })
                           .done(function(response) {
-                            console.debug('submit prepare_escrow', response)
+                            console.debug('submit prepare_escrow', response);
                             // 5) Call prepare_send_buls on bridge with the payment amount as the current user (launcher), sign and submit the tx to bridge
-                            infoLoadingScreen('8/14 Prepare send buls')
+                            infoLoadingScreen('8/14 Prepare send buls');
                             requests.bridge
                               .prepareSendBuls({
                                 from_pubkey: launcher.keypairStellar.publicKey(),
@@ -1339,17 +1340,17 @@ $(document).ready(function() {
                               .done(function(responsePrepareSendBuls) {
                                 const signedTransaction = signTransaction(responsePrepareSendBuls.transaction,
                                     launcher.keypairStellar);
-                                console.debug('prepare_send_buls (payment)', responsePrepareSendBuls)
+                                console.debug('prepare_send_buls (payment)', responsePrepareSendBuls);
                                 // Submit transaction
-                                infoLoadingScreen('9/14 Submit Prepare send buls')
+                                infoLoadingScreen('9/14 Submit Prepare send buls');
                                 requests.bridge
                                   .submitTransaction({
                                     signedTransaction,
                                   })
                                   .done(function(response) {
-                                    console.debug('submit prepare_send_buls (payment)', response)
+                                    console.debug('submit prepare_send_buls (payment)', response);
                                     // 6) Call prepare_send_buls on bridge with the collateral amount as the designated courier, sign and submit the tx to bridge
-                                    infoLoadingScreen('10/14 Second Prepare send buls')
+                                    infoLoadingScreen('10/14 Second Prepare send buls');
                                     requests.bridge
                                       .prepareSendBuls({
                                         from_pubkey: courierUser.keypairStellar.publicKey(),
@@ -1359,17 +1360,17 @@ $(document).ready(function() {
                                       .done(function(responsePrepareSendBuls) {
                                         const signedTransaction = signTransaction(responsePrepareSendBuls.transaction,
                                             courierUser.keypairStellar);
-                                        console.debug('prepare_send_buls (collateral)', responsePrepareSendBuls)
+                                        console.debug('prepare_send_buls (collateral)', responsePrepareSendBuls);
                                         // Submit transaction
-                                        infoLoadingScreen('11/14 Submit Second Prepare send buls')
+                                        infoLoadingScreen('11/14 Submit Second Prepare send buls');
                                         requests.bridge
                                           .submitTransaction({
                                             signedTransaction,
                                           })
                                           .done(function(response) {
-                                            console.debug('submit prepare_send_buls (collateral)', response)
+                                            console.debug('submit prepare_send_buls (collateral)', response);
                                             // 7) Call create_package on router
-                                            infoLoadingScreen('12/14 Create package')
+                                            infoLoadingScreen('12/14 Create package');
                                             requests.router
                                               .createPackage({
                                                 escrow_pubkey: escrowPubkey,
@@ -1388,15 +1389,15 @@ $(document).ready(function() {
                                                 photo: photoForCreateProject,
                                               })
                                               .done(function(responseCreatePackage) {
-                                                console.debug('create_package', responseCreatePackage)
+                                                console.debug('create_package', responseCreatePackage);
 
-                                                addRowPackagesToDataTable(responseCreatePackage.package)
+                                                addRowPackagesToDataTable(responseCreatePackage.package);
 
                                                 // clear field for photo
-                                                photoForCreateProject = null
+                                                photoForCreateProject = null;
 
                                                 // 8) Call confirm_couriering on router
-                                                infoLoadingScreen('13/14 Confirming package by courier')
+                                                infoLoadingScreen('13/14 Confirming package by courier');
                                                 requests.router
                                                   .confirmCouriering(courierUser.keypairStellar.secret(), courierUser.keypairStellar.publicKey(), {
                                                     escrow_pubkey: escrowPubkey,
@@ -1404,7 +1405,7 @@ $(document).ready(function() {
                                                   })
                                                   .done(function(response) {
                                                     // 9) Call assign_xdrs on router
-                                                    infoLoadingScreen('14/14 Preparing escrow and assigning XDRs')
+                                                    infoLoadingScreen('14/14 Preparing escrow and assigning XDRs');
                                                     requests.router
                                                       .assignXdrs(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
                                                         escrow_pubkey: escrowPubkey,
@@ -1413,143 +1414,143 @@ $(document).ready(function() {
                                                       })
                                                       .done(function(response) {
                                                         // Hide modal window
-                                                        $('#createPackageModal').modal('hide')
+                                                        $('#createPackageModal').modal('hide');
 
                                                         hideLoadingScreen()
                                                       })
                                                       .catch(function(error) {
-                                                        console.error(error)
-                                                        alert('An error occurred while confirm couriering')
+                                                        console.error(error);
+                                                        alert('An error occurred while confirm couriering');
                                                         hideLoadingScreen()
                                                       })
                                                   })
                                                   .catch(function(error) {
-                                                    console.error(error)
-                                                    alert('An error occurred while confirm couriering')
+                                                    console.error(error);
+                                                    alert('An error occurred while confirm couriering');
                                                     hideLoadingScreen()
                                                   })
                                               })
                                               .catch(function(error) {
-                                                console.error(error)
-                                                alert('An error occurred while creating the Package')
+                                                console.error(error);
+                                                alert('An error occurred while creating the Package');
                                                 hideLoadingScreen()
                                               })
                                           })
                                           .catch(function(error) {
                                             const errorMessage = 'Error on step: "Submit transaction -> Prepare send buls"';
 
-                                            console.error(errorMessage)
-                                            console.error(error)
+                                            console.error(errorMessage);
+                                            console.error(error);
 
-                                            alert(errorMessage)
+                                            alert(errorMessage);
                                             hideLoadingScreen()
                                           })
                                       })
                                       .catch(function(error) {
                                         const errorMessage = 'Error on step: "Prepare send buls"';
 
-                                        console.error(errorMessage)
-                                        console.error(error)
+                                        console.error(errorMessage);
+                                        console.error(error);
 
-                                        alert(errorMessage)
+                                        alert(errorMessage);
                                         hideLoadingScreen()
                                       })
                                   })
                                   .catch(function(error) {
                                     const errorMessage = 'Error on step: "Submit transaction -> Prepare send buls"';
 
-                                    console.error(errorMessage)
-                                    console.error(error)
+                                    console.error(errorMessage);
+                                    console.error(error);
 
-                                    alert(errorMessage)
+                                    alert(errorMessage);
                                     hideLoadingScreen()
                                   })
                               })
                               .catch(function(error) {
                                 const errorMessage = 'Error on step: "Prepare send buls"';
 
-                                console.error(errorMessage)
-                                console.error(error)
+                                console.error(errorMessage);
+                                console.error(error);
 
-                                alert(errorMessage)
+                                alert(errorMessage);
                                 hideLoadingScreen()
                               })
                           })
                           .catch(function(error) {
                             const errorMessage = 'Error on step: "Submit transaction -> prepare escrow"';
 
-                            console.error(errorMessage)
-                            console.error(error)
+                            console.error(errorMessage);
+                            console.error(error);
 
-                            alert(errorMessage)
+                            alert(errorMessage);
                             hideLoadingScreen()
                           })
                       })
                       .catch(function(error) {
                         const errorMessage = 'Error on step: "Prepare escrow"';
 
-                        console.error(errorMessage)
-                        console.error(error)
+                        console.error(errorMessage);
+                        console.error(error);
 
-                        alert(errorMessage)
+                        alert(errorMessage);
                         hideLoadingScreen()
                       })
                   })
                   .catch(function(error) {
                     const errorMessage = 'Error on step: "Submit transaction for prepare_trust"';
 
-                    console.error(errorMessage)
-                    console.error(error)
+                    console.error(errorMessage);
+                    console.error(error);
 
-                    alert(errorMessage)
+                    alert(errorMessage);
                     hideLoadingScreen()
                   })
               })
               .catch(function(error) {
                 const errorMessage = 'Error on step: "Call prepare_trust"';
 
-                console.error(errorMessage)
-                console.error(error)
+                console.error(errorMessage);
+                console.error(error);
 
-                alert(errorMessage)
+                alert(errorMessage);
                 hideLoadingScreen()
               })
           })
           .catch(function(error) {
             const errorMessage = 'Error on step: "Submit transaction -> prepare_account on bridge"';
 
-            console.error(errorMessage)
-            console.error(error)
+            console.error(errorMessage);
+            console.error(error);
 
-            alert(errorMessage)
+            alert(errorMessage);
             hideLoadingScreen()
           })
       })
       .catch(function(error) {
         const errorMessage = 'Error on step: "Call prepare_account on bridge"';
 
-        console.error(errorMessage)
-        console.error(error)
+        console.error(errorMessage);
+        console.error(error);
 
-        alert(errorMessage)
+        alert(errorMessage);
         hideLoadingScreen()
       })
-  })
+  });
     if(window.location.hash !== '#login'){
         $(this).find('button.btn-guest').click();
     }
-})
+});
 
 function changeSelectedLauncher(user) {
-  launcher = user
+  launcher = user;
 
     const tablePackages = $('#tablePackages tbody');
-    tablePackages.empty()
+    tablePackages.empty();
 
   // Change display info about user
   $('#userName')
     .empty()
-    .append(user.name)
+    .append(user.name);
 
   $('#publicKey')
     .empty()
@@ -1557,15 +1558,15 @@ function changeSelectedLauncher(user) {
 }
 
 function displayPackagesForLauncher() {
-  showLoadingScreen()
+  showLoadingScreen();
 
-  dataTablePackage.clear().draw()
+  dataTablePackage.clear().draw();
 
   // Get all packages for this user
   requests.router
     .getMyPackages()
     .done(function(data) {
-      allPackagesForLauncher = data.packages
+      allPackagesForLauncher = data.packages;
 
       for (let index = 0; index < allPackagesForLauncher.length; index++) {
           const packageItem = allPackagesForLauncher[index];
@@ -1575,32 +1576,32 @@ function displayPackagesForLauncher() {
       hideLoadingScreen()
     })
     .catch(function(error) {
-      console.error('catch')
-      console.error(error)
-      alert('Failed to get data from server')
+      console.error('catch');
+      console.error(error);
+      alert('Failed to get data from server');
 
       hideLoadingScreen()
     })
 }
 
-function addRowPackagesToDataTable(package) {
-    const packageId = package.escrow_pubkey;
+function addRowPackagesToDataTable(pckg) {
+    const packageId = pckg.escrow_pubkey;
 
-    const shortPackageId = package.short_package_id;
+    const shortPackageId = pckg.short_package_id;
 
-    const userRole = package.user_role || 'launcher';
+    const userRole = pckg.user_role || 'launcher';
 
-    const statusRole = package.status;
+    const statusRole = pckg.status;
 
-    const launchDate = package.launch_date;
+    const launchDate = pckg.launch_date;
 
-    const recipientsLocation = package.from_location;
+    const recipientsLocation = pckg.from_location;
 
-    const courieredEvent = package.events.filter(event => event.event_type === 'couriered').last();
+    const courieredEvent = pckg.events.filter(event => event.event_type === 'couriered').last();
 
-    const receivedEvent = package.events.filter(event => event.event_type === 'received').last();
+    const receivedEvent = pckg.events.filter(event => event.event_type === 'received').last();
 
-    const launchedEvent = package.events.filter(event => event.event_type === 'launched').last();
+    const launchedEvent = pckg.events.filter(event => event.event_type === 'launched').last();
 
     const currentCustodianPackage = (courieredEvent || receivedEvent || launchedEvent).user_pubkey;
 
@@ -1612,8 +1613,8 @@ function generateKeypairStellar(user) {
       const keypair = StellarBase.Keypair.fromSecret(user.privateKey);
       return keypair
   } catch (error) {
-    console.error(error)
-    alert('User with name "' + user.name + '" contains not corect private key')
+    console.error(error);
+    alert('User with name "' + user.name + '" contains not corect private key');
 
     return null
   }
@@ -1791,7 +1792,7 @@ var requests = {
       console.log(this.baseUrl)
     },
   },
-}
+};
 
 function anon_requestToServer({ url, data }) {
   try {
@@ -1806,8 +1807,8 @@ function anon_requestToServer({ url, data }) {
       contentType: false,
     })
   } catch (error) {
-    console.error(error)
-    alert('An error has occurred. Details in the Developer Console.')
+    console.error(error);
+    alert('An error has occurred. Details in the Developer Console.');
 
     return null
   }
@@ -1827,14 +1828,14 @@ function new_requestToServer(userSecret, userPublic, { url, data }) {
       processData: false,
       contentType: false,
       beforeSend: function(xhr) {
-        xhr.setRequestHeader('Pubkey', userPublic)
-        xhr.setRequestHeader('Fingerprint', unescape(encodeURIComponent(fingerprint)))
+        xhr.setRequestHeader('Pubkey', userPublic);
+        xhr.setRequestHeader('Fingerprint', unescape(encodeURIComponent(fingerprint)));
         xhr.setRequestHeader('Signature', signature)
       },
     })
   } catch (error) {
-    console.error(error)
-    alert('An error has occurred. Details in the Developer Console.')
+    console.error(error);
+    alert('An error has occurred. Details in the Developer Console.');
 
     return null
   }
@@ -1857,8 +1858,8 @@ function requestToServer({ uri, data, response }) {
       processData: false,
       contentType: false,
       beforeSend: function(xhr) {
-        xhr.setRequestHeader('Pubkey', launcher.keypairStellar.publicKey())
-        xhr.setRequestHeader('Fingerprint', fingerprint)
+        xhr.setRequestHeader('Pubkey', launcher.keypairStellar.publicKey());
+        xhr.setRequestHeader('Fingerprint', fingerprint);
         xhr.setRequestHeader('Signature', signature)
       },
       success: function(result) {
@@ -1869,13 +1870,13 @@ function requestToServer({ uri, data, response }) {
       },
     })
   } catch (error) {
-    console.error(error)
+    console.error(error);
     alert('An error has occurred. Details in the Developer Console.')
   }
 }
 
 function printResponse(selectorPanel, response) {
-  $(selectorPanel + '#responseFormGroup').show()
+  $(selectorPanel + '#responseFormGroup').show();
 
   $(selectorPanel + '#response')
     .empty()
@@ -1885,7 +1886,7 @@ function printResponse(selectorPanel, response) {
 function objectToFormData(data = null) {
     const formData = new FormData();
 
-    if (!data) return formData
+    if (!data) return formData;
 
   for (let key in data) {
     formData.append(key, data[key])
@@ -1915,7 +1916,7 @@ function signFingerprint(fingerprint, secret) {
 
 function signTransaction(transaction, keypairStellar) {
     const transactionStellar = new StellarBase.Transaction(transaction);
-    transactionStellar.sign(keypairStellar)
+    transactionStellar.sign(keypairStellar);
     const transactionEnvelope = transactionStellar.toEnvelope();
     const resultXDR = arrayBufferToBase64(transactionEnvelope.toXDR());
     return resultXDR
@@ -1925,7 +1926,7 @@ function stringToArrayBuffer(str) {
     const bytes = [];
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      bytes.push(char >>> 8)
+      bytes.push(char >>> 8);
     bytes.push(char & 0xff)
   }
   return bytes
@@ -1945,8 +1946,8 @@ function arrayBufferToBase64(buffer) {
 function saveDescriptionForCreatePackage(description) {
     const descriptions = getDescriptionForCreatePackage();
 
-    descriptions.unshift(description)
-  descriptions.splice(5)
+    descriptions.unshift(description);
+  descriptions.splice(5);
 
   localStorage.setItem('descriptionAutofill', JSON.stringify(descriptions))
 }
@@ -1959,11 +1960,11 @@ function getDescriptionForCreatePackage() {
 // Property for array
 Array.prototype.last = function() {
   return this[this.length - 1]
-}
+};
 
 // UiLoadingScreen
 function showLoadingScreen(info = '') {
-  $('#loadingScreen').show()
+  $('#loadingScreen').show();
   $('#loadingScreen #info').text(info)
 }
 
@@ -1993,8 +1994,8 @@ function changesCheckBoxEnterDescription(checkBox) {
 }
 
 function FillAllPackages(){
-  showLoadingScreen()
-  dataTablePackage.clear().draw()
+  showLoadingScreen();
+  dataTablePackage.clear().draw();
     $.ajax({
         type: 'POST',
         url: baseUrlRouter + '/events',
@@ -2034,7 +2035,7 @@ function FillAllPackages(){
             hideLoadingScreen()
         },
         error: function(result) {
-            hideLoadingScreen()
+            hideLoadingScreen();
             console.error(result)
         }
     });
@@ -2066,16 +2067,16 @@ function showPackageDetails(escrow_pubkey){
     requests.router
       .getPackage({ escrow_pubkey })
       .done(function(response) {
-        const package = response.package;
+        const pckg = response.package;
 
         // Show modal window
         $('#packageDetailsModal').modal({
           show: true,
-        })
+        });
 
         $('#packageDetailsModal').on('shown.bs.modal', function() {
           if (!mapOnPackageDetailsModal) {
-            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
+            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1);
               const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                   maxZoom: 19,
                   minZoom: 4,
@@ -2086,51 +2087,51 @@ function showPackageDetails(escrow_pubkey){
 
           // Remove all markers
           for (let index = 0; index < locationsOnPackageDetailsModal.length; index++) {
-            const element = locationsOnPackageDetailsModal[index]
+            const element = locationsOnPackageDetailsModal[index];
             mapOnPackageDetailsModal.removeLayer(element)
           }
           for (let index = 0; index < markersOnPackageDetailsModal.length; index++) {
-            const element = markersOnPackageDetailsModal[index]
+            const element = markersOnPackageDetailsModal[index];
             mapOnPackageDetailsModal.removeLayer(element)
           }
-          locationsOnPackageDetailsModal = []
-          markersOnPackageDetailsModal = []
+          locationsOnPackageDetailsModal = [];
+          markersOnPackageDetailsModal = [];
 
           // Display text
-          console.log(package)
-            const packageId = package.escrow_pubkey;
-            const shortPackageId = package.short_package_id;
+          console.log(pckg);
+            const packageId = pckg.escrow_pubkey;
+            const shortPackageId = pckg.short_package_id;
 
             $('#packageDetailsModal #name')
             .empty()
-            .append(shortPackageId)
+            .append(shortPackageId);
 
           $('#packageDetailsModal #status')
             .empty()
-            .append(package.status)
+            .append(pckg.status);
 
           $('#packageDetailsModal #description')
             .empty()
-            .append(package.description)
+            .append(pckg.description);
 
-          $('#packageDetailsModal #explorerUrl').attr('href', package.blockchain_url)
+          $('#packageDetailsModal #explorerUrl').attr('href', pckg.blockchain_url);
 
           $('#packageDetailsModal #deadline')
             .empty()
-            .append(dateToYMD(new Date(package.deadline * 1000)))
+            .append(dateToYMD(new Date(pckg.deadline * 1000)));
 
           // Display events
             const tabEvents = $('#packageDetailsModal #tab-events tbody');
-            tabEvents.empty()
+            tabEvents.empty();
 
-          for (let index = 0; index < package.events.length; index++) {
-              const event = package.events[index];
+          for (let index = 0; index < pckg.events.length; index++) {
+              const event = pckg.events[index];
 
               // Display marker on map
               const location = event.location.split(',');
-              var marker = L.marker([location[0], location[1]], {icon: redIcon})  //TODO should be red for source and ornage for dest, for example...
-            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.')
-            marker.addTo(mapOnPackageDetailsModal)
+              var marker = L.marker([location[0], location[1]], {icon: redIcon});  //TODO should be red for source and ornage for dest, for example...
+            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.');
+            marker.addTo(mapOnPackageDetailsModal);
             locationsOnPackageDetailsModal.push([location[0], location[1]]);
             markersOnPackageDetailsModal.push(marker);
 
@@ -2138,11 +2139,11 @@ function showPackageDetails(escrow_pubkey){
             tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
           }
           // Add destination.
-            const eventLocation = package.to_location.split(',');
+            const eventLocation = pckg.to_location.split(',');
             var marker = L.marker(eventLocation, {icon: greenIcon});
           locationsOnPackageDetailsModal.push(eventLocation);
-          marker.bindPopup('<b>final destination</b>')
-          marker.addTo(mapOnPackageDetailsModal)
+          marker.bindPopup('<b>final destination</b>');
+          marker.addTo(mapOnPackageDetailsModal);
           markersOnPackageDetailsModal.push(marker);
 
           // Draw path and fit map.
@@ -2158,17 +2159,17 @@ function showPackageDetails(escrow_pubkey){
               $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + photo)
             })
             .catch(function(error) {
-              alert('Error getting Packages info')
-              hideLoadingScreen()
+              alert('Error getting Packages info');
+              hideLoadingScreen();
               console.error(error)
-            })
+            });
 
           hideLoadingScreen()
         })
       })
       .catch(function(error) {
-        alert('Error getting Packages info')
-        hideLoadingScreen()
+        alert('Error getting Packages info');
+        hideLoadingScreen();
         console.error(error)
       })
 }
