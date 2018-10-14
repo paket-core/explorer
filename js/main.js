@@ -18,6 +18,7 @@ var baseUrlFund = protocol + '//fund.paket.global/v2'
 var dataTablePackage = null
 
 var mapOnPackageDetailsModal = null
+var locationsOnPackageDetailsModal = []
 var markersOnPackageDetailsModal = []
 
 var photoForCreateProject = null
@@ -2054,6 +2055,7 @@ function showPackageDetails(escrow_pubkey){
             const element = markersOnPackageDetailsModal[index]
             mapOnPackageDetailsModal.removeLayer(element)
           }
+          locationsOnPackageDetailsModal = []
           markersOnPackageDetailsModal = []
 
           // Display text
@@ -2088,18 +2090,26 @@ function showPackageDetails(escrow_pubkey){
 
             // Display marker on map
             var location = event.location.split(',')
-            console.log('location: ' + event.location)
-
             var marker = L.marker([location[0], location[1]])
             marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.')
             marker.addTo(mapOnPackageDetailsModal)
-            markersOnPackageDetailsModal.push(marker)
+            locationsOnPackageDetailsModal.push([location[0], location[1]]);
+            markersOnPackageDetailsModal.push(marker);
 
             // Add rows
             tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
           }
+          // Add destination.
+          var eventLocation = package.to_location.split(',');
+          var marker = L.marker(eventLocation);
+          locationsOnPackageDetailsModal.push(eventLocation);
+          marker.bindPopup('<b>final destination</b>')
+          marker.addTo(mapOnPackageDetailsModal)
+          markersOnPackageDetailsModal.push(marker);
 
-          mapOnPackageDetailsModal.setView([markersOnPackageDetailsModal[0]._latlng.lat, markersOnPackageDetailsModal[0]._latlng.lng], 7)
+          // Draw path and fit map.
+          var packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
+          mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
 
           // Get all packages for this user
           requests.router
