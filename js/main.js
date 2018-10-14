@@ -1,37 +1,37 @@
-var imgSrcBase64 =
-  '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'
+const imgSrcBase64 =
+    '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';
 
-var jsonData = null
+let jsonData = null;
 
-var allPackagesForLauncher = []
+let allPackagesForLauncher = [];
 
-var launcherData = []
-var recipientData = []
-var courierData = []
+const launcherData = [];
+const recipientData = [];
+const courierData = [];
 
-var launcher = {}
+let launcher = {};
 
-var protocol = location.protocol == 'file:' ? 'http:' : location.protocol
-var baseUrlRouter = protocol + '//route.paket.global/v3'
-var baseUrlBridge = protocol + '//bridge.paket.global/v3'
-var baseUrlFund = protocol + '//fund.paket.global/v2'
-var dataTablePackage = null
+const protocol = location.protocol === 'file:' ? 'http:' : location.protocol;
+const baseUrlRouter = protocol + '//route.paket.global/v3';
+const baseUrlBridge = protocol + '//bridge.paket.global/v3';
+const baseUrlFund = protocol + '//fund.paket.global/v2';
+let dataTablePackage = null;
 
-var mapOnPackageDetailsModal = null
-var locationsOnPackageDetailsModal = []
-var markersOnPackageDetailsModal = []
+let mapOnPackageDetailsModal = null;
+let locationsOnPackageDetailsModal = [];
+let markersOnPackageDetailsModal = [];
 
-var photoForCreateProject = null
-var photoForLaunchModal = null
-var photoForRelayModal = null
-var photoForReceiveModal = null
-var photoForChangeLocationModal = null
+let photoForCreateProject = null;
+let photoForLaunchModal = null;
+let photoForRelayModal = null;
+let photoForReceiveModal = null;
+let photoForChangeLocationModal = null;
 
-var recipientAddressAutocomplete = null
-var courierAddressAutocompleteOnLaunchModal = null
-var courierAddressAutocompleteOnRelayModal = null
-var courierAddressAutocompleteOnReceiveModal = null
-var courierAddressAutocompleteOnChangeLocationModal = null
+let recipientAddressAutocomplete = null;
+let courierAddressAutocompleteOnLaunchModal = null;
+let courierAddressAutocompleteOnRelayModal = null;
+let courierAddressAutocompleteOnReceiveModal = null;
+let courierAddressAutocompleteOnChangeLocationModal = null;
 
 $(document).ready(function() {
   // Reset first form (Select file with Customer Data)
@@ -39,8 +39,8 @@ $(document).ready(function() {
 
   // Configuration Stellar Network
   // StellarBase.Network.useTestNetwork()
-  var network = new StellarBase.Network('Test SDF Network ; September 2015')
-  StellarBase.Network.use(network)
+    const network = new StellarBase.Network('Test SDF Network ; September 2015');
+    StellarBase.Network.use(network)
 
   // Places autocomplete on create package modal
   recipientAddressAutocomplete = new google.maps.places.Autocomplete($('#createPackageModal #recipientAddress')[0])
@@ -58,17 +58,17 @@ $(document).ready(function() {
   courierAddressAutocompleteOnChangeLocationModal = new google.maps.places.Autocomplete($('#changeLocationModal #address')[0])
 
   // Description autocomplete
-  var inputDescription = $('#createPackageModal #description')
-  inputDescription.typeahead({
+    const inputDescription = $('#createPackageModal #description');
+    inputDescription.typeahead({
     source: [],
     autoSelect: true,
   })
 
   inputDescription.change(function() {
-    var current = inputDescription.typeahead('getActive')
-    if (current) {
+      const current = inputDescription.typeahead('getActive');
+      if (current) {
       // Some item from your model is active!
-      if (current.name == inputDescription.val()) {
+      if (current.name === inputDescription.val()) {
         // This means the exact match is found. Use toLowerCase() if you want case insensitive match.
       } else {
         // This means it is only a partial match, you can either add a new item
@@ -93,22 +93,22 @@ $(document).ready(function() {
         orderable: false,
         render: function($data, $type, $row) {
           // Get status package
-          var statusPackage = undefined
-          for (let index = 0; index < allPackagesForLauncher.length; index++) {
-            var package = allPackagesForLauncher[index]
-            if (package.escrow_pubkey === $row[0]) {
-              statusPackage = package.status
+            let statusPackage = undefined;
+            for (let index = 0; index < allPackagesForLauncher.length; index++) {
+              const pckg = allPackagesForLauncher[index];
+              if (pckg.escrow_pubkey === $row[0]) {
+              statusPackage = pckg.status
               break
             }
           }
 
-          var buttonsHtml = ''
+            let buttonsHtml = '';
 
-          if (statusPackage == 'waiting pickup') {
+            if (statusPackage === 'waiting pickup') {
             buttonsHtml += '<button type="button" class="launch btn btn-success" id="' + $row[0] + '">Launch</button>'
-          } else if (statusPackage == 'in transit') {
+          } else if (statusPackage === 'in transit') {
             buttonsHtml += '<button type="button" class="relay btn btn-success" id="' + $row[0] + '">Relay</button>' + '<button type="button" class="receive btn btn-success" id="' + $row[0] + '">Receive</button>' + '<button type="button" class="changeLocation btn btn-success" id="' + $row[0] + '">Change location</button>'
-          } else if (statusPackage == 'delivered') {
+          } else if (statusPackage === 'delivered') {
           }
 
           return '<div class="btn-group">' + buttonsHtml + '<button type="button" class="details btn btn-info" id="' + $row[0] + '">Details</button>' + '</div>'
@@ -120,18 +120,18 @@ $(document).ready(function() {
   dataTablePackage.clear().draw()
 
   // Show modal window for package launch
-  var packageIdForLaunch = null
-  $('#tablePackages tbody').on('click', 'button.launch', function() {
+    let packageIdForLaunch = null;
+    $('#tablePackages tbody').on('click', 'button.launch', function() {
     packageIdForLaunch = this.attributes.id.value
 
     // Reset form
     $('#launchModal form')[0].reset()
 
     // Get short package id
-    var packageDetail = undefined
-    for (let index = 0; index < allPackagesForLauncher.length; index++) {
-      var package = allPackagesForLauncher[index]
-      if (package.escrow_pubkey === packageIdForLaunch) {
+      let packageDetail = undefined;
+      for (let index = 0; index < allPackagesForLauncher.length; index++) {
+        const package = allPackagesForLauncher[index];
+        if (package.escrow_pubkey === packageIdForLaunch) {
         packageDetail = package
         break
       }
@@ -157,29 +157,29 @@ $(document).ready(function() {
     showLoadingScreen('Starting')
 
     // Get val from Recipient address field
-    var addressVal = $('#launchModal #address').val()
+      let addressVal = $('#launchModal #address').val();
 
-    // Get place
-    var place = courierAddressAutocompleteOnLaunchModal.getPlace()
-    if (!addressVal || !place) {
+      // Get place
+      let place = courierAddressAutocompleteOnLaunchModal.getPlace();
+      if (!addressVal || !place) {
       alert('Data is not valid. Please enter the recipient address.')
       hideLoadingScreen()
       return
     }
 
     // Get location
-    var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
+      const location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7);
 
-    requests.router
+      requests.router
       .getPackage({ escrow_pubkey: packageIdForLaunch })
       .done(function(response) {
         console.log('get package', response)
 
         // Get courier pub key
-        var courierPubKey = undefined
+        let courierPubKey = undefined;
         for (let index = 0; index < response.package.events.length; index++) {
-          var event = response.package.events[index]
-          if (event.event_type === 'courier confirmed') {
+            const event = response.package.events[index];
+            if (event.event_type === 'courier confirmed') {
             courierPubKey = event.user_pubkey
             break
           }
@@ -191,7 +191,7 @@ $(document).ready(function() {
         }
 
         // Get courier private key
-        var courierPrivateKey = undefined
+        let courierPrivateKey = undefined;
         for (let index = 0; index < courierData.length; index++) {
           let courier = courierData[index]
           if (courier.publicKey === courierPubKey) {
@@ -230,18 +230,18 @@ $(document).ready(function() {
   })
 
   // Show modal window for package relay
-  var packageIdForRelay = null
-  $('#tablePackages tbody').on('click', 'button.relay', function() {
+    let packageIdForRelay = null;
+    $('#tablePackages tbody').on('click', 'button.relay', function() {
     packageIdForRelay = this.attributes.id.value
 
     // Reset form
     $('#relayModal form')[0].reset()
 
     // Get short package id
-    var packageDetail = undefined
-    for (let index = 0; index < allPackagesForLauncher.length; index++) {
-      var package = allPackagesForLauncher[index]
-      if (package.escrow_pubkey === packageIdForRelay) {
+      let packageDetail = undefined;
+      for (let index = 0; index < allPackagesForLauncher.length; index++) {
+        const package = allPackagesForLauncher[index];
+        if (package.escrow_pubkey === packageIdForRelay) {
         packageDetail = package
         break
       }
@@ -258,12 +258,12 @@ $(document).ready(function() {
       .append(packageDetail.status)
 
     // Display courier
-    var courierSelect = $('#relayModal #courier')
-    courierSelect.empty()
+      const courierSelect = $('#relayModal #courier');
+      courierSelect.empty()
 
     for (var index = 0; index < courierData.length; index++) {
-      var element = courierData[index]
-      courierSelect.append('<option value="' + index + '">' + element.name + '</option>')
+        const element = courierData[index];
+        courierSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
 
     // Show modal window
@@ -276,34 +276,34 @@ $(document).ready(function() {
     showLoadingScreen('Starting')
 
     // Get val from Recipient address field
-    var addressVal = $('#relayModal #address').val()
+      let addressVal = $('#relayModal #address').val();
 
-    // Get place
-    var place = courierAddressAutocompleteOnRelayModal.getPlace()
-    if (!addressVal || !place) {
+      // Get place
+      let place = courierAddressAutocompleteOnRelayModal.getPlace();
+      if (!addressVal || !place) {
       alert('Data is not valid. Please enter the recipient address.')
       hideLoadingScreen()
       return
     }
 
     // Get courier
-    var courierId = $('#relayModal #courier').val()
-    var newCourier = courierData[courierId]
+      const courierId = $('#relayModal #courier').val();
+      // const newCourier = courierData[courierId];
 
-    // Get location
-    var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
+      // Get location
+      // const location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7);
 
-    // Get vehicle
-    var vehicle = $('#relayModal #vehicle').val()
-    if (!vehicle) {
+      // Get vehicle
+      let vehicle = $('#relayModal #vehicle').val();
+      if (!vehicle) {
       alert('Data is not valid. Please enter the vehicle.')
       hideLoadingScreen()
       return
     }
 
     // Get cost
-    var cost = $('#relayModal #cost').val()
-    if (!cost) {
+      let cost = $('#relayModal #cost').val();
+      if (!cost) {
       alert('Data is not valid. Please enter the cost.')
       hideLoadingScreen()
       return
@@ -315,18 +315,18 @@ $(document).ready(function() {
   })
 
   // Show modal window for package receive
-  var packageIdForReceive = null
-  $('#tablePackages tbody').on('click', 'button.receive', function() {
+    let packageIdForReceive = null;
+    $('#tablePackages tbody').on('click', 'button.receive', function() {
     packageIdForReceive = this.attributes.id.value
 
     // Reset form
     $('#receiveModal form')[0].reset()
 
     // Get short package id
-    var packageDetail = undefined
-    for (let index = 0; index < allPackagesForLauncher.length; index++) {
-      var package = allPackagesForLauncher[index]
-      if (package.escrow_pubkey === packageIdForReceive) {
+      let packageDetail = undefined;
+      for (let index = 0; index < allPackagesForLauncher.length; index++) {
+        const package = allPackagesForLauncher[index];
+        if (package.escrow_pubkey === packageIdForReceive) {
         packageDetail = package
         break
       }
@@ -352,30 +352,30 @@ $(document).ready(function() {
     showLoadingScreen()
 
     // Get val from Recipient address field
-    var addressVal = $('#receiveModal #address').val()
+      let addressVal = $('#receiveModal #address').val();
 
-    // Get place
-    var place = courierAddressAutocompleteOnReceiveModal.getPlace()
-    if (!addressVal || !place) {
+      // Get place
+      let place = courierAddressAutocompleteOnReceiveModal.getPlace();
+      if (!addressVal || !place) {
       alert('Data is not valid. Please enter the recipient address.')
       hideLoadingScreen()
       return
     }
 
     // Get location
-    var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
+      const location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7);
 
-    // Get vehicle
-    var vehicle = $('#receiveModal #vehicle').val()
-    if (!vehicle) {
+      // Get vehicle
+      let vehicle = $('#receiveModal #vehicle').val();
+      if (!vehicle) {
       alert('Data is not valid. Please enter the vehicle.')
       hideLoadingScreen()
       return
     }
 
     // Get cost
-    var cost = $('#receiveModal #cost').val()
-    if (!cost) {
+      let cost = $('#receiveModal #cost').val();
+      if (!cost) {
       alert('Data is not valid. Please enter the cost.')
       hideLoadingScreen()
       return
@@ -385,13 +385,13 @@ $(document).ready(function() {
       .getPackage({ escrow_pubkey: packageIdForReceive })
       .done(function(response) {
         console.log('get package', response)
-        var package = response.package
+        const package = response.package;
 
         // Get recipient pub key
-        var recipientPubkey = response.package.recipient_pubkey
+        const recipientPubkey = response.package.recipient_pubkey;
 
         // Get recipient private key
-        var recipientPrivateKey = undefined
+        let recipientPrivateKey = undefined;
         for (let index = 0; index < recipientData.length; index++) {
           let recipient = recipientData[index]
           if (recipient.publicKey === recipientPubkey) {
@@ -401,7 +401,7 @@ $(document).ready(function() {
         }
 
         // Get courier pub key
-        var courierPubKey = undefined
+        let courierPubKey = undefined;
         for (let index = 0; index < response.package.events.length; index++) {
           var event = response.package.events[index]
           if (event.event_type === 'courier confirmed') {
@@ -416,7 +416,7 @@ $(document).ready(function() {
         }
 
         // Get courier private key
-        var courierPrivateKey = undefined
+        let courierPrivateKey = undefined;
         for (let index = 0; index < courierData.length; index++) {
           let courier = courierData[index]
           if (courier.publicKey === courierPubKey) {
@@ -426,10 +426,10 @@ $(document).ready(function() {
         }
 
         // Get escrowXdrsForPackage
-        var escrowXdrsForPackage = null
+        let escrowXdrsForPackage = null;
         for (let index = 0; index < package.events.length; index++) {
           const event = package.events[index]
-          if (event.event_type == 'escrow XDRs assigned') {
+          if (event.event_type === 'escrow XDRs assigned') {
             escrowXdrsForPackage = JSON.parse(event.kwargs).escrow_xdrs
           }
         }
@@ -439,9 +439,10 @@ $(document).ready(function() {
           return
         }
 
-        var paymentTransaction = escrowXdrsForPackage.payment_transaction
+        const paymentTransaction = escrowXdrsForPackage.payment_transaction;
 
-        var signedTransaction = signTransaction(paymentTransaction, StellarBase.Keypair.fromSecret(recipientPrivateKey))
+        const signedTransaction = signTransaction(paymentTransaction,
+            StellarBase.Keypair.fromSecret(recipientPrivateKey));
 
         // Submit transaction
         requests.bridge
@@ -502,18 +503,18 @@ $(document).ready(function() {
   })
 
   // Show modal window for package change location
-  var packageIdForChangeLocation = null
-  $('#tablePackages tbody').on('click', 'button.changeLocation', function() {
+    let packageIdForChangeLocation = null;
+    $('#tablePackages tbody').on('click', 'button.changeLocation', function() {
     packageIdForChangeLocation = this.attributes.id.value
 
     // Reset form
     $('#changeLocationModal form')[0].reset()
 
     // Get short package id
-    var packageDetail = undefined
-    for (let index = 0; index < allPackagesForLauncher.length; index++) {
-      var package = allPackagesForLauncher[index]
-      if (package.escrow_pubkey === packageIdForChangeLocation) {
+      let packageDetail = undefined;
+      for (let index = 0; index < allPackagesForLauncher.length; index++) {
+        const package = allPackagesForLauncher[index];
+        if (package.escrow_pubkey === packageIdForChangeLocation) {
         packageDetail = package
         break
       }
@@ -539,30 +540,30 @@ $(document).ready(function() {
     showLoadingScreen('Starting')
 
     // Get val from Recipient address field
-    var addressVal = $('#changeLocationModal #address').val()
+      let addressVal = $('#changeLocationModal #address').val();
 
-    // Get place
-    var place = courierAddressAutocompleteOnChangeLocationModal.getPlace()
-    if (!addressVal || !place) {
+      // Get place
+      let place = courierAddressAutocompleteOnChangeLocationModal.getPlace();
+      if (!addressVal || !place) {
       alert('Data is not valid. Please enter the recipient address.')
       hideLoadingScreen()
       return
     }
 
     // Get location
-    var location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7)
+      const location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7);
 
-    // Get vehicle
-    var vehicle = $('#changeLocationModal #vehicle').val()
-    if (!vehicle) {
+      // Get vehicle
+      let vehicle = $('#changeLocationModal #vehicle').val();
+      if (!vehicle) {
       alert('Data is not valid. Please enter the vehicle.')
       hideLoadingScreen()
       return
     }
 
     // Get cost
-    var cost = $('#changeLocationModal #cost').val()
-    if (!cost) {
+      let cost = $('#changeLocationModal #cost').val();
+      if (!cost) {
       alert('Data is not valid. Please enter the cost.')
       hideLoadingScreen()
       return
@@ -574,10 +575,10 @@ $(document).ready(function() {
         console.log('get package', response)
 
         // Get courier pub key
-        var courierPubKey = undefined
+        let courierPubKey = undefined;
         for (let index = 0; index < response.package.events.length; index++) {
-          var event = response.package.events[index]
-          if (event.event_type === 'courier confirmed') {
+            const event = response.package.events[index];
+            if (event.event_type === 'courier confirmed') {
             courierPubKey = event.user_pubkey
             break
           }
@@ -589,7 +590,7 @@ $(document).ready(function() {
         }
 
         // Get courier private key
-        var courierPrivateKey = undefined
+        let courierPrivateKey = undefined;
         for (let index = 0; index < courierData.length; index++) {
           let courier = courierData[index]
           if (courier.publicKey === courierPubKey) {
@@ -639,8 +640,9 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='.json, .txt'>")
-      element.attr('name', $(this).attr('name'))
+        const element = $(
+            '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'.json, .txt\'>');
+        element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
           .next(element)
@@ -652,11 +654,11 @@ $(document).ready(function() {
               .pop()
           )
 
-        var fileReader = new FileReader()
-        fileReader.onload = function(progressEvent) {
+          const fileReader = new FileReader();
+          fileReader.onload = function(progressEvent) {
           try {
-            var json = progressEvent.target.result
-            jsonData = JSON.parse(json)
+              const json = progressEvent.target.result;
+              jsonData = JSON.parse(json)
           } catch (error) {
             alert('Problems reading the JSON file. Details in console.')
             console.error(error)
@@ -709,8 +711,9 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
-      element.attr('name', $(this).attr('name'))
+        const element = $(
+            '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
+        element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
           .next(element)
@@ -755,8 +758,9 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
-      element.attr('name', $(this).attr('name'))
+        const element = $(
+            '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
+        element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
           .next(element)
@@ -801,8 +805,9 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
-      element.attr('name', $(this).attr('name'))
+        const element = $(
+            '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
+        element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
           .next(element)
@@ -847,8 +852,9 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
-      element.attr('name', $(this).attr('name'))
+        const element = $(
+            '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
+        element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
           .next(element)
@@ -893,8 +899,9 @@ $(document).ready(function() {
         .prev()
         .hasClass('input-ghost')
     ) {
-      var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0' accept='image/*'>")
-      element.attr('name', $(this).attr('name'))
+        const element = $(
+            '<input type=\'file\' class=\'input-ghost\' style=\'visibility:hidden; height:0\' accept=\'image/*\'>');
+        element.attr('name', $(this).attr('name'))
       element.change(function(e) {
         element
           .next(element)
@@ -938,11 +945,11 @@ $(document).ready(function() {
       var item = jsonData[index]
       jsonData[index].keypairStellar = generateKeypairStellar(item)
 
-      if (item.type == 'LAUNCHER') {
+      if (item.type === 'LAUNCHER') {
         launcherData.push(item)
-      } else if (item.type == 'RECIPIENT') {
+      } else if (item.type === 'RECIPIENT') {
         recipientData.push(item)
-      } else if (item.type == 'COURIER') {
+      } else if (item.type === 'COURIER') {
         courierData.push(item)
       }
     }
@@ -968,14 +975,14 @@ $(document).ready(function() {
   })
 
   $('#addEvent #tryItOut').click(function() {
-    var selectorPanel = '#addEvent '
+      const selectorPanel = '#addEvent ';
 
-    var data = {
-      event_type: $(selectorPanel + '#eventType').val(),
-      location: $(selectorPanel + '#location').val(),
-    }
+      const data = {
+          event_type: $(selectorPanel + '#eventType').val(),
+          location: $(selectorPanel + '#location').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/add_event',
       data: data,
       response: function(result) {
@@ -985,14 +992,14 @@ $(document).ready(function() {
   })
 
   $('#acceptPackage #tryItOut').click(function() {
-    var selectorPanel = '#acceptPackage '
+      const selectorPanel = '#acceptPackage ';
 
-    var data = {
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-      location: $(selectorPanel + '#location').val(),
-    }
+      const data = {
+          escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+          location: $(selectorPanel + '#location').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/accept_package',
       data: data,
       response: function(result) {
@@ -1002,14 +1009,14 @@ $(document).ready(function() {
   })
 
   $('#assignPackage #tryItOut').click(function() {
-    var selectorPanel = '#assignPackage '
+      const selectorPanel = '#assignPackage ';
 
-    var data = {
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-      location: $(selectorPanel + '#location').val(),
-    }
+      const data = {
+          escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+          location: $(selectorPanel + '#location').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/assign_package',
       data: data,
       response: function(result) {
@@ -1019,15 +1026,15 @@ $(document).ready(function() {
   })
 
   $('#assignXdrs #tryItOut').click(function() {
-    var selectorPanel = '#assignXdrs '
+      const selectorPanel = '#assignXdrs ';
 
-    var data = {
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-      location: $(selectorPanel + '#location').val(),
-      kwargs: $(selectorPanel + '#kwargs').val(),
-    }
+      const data = {
+          escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+          location: $(selectorPanel + '#location').val(),
+          kwargs: $(selectorPanel + '#kwargs').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/assign_xdrs',
       data: data,
       response: function(result) {
@@ -1037,15 +1044,15 @@ $(document).ready(function() {
   })
 
   $('#availablePackages #tryItOut').click(function() {
-    var selectorPanel = '#availablePackages '
+      const selectorPanel = '#availablePackages ';
 
-    var data = {
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-      location: $(selectorPanel + '#location').val(),
-      kwargs: $(selectorPanel + '#kwargs').val(),
-    }
+      const data = {
+          escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+          location: $(selectorPanel + '#location').val(),
+          kwargs: $(selectorPanel + '#kwargs').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/available_packages',
       data: data,
       response: function(result) {
@@ -1055,14 +1062,14 @@ $(document).ready(function() {
   })
 
   $('#changedLocation #tryItOut').click(function() {
-    var selectorPanel = '#changedLocation '
+      const selectorPanel = '#changedLocation ';
 
-    var data = {
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-      location: $(selectorPanel + '#location').val(),
-    }
+      const data = {
+          escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+          location: $(selectorPanel + '#location').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/changed_location',
       data: data,
       response: function(result) {
@@ -1072,25 +1079,25 @@ $(document).ready(function() {
   })
 
   $('#createPackage #tryItOut').click(function() {
-    var selectorPanel = '#createPackage '
+      const selectorPanel = '#createPackage ';
 
-    var data = {
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-      recipient_pubkey: $(selectorPanel + '#recipientPubkey').val(),
-      launcher_phone_number: $(selectorPanel + '#launcherPhoneNumber').val(),
-      recipient_phone_number: $(selectorPanel + '#recipientPhoneNumber').val(),
-      payment_buls: $(selectorPanel + '#paymentBuls').val(),
-      collateral_buls: $(selectorPanel + '#collateralBuls').val(),
-      deadline_timestamp: $(selectorPanel + '#deadlineTimestamp').val(),
-      description: $(selectorPanel + '#description').val(),
-      from_location: $(selectorPanel + '#fromLocation').val(),
-      to_location: $(selectorPanel + '#foLocation').val(),
-      from_address: $(selectorPanel + '#fromAddress').val(),
-      to_address: $(selectorPanel + '#toAddress').val(),
-      event_location: $(selectorPanel + '#eventLocation').val(),
-    }
+      const data = {
+          escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+          recipient_pubkey: $(selectorPanel + '#recipientPubkey').val(),
+          launcher_phone_number: $(selectorPanel + '#launcherPhoneNumber').val(),
+          recipient_phone_number: $(selectorPanel + '#recipientPhoneNumber').val(),
+          payment_buls: $(selectorPanel + '#paymentBuls').val(),
+          collateral_buls: $(selectorPanel + '#collateralBuls').val(),
+          deadline_timestamp: $(selectorPanel + '#deadlineTimestamp').val(),
+          description: $(selectorPanel + '#description').val(),
+          from_location: $(selectorPanel + '#fromLocation').val(),
+          to_location: $(selectorPanel + '#foLocation').val(),
+          from_address: $(selectorPanel + '#fromAddress').val(),
+          to_address: $(selectorPanel + '#toAddress').val(),
+          event_location: $(selectorPanel + '#eventLocation').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/create_package',
       data: data,
       response: function(result) {
@@ -1100,11 +1107,11 @@ $(document).ready(function() {
   })
 
   $('#events #tryItOut').click(function() {
-    var selectorPanel = '#events '
+      const selectorPanel = '#events ';
 
-    var data = {}
+      const data = {};
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/events',
       data: data,
       response: function(result) {
@@ -1114,11 +1121,11 @@ $(document).ready(function() {
   })
 
   $('#myPackages #tryItOut').click(function() {
-    var selectorPanel = '#myPackages '
+      const selectorPanel = '#myPackages ';
 
-    var data = {}
+      const data = {};
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/my_packages',
       data: data,
       response: function(result) {
@@ -1128,13 +1135,13 @@ $(document).ready(function() {
   })
 
   $('#package #tryItOut').click(function() {
-    var selectorPanel = '#package '
+      const selectorPanel = '#package ';
 
-    var data = {
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-    }
+      const data = {
+          escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/package',
       data: data,
       response: function(result) {
@@ -1144,13 +1151,13 @@ $(document).ready(function() {
   })
 
   $('#packagePhoto #tryItOut').click(function() {
-    var selectorPanel = '#packagePhoto '
+      const selectorPanel = '#packagePhoto ';
 
-    var data = {
-      escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-    }
+      const data = {
+          escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
+      };
 
-    requestToServer({
+      requestToServer({
       uri: '/v3/package_photo',
       data: data,
       response: function(result) {
@@ -1165,15 +1172,15 @@ $(document).ready(function() {
     changesCheckBoxEnterDescription($('#createPackageModal #enterMessageCheckBox'))
 
     // Recipient in modal window
-    var recipientSelect = $('#createPackageModal #recipient').empty()
-    for (var index = 0; index < recipientData.length; index++) {
+      const recipientSelect = $('#createPackageModal #recipient').empty();
+      for (var index = 0; index < recipientData.length; index++) {
       var element = recipientData[index]
       recipientSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
 
     // Courier in modal window
-    var courierSelect = $('#createPackageModal #courier').empty()
-    for (var index = 0; index < courierData.length; index++) {
+      const courierSelect = $('#createPackageModal #courier').empty();
+      for (var index = 0; index < courierData.length; index++) {
       var element = courierData[index]
       courierSelect.append('<option value="' + index + '">' + element.name + '</option>')
     }
@@ -1188,71 +1195,73 @@ $(document).ready(function() {
   $('#createPackageModal #createPackage').click(function() {
     showLoadingScreen('Starting')
 
-    var selectorPanel = '#createPackageModal '
+      const selectorPanel = '#createPackageModal ';
 
-    // Get recipient
-    var recipientId = $(selectorPanel + '#recipient').val()
-    var recipientUser = recipientData[recipientId]
+      // Get recipient
+      const recipientId = $(selectorPanel + '#recipient').val();
+      const recipientUser = recipientData[recipientId];
 
-    // Get val from Recipient address field
-    var recipientAddressVal = $(selectorPanel + '#recipientAddress').val()
+      // Get val from Recipient address field
+      let recipientAddressVal = $(selectorPanel + '#recipientAddress').val();
 
-    // Get recipient place
-    var recipientPlace = recipientAddressAutocomplete.getPlace()
-    if (!recipientAddressVal || !recipientPlace) {
+      // Get recipient place
+      let recipientPlace = recipientAddressAutocomplete.getPlace();
+      if (!recipientAddressVal || !recipientPlace) {
       alert('Data is not valid. Please enter the recipient address.')
       hideLoadingScreen()
       return
     }
 
-    var recipientAddress = recipientPlace.formatted_address
-    var recipientLocation = recipientPlace.geometry.location.lat().toFixed(7) + ',' + recipientPlace.geometry.location.lng().toFixed(7)
+      const recipientAddress = recipientPlace.formatted_address;
+      const recipientLocation = recipientPlace.geometry.location.lat().toFixed(7) + ',' +
+          recipientPlace.geometry.location.lng().toFixed(7);
 
-    // Get courier
-    var courierId = $(selectorPanel + '#courier').val()
-    var courierUser = courierData[courierId]
+      // Get courier
+      const courierId = $(selectorPanel + '#courier').val();
+      const courierUser = courierData[courierId];
 
-    // Get deadline
-    var deadline = $(selectorPanel + 'input[name=deadline]:checked').val()
+      // Get deadline
+      const deadline = $(selectorPanel + 'input[name=deadline]:checked').val();
 
-    // Get date
-    var today = new Date()
-    if (deadline == '1Day') {
+      // Get date
+      const today = new Date();
+      if (deadline === '1Day') {
       // 1 day from now
       var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime() / 1000
-    } else if (deadline == '1Week') {
+    } else if (deadline === '1Week') {
       // 1 week from now
       var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7).getTime() / 1000
-    } else if (deadline == '2Week') {
+    } else if (deadline === '2Week') {
       // 2 week from now
       var deadlineUnixTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 14).getTime() / 1000
     }
 
     // Get values
-    var paymentBuls = $(selectorPanel + 'input[name=paymentBuls]:checked').val()
-    var collateralBuls = $(selectorPanel + 'input[name=collateralBuls]:checked').val()
+      const paymentBuls = $(selectorPanel + 'input[name=paymentBuls]:checked').val();
+      const collateralBuls = $(selectorPanel + 'input[name=collateralBuls]:checked').val();
 
-    // Get fragile
-    var fragile = $(selectorPanel + '#isFragile')[0].checked ? 'fragile' : null
+      // Get fragile
+      const fragile = $(selectorPanel + '#isFragile')[0].checked ? 'fragile' : null;
 
-    // Get description type
-    var descriptionType = $(selectorPanel + 'input[name=descriptionType]:checked').val()
+      // Get description type
+      const descriptionType = $(selectorPanel + 'input[name=descriptionType]:checked').val();
 
-    // Get description
-    var descriptionText = $(selectorPanel + '#enterMessageCheckBox')[0].checked ? $(selectorPanel + '#description').val() : null
+      // Get description
+      const descriptionText = $(selectorPanel + '#enterMessageCheckBox')[0].checked ? $(selectorPanel + '#description').
+          val() : null;
 
-    saveDescriptionForCreatePackage(descriptionText)
+      saveDescriptionForCreatePackage(descriptionText)
 
     // Message for a descriptive
-    var description = [descriptionType, fragile, descriptionText].filter(Boolean).join(', ')
+      const description = [descriptionType, fragile, descriptionText].filter(Boolean).join(', ');
 
-    // 1) Create a pubkey for the escrow
+      // 1) Create a pubkey for the escrow
     // generate new Keypair
     infoLoadingScreen('1/14 Create a pubkey for the escrow')
-    var escrowKeypair = StellarBase.Keypair.random()
-    var escrowPubkey = escrowKeypair.publicKey()
-    var escrowSecret = escrowKeypair.secret()
-    console.debug('escrowKeypair', escrowKeypair)
+      const escrowKeypair = StellarBase.Keypair.random();
+      const escrowPubkey = escrowKeypair.publicKey();
+      const escrowSecret = escrowKeypair.secret();
+      console.debug('escrowKeypair', escrowKeypair)
 
     // 2) Call prepare_account on bridge as current user (launcher), sign and submit the tx to bridge
     infoLoadingScreen('2/14 Prepare account')
@@ -1263,7 +1272,7 @@ $(document).ready(function() {
       })
       .done(function(responsePrepareAccount) {
         console.debug('prepare_account', responsePrepareAccount)
-        var signedTransaction = signTransaction(responsePrepareAccount.transaction, launcher.keypairStellar)
+        const signedTransaction = signTransaction(responsePrepareAccount.transaction, launcher.keypairStellar);
         // Submit transaction
         infoLoadingScreen('3/14 Submit Prepare account')
         requests.bridge
@@ -1278,7 +1287,7 @@ $(document).ready(function() {
               })
               .done(function(responsePrepareTrust) {
                 console.debug('prepare_trust', responsePrepareTrust)
-                var signedTransaction = signTransaction(responsePrepareTrust.transaction, escrowKeypair)
+                const signedTransaction = signTransaction(responsePrepareTrust.transaction, escrowKeypair);
                 // Submit transaction
                 infoLoadingScreen('5/14 Submit Prepare trust')
                 requests.bridge
@@ -1299,16 +1308,17 @@ $(document).ready(function() {
                       })
                       .done(function(responsePrepareEscrow) {
                         console.debug('prepare_escrow', responsePrepareEscrow)
-                        var signedTransaction = signTransaction(responsePrepareEscrow.escrow_details.set_options_transaction, escrowKeypair)
+                        const signedTransaction = signTransaction(
+                            responsePrepareEscrow.escrow_details.set_options_transaction, escrowKeypair);
 
-                        var XDRs = {
-                          escrow_xdrs: {
-                            merge_transaction: responsePrepareEscrow.escrow_details.merge_transaction,
-                            payment_transaction: responsePrepareEscrow.escrow_details.payment_transaction,
-                            refund_transaction: responsePrepareEscrow.escrow_details.refund_transaction,
-                            set_options_transaction: responsePrepareEscrow.escrow_details.set_options_transaction,
-                          },
-                        }
+                        const XDRs = {
+                            escrow_xdrs: {
+                                merge_transaction: responsePrepareEscrow.escrow_details.merge_transaction,
+                                payment_transaction: responsePrepareEscrow.escrow_details.payment_transaction,
+                                refund_transaction: responsePrepareEscrow.escrow_details.refund_transaction,
+                                set_options_transaction: responsePrepareEscrow.escrow_details.set_options_transaction,
+                            },
+                        };
 
                         // Submit transaction
                         infoLoadingScreen('7/14 Submit Prepare escrow')
@@ -1327,7 +1337,8 @@ $(document).ready(function() {
                                 amount_buls: paymentBuls,
                               })
                               .done(function(responsePrepareSendBuls) {
-                                var signedTransaction = signTransaction(responsePrepareSendBuls.transaction, launcher.keypairStellar)
+                                const signedTransaction = signTransaction(responsePrepareSendBuls.transaction,
+                                    launcher.keypairStellar);
                                 console.debug('prepare_send_buls (payment)', responsePrepareSendBuls)
                                 // Submit transaction
                                 infoLoadingScreen('9/14 Submit Prepare send buls')
@@ -1346,7 +1357,8 @@ $(document).ready(function() {
                                         amount_buls: collateralBuls,
                                       })
                                       .done(function(responsePrepareSendBuls) {
-                                        var signedTransaction = signTransaction(responsePrepareSendBuls.transaction, courierUser.keypairStellar)
+                                        const signedTransaction = signTransaction(responsePrepareSendBuls.transaction,
+                                            courierUser.keypairStellar);
                                         console.debug('prepare_send_buls (collateral)', responsePrepareSendBuls)
                                         // Submit transaction
                                         infoLoadingScreen('11/14 Submit Second Prepare send buls')
@@ -1424,7 +1436,7 @@ $(document).ready(function() {
                                               })
                                           })
                                           .catch(function(error) {
-                                            var errorMessage = 'Error on step: "Submit transaction -> Prepare send buls"'
+                                            const errorMessage = 'Error on step: "Submit transaction -> Prepare send buls"';
 
                                             console.error(errorMessage)
                                             console.error(error)
@@ -1434,7 +1446,7 @@ $(document).ready(function() {
                                           })
                                       })
                                       .catch(function(error) {
-                                        var errorMessage = 'Error on step: "Prepare send buls"'
+                                        const errorMessage = 'Error on step: "Prepare send buls"';
 
                                         console.error(errorMessage)
                                         console.error(error)
@@ -1444,7 +1456,7 @@ $(document).ready(function() {
                                       })
                                   })
                                   .catch(function(error) {
-                                    var errorMessage = 'Error on step: "Submit transaction -> Prepare send buls"'
+                                    const errorMessage = 'Error on step: "Submit transaction -> Prepare send buls"';
 
                                     console.error(errorMessage)
                                     console.error(error)
@@ -1454,7 +1466,7 @@ $(document).ready(function() {
                                   })
                               })
                               .catch(function(error) {
-                                var errorMessage = 'Error on step: "Prepare send buls"'
+                                const errorMessage = 'Error on step: "Prepare send buls"';
 
                                 console.error(errorMessage)
                                 console.error(error)
@@ -1464,7 +1476,7 @@ $(document).ready(function() {
                               })
                           })
                           .catch(function(error) {
-                            var errorMessage = 'Error on step: "Submit transaction -> prepare escrow"'
+                            const errorMessage = 'Error on step: "Submit transaction -> prepare escrow"';
 
                             console.error(errorMessage)
                             console.error(error)
@@ -1474,7 +1486,7 @@ $(document).ready(function() {
                           })
                       })
                       .catch(function(error) {
-                        var errorMessage = 'Error on step: "Prepare escrow"'
+                        const errorMessage = 'Error on step: "Prepare escrow"';
 
                         console.error(errorMessage)
                         console.error(error)
@@ -1484,7 +1496,7 @@ $(document).ready(function() {
                       })
                   })
                   .catch(function(error) {
-                    var errorMessage = 'Error on step: "Submit transaction for prepare_trust"'
+                    const errorMessage = 'Error on step: "Submit transaction for prepare_trust"';
 
                     console.error(errorMessage)
                     console.error(error)
@@ -1494,7 +1506,7 @@ $(document).ready(function() {
                   })
               })
               .catch(function(error) {
-                var errorMessage = 'Error on step: "Call prepare_trust"'
+                const errorMessage = 'Error on step: "Call prepare_trust"';
 
                 console.error(errorMessage)
                 console.error(error)
@@ -1504,7 +1516,7 @@ $(document).ready(function() {
               })
           })
           .catch(function(error) {
-            var errorMessage = 'Error on step: "Submit transaction -> prepare_account on bridge"'
+            const errorMessage = 'Error on step: "Submit transaction -> prepare_account on bridge"';
 
             console.error(errorMessage)
             console.error(error)
@@ -1514,7 +1526,7 @@ $(document).ready(function() {
           })
       })
       .catch(function(error) {
-        var errorMessage = 'Error on step: "Call prepare_account on bridge"'
+        const errorMessage = 'Error on step: "Call prepare_account on bridge"';
 
         console.error(errorMessage)
         console.error(error)
@@ -1523,7 +1535,7 @@ $(document).ready(function() {
         hideLoadingScreen()
       })
   })
-    if(window.location.hash != '#login'){
+    if(window.location.hash !== '#login'){
         $(this).find('button.btn-guest').click();
     }
 })
@@ -1531,8 +1543,8 @@ $(document).ready(function() {
 function changeSelectedLauncher(user) {
   launcher = user
 
-  var tablePackages = $('#tablePackages tbody')
-  tablePackages.empty()
+    const tablePackages = $('#tablePackages tbody');
+    tablePackages.empty()
 
   // Change display info about user
   $('#userName')
@@ -1555,9 +1567,9 @@ function displayPackagesForLauncher() {
     .done(function(data) {
       allPackagesForLauncher = data.packages
 
-      for (var index = 0; index < allPackagesForLauncher.length; index++) {
-        var packageItem = allPackagesForLauncher[index]
-        addRowPackagesToDataTable(packageItem)
+      for (let index = 0; index < allPackagesForLauncher.length; index++) {
+          const packageItem = allPackagesForLauncher[index];
+          addRowPackagesToDataTable(packageItem)
       }
 
       hideLoadingScreen()
@@ -1572,33 +1584,33 @@ function displayPackagesForLauncher() {
 }
 
 function addRowPackagesToDataTable(package) {
-  var packageId = package.escrow_pubkey
+    const packageId = package.escrow_pubkey;
 
-  var shortPackageId = package.short_package_id
+    const shortPackageId = package.short_package_id;
 
-  var userRole = package.user_role || 'launcher'
+    const userRole = package.user_role || 'launcher';
 
-  var statusRole = package.status
+    const statusRole = package.status;
 
-  var launchDate = package.launch_date
+    const launchDate = package.launch_date;
 
-  var recipientsLocation = package.from_location
+    const recipientsLocation = package.from_location;
 
-  var courieredEvent = package.events.filter(event => event.event_type == 'couriered').last()
+    const courieredEvent = package.events.filter(event => event.event_type === 'couriered').last();
 
-  var receivedEvent = package.events.filter(event => event.event_type == 'received').last()
+    const receivedEvent = package.events.filter(event => event.event_type === 'received').last();
 
-  var launchedEvent = package.events.filter(event => event.event_type == 'launched').last()
+    const launchedEvent = package.events.filter(event => event.event_type === 'launched').last();
 
-  var currentCustodianPackage = (courieredEvent || receivedEvent || launchedEvent).user_pubkey
+    const currentCustodianPackage = (courieredEvent || receivedEvent || launchedEvent).user_pubkey;
 
-  dataTablePackage.row.add([packageId, shortPackageId, statusRole, userRole, launchDate, recipientsLocation, currentCustodianPackage]).draw(true)
+    dataTablePackage.row.add([packageId, shortPackageId, statusRole, userRole, launchDate, recipientsLocation, currentCustodianPackage]).draw(true)
 }
 
 function generateKeypairStellar(user) {
   try {
-    var keypair = StellarBase.Keypair.fromSecret(user.privateKey)
-    return keypair
+      const keypair = StellarBase.Keypair.fromSecret(user.privateKey);
+      return keypair
   } catch (error) {
     console.error(error)
     alert('User with name "' + user.name + '" contains not corect private key')
@@ -1632,22 +1644,22 @@ var requests = {
       })
     },
     createPackage: function({ escrow_pubkey, recipient_pubkey, launcher_phone_number, recipient_phone_number, payment_buls, collateral_buls, deadline_timestamp, description, from_location, to_location, from_address, to_address, event_location, photo }) {
-      var data = {
-        escrow_pubkey,
-        recipient_pubkey,
-        launcher_phone_number,
-        recipient_phone_number,
-        payment_buls,
-        collateral_buls,
-        deadline_timestamp,
-        description,
-        from_location,
-        to_location,
-        from_address,
-        to_address,
-        event_location,
-      }
-      if (photo) {
+        const data = {
+            escrow_pubkey,
+            recipient_pubkey,
+            launcher_phone_number,
+            recipient_phone_number,
+            payment_buls,
+            collateral_buls,
+            deadline_timestamp,
+            description,
+            from_location,
+            to_location,
+            from_address,
+            to_address,
+            event_location,
+        };
+        if (photo) {
         data.photo = photo
       }
 
@@ -1676,14 +1688,14 @@ var requests = {
       })
     },
     acceptPackage: function(userSecret, userPubkey, { escrow_pubkey, location, leg_price, vehicle, cost, photo }) {
-      var data = {
-        escrow_pubkey, // escrow pubkey (the package ID)
-        location, // location of place where user accepted package
-      }
+        const data = {
+            escrow_pubkey, // escrow pubkey (the package ID)
+            location, // location of place where user accepted package
+        };
 
-      if (leg_price || vehicle || cost) {
-        var kwargsObj = {}
-        if (leg_price) {
+        if (leg_price || vehicle || cost) {
+          const kwargsObj = {};
+          if (leg_price) {
           kwargsObj.leg_price = leg_price
         }
         if (vehicle) {
@@ -1706,13 +1718,13 @@ var requests = {
       })
     },
     changedLocation: function(userSecret, userPubkey, { escrow_pubkey, location, photo, vehicle, cost }) {
-      var data = {
-        escrow_pubkey, // pubkey of package escrow
-        location, // GPS coordinates where user is at this moment
-        kwargs: JSON.stringify({ vehicle, cost }),
-      }
+        const data = {
+            escrow_pubkey, // pubkey of package escrow
+            location, // GPS coordinates where user is at this moment
+            kwargs: JSON.stringify({vehicle, cost}),
+        };
 
-      if (photo) {
+        if (photo) {
         data.photo = photo
       }
 
@@ -1783,9 +1795,9 @@ var requests = {
 
 function anon_requestToServer({ url, data }) {
   try {
-    var formData = objectToFormData(data)
+      const formData = objectToFormData(data);
 
-    return $.ajax({
+      return $.ajax({
       type: 'POST',
       url: url,
       data: formData,
@@ -1802,12 +1814,12 @@ function anon_requestToServer({ url, data }) {
 }
 function new_requestToServer(userSecret, userPublic, { url, data }) {
   try {
-    var fingerprint = generateFingerprint(url, data)
-    var signature = signFingerprint(fingerprint, userSecret)
+      const fingerprint = generateFingerprint(url, data);
+      const signature = signFingerprint(fingerprint, userSecret);
 
-    var formData = objectToFormData(data)
+      const formData = objectToFormData(data);
 
-    return $.ajax({
+      return $.ajax({
       type: 'POST',
       url: url,
       data: formData,
@@ -1830,14 +1842,14 @@ function new_requestToServer(userSecret, userPublic, { url, data }) {
 
 function requestToServer({ uri, data, response }) {
   try {
-    var url = baseUrl + uri
+      const url = baseUrl + uri;
 
-    var fingerprint = generateFingerprint(url, data)
-    var signature = signFingerprint(fingerprint, launcher.keypairStellar.secret())
+      const fingerprint = generateFingerprint(url, data);
+      const signature = signFingerprint(fingerprint, launcher.keypairStellar.secret());
 
-    var formData = objectToFormData(data)
+      const formData = objectToFormData(data);
 
-    $.ajax({
+      $.ajax({
       type: 'POST',
       url: url,
       data: formData,
@@ -1871,11 +1883,11 @@ function printResponse(selectorPanel, response) {
 }
 
 function objectToFormData(data = null) {
-  var formData = new FormData()
+    const formData = new FormData();
 
-  if (!data) return formData
+    if (!data) return formData
 
-  for (var key in data) {
+  for (let key in data) {
     formData.append(key, data[key])
   }
 
@@ -1883,47 +1895,47 @@ function objectToFormData(data = null) {
 }
 
 function generateFingerprint(uri, kwargs = null) {
-  if (kwargs == null) {
-    kwargstring = ''
-  } else {
-    var ert = ['']
-    for (var key in kwargs) {
-      ert.push(`${key}=${kwargs[key]}`)
+    if(kwargs == null){
+        kwargstring = '';
+    }else{
+        const ert = [''];
+        for(let key in kwargs){
+            ert.push(`${key}=${kwargs[key]}`);
+        }
+        kwargstring = ert.join(',');
     }
-    kwargstring = ert.join(',')
-  }
   return `${uri}${kwargstring},${Date.now() * 1000}`
 }
 
 function signFingerprint(fingerprint, secret) {
-  var fingerprintBuffer = stringToArrayBuffer(fingerprint)
-  var signature = StellarBase.Keypair.fromSecret(secret).sign(fingerprintBuffer)
-  return arrayBufferToBase64(signature)
+    const fingerprintBuffer = stringToArrayBuffer(fingerprint);
+    const signature = StellarBase.Keypair.fromSecret(secret).sign(fingerprintBuffer);
+    return arrayBufferToBase64(signature)
 }
 
 function signTransaction(transaction, keypairStellar) {
-  var transactionStellar = new StellarBase.Transaction(transaction)
-  transactionStellar.sign(keypairStellar)
-  var transactionEnvelope = transactionStellar.toEnvelope()
-  var resultXDR = arrayBufferToBase64(transactionEnvelope.toXDR())
-  return resultXDR
+    const transactionStellar = new StellarBase.Transaction(transaction);
+    transactionStellar.sign(keypairStellar)
+    const transactionEnvelope = transactionStellar.toEnvelope();
+    const resultXDR = arrayBufferToBase64(transactionEnvelope.toXDR());
+    return resultXDR
 }
 
 function stringToArrayBuffer(str) {
-  var bytes = []
-  for (var i = 0; i < str.length; i++) {
-    var char = str.charCodeAt(i)
-    bytes.push(char >>> 8)
+    const bytes = [];
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      bytes.push(char >>> 8)
     bytes.push(char & 0xff)
   }
   return bytes
 }
 
 function arrayBufferToBase64(buffer) {
-  var binary = ''
-  var bytes = new Uint8Array(buffer)
-  var len = bytes.byteLength
-  for (var i = 0; i < len; i++) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
     binary += String.fromCharCode(bytes[i])
   }
   return window.btoa(binary)
@@ -1931,17 +1943,17 @@ function arrayBufferToBase64(buffer) {
 
 // Save description for create package
 function saveDescriptionForCreatePackage(description) {
-  var descriptions = getDescriptionForCreatePackage()
+    const descriptions = getDescriptionForCreatePackage();
 
-  descriptions.unshift(description)
+    descriptions.unshift(description)
   descriptions.splice(5)
 
   localStorage.setItem('descriptionAutofill', JSON.stringify(descriptions))
 }
 
 function getDescriptionForCreatePackage() {
-  var descriptions = JSON.parse(localStorage.getItem('descriptionAutofill')) || []
-  return descriptions
+    const descriptions = JSON.parse(localStorage.getItem('descriptionAutofill')) || [];
+    return descriptions
 }
 
 // Property for array
@@ -1965,15 +1977,15 @@ function hideLoadingScreen() {
 
 // Conwert date time
 function dateToYMD(date) {
-  var strArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  var d = date.getDate()
-  var m = strArray[date.getMonth()]
-  var y = date.getFullYear()
-  return '' + (d <= 9 ? '0' + d : d) + ' ' + m + ' ' + y
+    const strArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const d = date.getDate();
+    const m = strArray[date.getMonth()];
+    const y = date.getFullYear();
+    return '' + (d <= 9 ? '0' + d : d) + ' ' + m + ' ' + y
 }
 
 function changesCheckBoxEnterDescription(checkBox) {
-  if (checkBox.checked == true) {
+  if (checkBox.checked === true) {
     $('#createPackageModal #description').show()
   } else {
     $('#createPackageModal #description').hide()
@@ -1990,9 +2002,9 @@ function FillAllPackages(){
         processData: false,
         contentType: false,
         success: function(result) {
-            var events = result.events.packages_events;
-            var packages = [];
-            var index;
+            const events = result.events.packages_events;
+            const packages = [];
+            let index;
             for(index = 0; index < events.length; index++){
                 if(
                     packages.hasOwnProperty(events[index].escrow_pubkey) ||
@@ -2030,32 +2042,31 @@ function FillAllPackages(){
 
 
 function showPackageDetails(escrow_pubkey){
-    var redIcon = L.icon({
-    iconUrl: 'red_location.png',
-    iconSize: [38, 38],
-    iconAnchor: [22, 37],
-    popupAnchor: [-3, -38],
-    })
-    var orangeIcon = L.icon({
-    iconUrl: 'orange_location.png',
-    iconSize: [38, 38],
-    iconAnchor: [22, 37],
-    popupAnchor: [-3, -38],
-    })
-    var greenIcon = new L.Icon({
-      iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
+    const redIcon = L.icon({
+        iconUrl: 'red_location.png',
+        iconSize: [38, 38],
+        iconAnchor: [22, 37],
+        popupAnchor: [-3, -38],
     });
-
+    const orangeIcon = L.icon({
+        iconUrl: 'orange_location.png',
+        iconSize: [38, 38],
+        iconAnchor: [22, 37],
+        popupAnchor: [-3, -38],
+    });
+    const greenIcon = new L.Icon({
+        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+    });
 
     requests.router
       .getPackage({ escrow_pubkey })
       .done(function(response) {
-        var package = response.package
+        const package = response.package;
 
         // Show modal window
         $('#packageDetailsModal').modal({
@@ -2065,11 +2076,12 @@ function showPackageDetails(escrow_pubkey){
         $('#packageDetailsModal').on('shown.bs.modal', function() {
           if (!mapOnPackageDetailsModal) {
             mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
-            var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-              maxZoom: 22,
-              attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-            })
-            mapOnPackageDetailsModal.addLayer(tiles)
+              const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                  maxZoom: 19,
+                  minZoom: 4,
+                  attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+              });
+              mapOnPackageDetailsModal.addLayer(tiles)
           }
 
           // Remove all markers
@@ -2086,10 +2098,10 @@ function showPackageDetails(escrow_pubkey){
 
           // Display text
           console.log(package)
-          var packageId = package.escrow_pubkey
-          var shortPackageId = package.short_package_id
+            const packageId = package.escrow_pubkey;
+            const shortPackageId = package.short_package_id;
 
-          $('#packageDetailsModal #name')
+            $('#packageDetailsModal #name')
             .empty()
             .append(shortPackageId)
 
@@ -2108,15 +2120,15 @@ function showPackageDetails(escrow_pubkey){
             .append(dateToYMD(new Date(package.deadline * 1000)))
 
           // Display events
-          var tabEvents = $('#packageDetailsModal #tab-events tbody')
-          tabEvents.empty()
+            const tabEvents = $('#packageDetailsModal #tab-events tbody');
+            tabEvents.empty()
 
           for (let index = 0; index < package.events.length; index++) {
-            var event = package.events[index]
+              const event = package.events[index];
 
-            // Display marker on map
-            var location = event.location.split(',')
-            var marker = L.marker([location[0], location[1]], {icon: redIcon})  //TODO should be red for source and ornage for dest, for example...
+              // Display marker on map
+              const location = event.location.split(',');
+              var marker = L.marker([location[0], location[1]], {icon: redIcon})  //TODO should be red for source and ornage for dest, for example...
             marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.')
             marker.addTo(mapOnPackageDetailsModal)
             locationsOnPackageDetailsModal.push([location[0], location[1]]);
@@ -2126,22 +2138,22 @@ function showPackageDetails(escrow_pubkey){
             tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
           }
           // Add destination.
-          var eventLocation = package.to_location.split(',');
-          var marker = L.marker(eventLocation, {icon: greenIcon});
+            const eventLocation = package.to_location.split(',');
+            var marker = L.marker(eventLocation, {icon: greenIcon});
           locationsOnPackageDetailsModal.push(eventLocation);
           marker.bindPopup('<b>final destination</b>')
           marker.addTo(mapOnPackageDetailsModal)
           markersOnPackageDetailsModal.push(marker);
 
           // Draw path and fit map.
-          var packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
-          mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
+            const packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
+            mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
 
           // Get all packages for this user
           requests.router
             .getPackagePhoto({ escrow_pubkey: packageId })
             .done(function(data) {
-              var photo = data.package_photo ? data.package_photo.photo : imgSrcBase64
+              const photo = data.package_photo ? data.package_photo.photo : imgSrcBase64;
 
               $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + photo)
             })
