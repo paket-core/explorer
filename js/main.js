@@ -2030,6 +2030,26 @@ function FillAllPackages(){
 
 
 function showPackageDetails(escrow_pubkey){
+    var redIcon = L.icon({
+    iconUrl: 'red_location.png',
+    iconSize: [38, 38],
+    iconAnchor: [22, 37],
+    popupAnchor: [-3, -38],
+    })
+    var orangeIcon = L.icon({
+    iconUrl: 'orange_location.png',
+    iconSize: [38, 38],
+    iconAnchor: [22, 37],
+    popupAnchor: [-3, -38],
+    })
+    var greenIcon = L.icon({
+    iconUrl: 'green_location.png',
+    iconSize: [38, 38],
+    iconAnchor: [22, 37],
+    popupAnchor: [-3, -38],
+    })
+
+
     requests.router
       .getPackage({ escrow_pubkey })
       .done(function(response) {
@@ -2044,7 +2064,7 @@ function showPackageDetails(escrow_pubkey){
           if (!mapOnPackageDetailsModal) {
             mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1)
             var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-              maxZoom: 18,
+              maxZoom: 22,
               attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             })
             mapOnPackageDetailsModal.addLayer(tiles)
@@ -2094,7 +2114,7 @@ function showPackageDetails(escrow_pubkey){
 
             // Display marker on map
             var location = event.location.split(',')
-            var marker = L.marker([location[0], location[1]])
+            var marker = L.marker([location[0], location[1]], {icon: redIcon})  //TODO should be red for source and ornage for dest, for example...
             marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.')
             marker.addTo(mapOnPackageDetailsModal)
             locationsOnPackageDetailsModal.push([location[0], location[1]]);
@@ -2105,7 +2125,7 @@ function showPackageDetails(escrow_pubkey){
           }
           // Add destination.
           var eventLocation = package.to_location.split(',');
-          var marker = L.marker(eventLocation);
+          var marker = L.marker(eventLocation, {icon: greenIcon});
           locationsOnPackageDetailsModal.push(eventLocation);
           marker.bindPopup('<b>final destination</b>')
           marker.addTo(mapOnPackageDetailsModal)
