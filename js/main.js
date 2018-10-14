@@ -2103,7 +2103,7 @@ function showPackageDetails(escrow_pubkey){
             // Add rows
             tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' + event.location + '</td><td>' + event.timestamp + '</td><td> ***' + event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') + '</td><td>' + (event.kwargs || '') + '</td></tr>')
           }
-          // Add destination.
+          // Add destination.  #TODO add destination to events tab
           var eventLocation = package.to_location.split(',');
           var marker = L.marker(eventLocation);
           locationsOnPackageDetailsModal.push(eventLocation);
