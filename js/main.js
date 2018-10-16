@@ -80,8 +80,6 @@ $(document).ready(function(){
         }
     });
 
-    mapOnPackageDetailsModal = L.map('map');
-
     // Refresh DataTable
     dataTablePackage = $('#tablePackages').DataTable({
         columnDefs: [
@@ -1920,13 +1918,11 @@ function showPackageDetails(escrow_pubkey){
         $('#packageDetailsModal').on('shown.bs.modal', function(){
 
             // Reset map.
-            mapOnPackageDetailsModal.setView([0, 0], 1);
-            L.control.scale({imperial: false}).addTo(mapOnPackageDetailsModal);  //fixme control is duplicated on subsequent package details
-
-            mapOnPackageDetailsModal.eachLayer(function(layer){
-                mapOnPackageDetailsModal.removeLayer(layer);
-            });
-            mapOnPackageDetailsModal.addLayer(tiles);
+            if(mapOnPackageDetailsModal){
+                mapOnPackageDetailsModal.remove();
+            }
+            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1).addLayer(tiles);
+            L.control.scale({imperial: false}).addTo(mapOnPackageDetailsModal);
             locationsOnPackageDetailsModal = [];
             markersOnPackageDetailsModal = [];
 
