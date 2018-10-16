@@ -1906,15 +1906,10 @@ function showPackageDetails(escrow_pubkey){
                 mapOnPackageDetailsModal.addLayer(tiles);
             }
 
-            // Remove all markers
-            for(let index = 0; index < locationsOnPackageDetailsModal.length; index++){
-                const element = locationsOnPackageDetailsModal[index];
-                mapOnPackageDetailsModal.removeLayer(element);
-            }
-            for(let index = 0; index < markersOnPackageDetailsModal.length; index++){
-                const element = markersOnPackageDetailsModal[index];
-                mapOnPackageDetailsModal.removeLayer(element);
-            }
+            // Remove all layers from map.
+            mapOnPackageDetailsModal.eachLayer(function(layer){
+                mapOnPackageDetailsModal.removeLayer(layer);
+            });
             locationsOnPackageDetailsModal = [];
             markersOnPackageDetailsModal = [];
 
