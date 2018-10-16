@@ -1921,6 +1921,8 @@ function showPackageDetails(escrow_pubkey){
 
             // Reset map.
             mapOnPackageDetailsModal.setView([0, 0], 1);
+            L.control.scale({imperial: false}).addTo(mapOnPackageDetailsModal);  //fixme control is duplicated on subsequent package details
+
             mapOnPackageDetailsModal.eachLayer(function(layer){
                 mapOnPackageDetailsModal.removeLayer(layer);
             });
