@@ -17,7 +17,7 @@ const baseUrlBridge = protocol + '//bridge.paket.global/v3';
 const baseUrlFund = protocol + '//fund.paket.global/v2';
 let dataTablePackage = null;
 
-let mapOnPackageDetailsModal = null;
+let mapOnPackageDetailsModal;
 let locationsOnPackageDetailsModal = [];
 let markersOnPackageDetailsModal = [];
 
@@ -79,6 +79,8 @@ $(document).ready(function(){
             // Nothing is active so it is a new value (or maybe empty value)
         }
     });
+
+    mapOnPackageDetailsModal = L.map('map');
 
     // Refresh DataTable
     dataTablePackage = $('#tablePackages').DataTable({
@@ -1892,26 +1894,34 @@ function showPackageDetails(escrow_pubkey){
     });
 
     showLoadingScreen();
-    requests.router.getPackage({escrow_pubkey}).done(function(response){
-        hideLoadingScreen();
-        const pckg = response.package;
-        console.log(pckg);
 
+    requests.router.getPackage({escrow_pubkey}).done(function(response){
+        const pckg = response.package;
         $('#name').text(pckg.short_package_id);
         $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
         $('#status').empty().append(pckg.status);
         $('#description').empty().append(pckg.description);
         $('#explorerUrl').attr('href', pckg.blockchain_url);
         $('#deadline').empty().append(dateToYMD(new Date(pckg.deadline * 1000)));
-        $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + imgSrcBase64);
+        $('#packageDetailsModal #img').attr('src', '');
+
+        // Get photo
+        requests.router.getPackagePhoto({escrow_pubkey: pckg.escrow_pubkey}).done(function(data){
+            console.log('!!!');
+            $('#packageDetailsModal #img').attr(
+                'src', 'data:image/png;base64,' + (data.package_photo ? data.package_photo.photo : imgSrcBase64)
+            );
+        });
+
+        $('#packageDetailsModal').modal({
+            show: true,
+        });
+        hideLoadingScreen();
+
         $('#packageDetailsModal').on('shown.bs.modal', function(){
 
-            // This is ugly.
-            if(!mapOnPackageDetailsModal){
-                mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1);
-            }
-
             // Reset map.
+            mapOnPackageDetailsModal.setView([0, 0], 1);
             mapOnPackageDetailsModal.eachLayer(function(layer){
                 mapOnPackageDetailsModal.removeLayer(layer);
             });
@@ -1951,24 +1961,10 @@ function showPackageDetails(escrow_pubkey){
             // Draw path and fit map.
             const packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
             mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
-
-            // Get all packages for this user
-            requests.router.getPackagePhoto({escrow_pubkey: pckg.escrow_pubkey}).done(function(data){
-                const photo = data.package_photo ? data.package_photo.photo : imgSrcBase64;
-                $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + photo);
-            }).catch(function(error){
-                alert('Error getting Packages info');
-                hideLoadingScreen();
-                console.error(error);
-            });
         });
-        $('#packageDetailsModal').modal({
-            show: true,
-        });
-        hideLoadingScreen();
     }).catch(function(error){
         alert('Error getting Packages info');
-        hideLoadingScreen();
         console.error(error);
+        hideLoadingScreen();
     });
 }
