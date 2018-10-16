@@ -598,7 +598,6 @@ $(document).ready(function(){
 
     // Show modal window for package details
     $('#tablePackages tbody').on('click', 'button.details', function(){
-        showLoadingScreen();
         showPackageDetails(this.attributes.id.value);
     });
 
@@ -1886,93 +1885,87 @@ function showPackageDetails(escrow_pubkey){
         popupAnchor: [1, -34],
         shadowSize: [41, 41],
     });
+    const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        minZoom: 4,
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    });
 
+    showLoadingScreen();
     requests.router.getPackage({escrow_pubkey}).done(function(response){
+        hideLoadingScreen();
         const pckg = response.package;
-        if(!mapOnPackageDetailsModal){
-            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1);
-            const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                minZoom: 4,
-                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        console.log(pckg);
+
+        $('#name').text(pckg.short_package_id);
+        $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
+        $('#status').empty().append(pckg.status);
+        $('#description').empty().append(pckg.description);
+        $('#explorerUrl').attr('href', pckg.blockchain_url);
+        $('#deadline').empty().append(dateToYMD(new Date(pckg.deadline * 1000)));
+        $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + imgSrcBase64);
+        $('#packageDetailsModal').on('shown.bs.modal', function(){
+
+            // This is ugly.
+            if(!mapOnPackageDetailsModal){
+                mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1);
+            }
+
+            // Reset map.
+            mapOnPackageDetailsModal.eachLayer(function(layer){
+                mapOnPackageDetailsModal.removeLayer(layer);
             });
             mapOnPackageDetailsModal.addLayer(tiles);
-        }
+            locationsOnPackageDetailsModal = [];
+            markersOnPackageDetailsModal = [];
 
-        // Remove all layers from map.
-        mapOnPackageDetailsModal.eachLayer(function(layer){
-            mapOnPackageDetailsModal.removeLayer(layer);
-        });
-        locationsOnPackageDetailsModal = [];
-        markersOnPackageDetailsModal = [];
+            // Display events
+            const tabEvents = $('#packageDetailsModal #tab-events tbody');
+            tabEvents.empty();
 
-        // Display text
-        console.log(pckg);
-        const packageId = pckg.escrow_pubkey;
-        const shortPackageId = pckg.short_package_id;
+            for(let index = 0; index < pckg.events.length; index++){
+                const event = pckg.events[index];
 
-        $('#name').text(shortPackageId);
-        $('#FullEscrowPubkey').text(pckg.escrow_pubkey);
+                // Display marker on map
+                const location = event.location.split(',');
+                var marker = L.marker([location[0], location[1]], {icon: redIcon});  //TODO should be red for source and ornage for dest, for example...
+                marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.');
+                marker.addTo(mapOnPackageDetailsModal);
+                locationsOnPackageDetailsModal.push([location[0], location[1]]);
+                markersOnPackageDetailsModal.push(marker);
 
-        $('#status').empty().append(pckg.status);
-
-        $('#description').empty().append(pckg.description);
-
-        $('#explorerUrl').attr('href', pckg.blockchain_url);
-
-        $('#deadline').empty().append(dateToYMD(new Date(pckg.deadline * 1000)));
-
-        // Display events
-        const tabEvents = $('#packageDetailsModal #tab-events tbody');
-        tabEvents.empty();
-
-        for(let index = 0; index < pckg.events.length; index++){
-            const event = pckg.events[index];
-
-            // Display marker on map
-            const location = event.location.split(',');
-            var marker = L.marker([location[0], location[1]], {icon: redIcon});  //TODO should be red for source and ornage for dest, for example...
-            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.');
+                // Add rows
+                tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' +
+                    event.location + '</td><td>' + event.timestamp + '</td><td> ***' +
+                    event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') +
+                    '</td><td>' + (event.kwargs || '') + '</td></tr>');
+            }
+            // Add destination.
+            const eventLocation = pckg.to_location.split(',');
+            var marker = L.marker(eventLocation, {icon: greenIcon});
+            locationsOnPackageDetailsModal.push(eventLocation);
+            marker.bindPopup('<b>final destination</b>');
             marker.addTo(mapOnPackageDetailsModal);
-            locationsOnPackageDetailsModal.push([location[0], location[1]]);
             markersOnPackageDetailsModal.push(marker);
 
-            // Add rows
-            tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' +
-                event.location + '</td><td>' + event.timestamp + '</td><td> ***' +
-                event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') +
-                '</td><td>' + (event.kwargs || '') + '</td></tr>');
-        }
-        // Add destination.
-        const eventLocation = pckg.to_location.split(',');
-        var marker = L.marker(eventLocation, {icon: greenIcon});
-        locationsOnPackageDetailsModal.push(eventLocation);
-        marker.bindPopup('<b>final destination</b>');
-        marker.addTo(mapOnPackageDetailsModal);
-        markersOnPackageDetailsModal.push(marker);
+            // Draw path and fit map.
+            const packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
+            mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
 
-        // Draw path and fit map.
-        const packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
-        mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
-
-        $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + imgSrcBase64);
-        // Get all packages for this user
-        requests.router.getPackagePhoto({escrow_pubkey: packageId}).done(function(data){
-            const photo = data.package_photo ? data.package_photo.photo : imgSrcBase64;
-            $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + photo);
-        }).catch(function(error){
-            alert('Error getting Packages info');
-            hideLoadingScreen();
-            console.error(error);
+            // Get all packages for this user
+            requests.router.getPackagePhoto({escrow_pubkey: pckg.escrow_pubkey}).done(function(data){
+                const photo = data.package_photo ? data.package_photo.photo : imgSrcBase64;
+                $('#packageDetailsModal #img').attr('src', 'data:image/png;base64,' + photo);
+            }).catch(function(error){
+                alert('Error getting Packages info');
+                hideLoadingScreen();
+                console.error(error);
+            });
         });
-
         $('#packageDetailsModal').modal({
             show: true,
         });
-
-        $('#packageDetailsModal').on('shown.bs.modal', function(){
-            hideLoadingScreen();
-        });
+        hideLoadingScreen();
     }).catch(function(error){
         alert('Error getting Packages info');
         hideLoadingScreen();
