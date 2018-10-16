@@ -11,7 +11,7 @@ const courierData = [];
 
 let launcher = {};
 
-const protocol = location.protocol === 'file:' ? 'http:' : location.protocol;
+const protocol = location.protocol === 'file:' ? 'https:' : location.protocol;
 const baseUrlRouter = protocol + '//route.paket.global/v3';
 const baseUrlBridge = protocol + '//bridge.paket.global/v3';
 const baseUrlFund = protocol + '//fund.paket.global/v2';
@@ -1907,7 +1907,6 @@ function showPackageDetails(escrow_pubkey){
 
         // Get photo
         requests.router.getPackagePhoto({escrow_pubkey: pckg.escrow_pubkey}).done(function(data){
-            console.log('!!!');
             $('#packageDetailsModal #img').attr(
                 'src', 'data:image/png;base64,' + (data.package_photo ? data.package_photo.photo : imgSrcBase64)
             );
