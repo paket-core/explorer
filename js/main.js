@@ -1295,7 +1295,7 @@ $(document).ready(function(){
                                                         courierUser.keypairStellar.publicKey(), {
                                                             escrow_pubkey: escrowPubkey,
                                                             location: launcher.location,
-                                                        }).done(response =>{
+                                                        }).done(function(response){
                                                         // 9) Call assign_xdrs on router
                                                         infoLoadingScreen('14/14 Preparing escrow and assigning XDRs');
                                                         requests.router.assignXdrs(launcher.keypairStellar.secret(),
@@ -1303,7 +1303,7 @@ $(document).ready(function(){
                                                                 escrow_pubkey: escrowPubkey,
                                                                 location: launcher.location,
                                                                 kwargs: JSON.stringify(XDRs),
-                                                            }).done(response =>{
+                                                            }).done(function(response){
                                                             // Hide modal window
                                                             $('#createPackageModal').modal('hide');
 
@@ -1670,7 +1670,7 @@ var requests = {
             console.log(this.baseUrl);
         },
     },
-}, kwargstring;
+};
 
 function anon_requestToServer({url, data}){
     try{
@@ -1765,18 +1765,21 @@ function objectToFormData(data = null){
 
     if(!data) return formData;
 
-    for(let key in data) formData.append(key, data[key]);
+    for(let key in data){
+        formData.append(key, data[key]);
+    }
 
     return formData;
 }
 
 function generateFingerprint(uri, kwargs = null){
-    let kwargstring;
     if(kwargs == null){
         kwargstring = '';
     }else{
         const ert = [''];
-        for(let key in kwargs) ert.push(`${key}=${kwargs[key]}`);
+        for(let key in kwargs){
+            ert.push(`${key}=${kwargs[key]}`);
+        }
         kwargstring = ert.join(',');
     }
     return `${uri}${kwargstring},${Date.now() * 1000}`;
@@ -1830,6 +1833,11 @@ function getDescriptionForCreatePackage(){
     const descriptions = JSON.parse(localStorage.getItem('descriptionAutofill')) || [];
     return descriptions;
 }
+
+// Property for array
+Array.prototype.last = function(){
+    return this[this.length - 1];
+};
 
 // UiLoadingScreen
 function showLoadingScreen(info = ''){
