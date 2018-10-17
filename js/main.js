@@ -503,26 +503,64 @@ $(document).ready(function(){
             return;
         }
 
-        let courierId = $('#relayCourier').val();
-        let courierPrivateKey = courierData[courierId].privateKey;
-        let courierPubKey = courierData[courierId].publicKey;
+        requests.router.getPackage({escrow_pubkey: packageIdForRelay}).done(function(response){
+            console.log('get package', response);
 
-        requests.router.changedLocation(courierPrivateKey, courierPubKey, {
-            escrow_pubkey: packageIdForRelay,
-            location: location,
-            photo: photoForRelayModal,
-            vehicle: vehicle,
-            cost: cost,
-        }).done(function(response){
-            console.log(response);
+            // Get courier pub key
+            let courierPubKey;
+            for(let index = 0; index < response.package.events.length; index++){
+                const event = response.package.events[index];
+                if(event.event_type === 'courier confirmed'){
+                    courierPubKey = event.user_pubkey;
+                    break;
+                }
+            }
 
-            // Hide modal window
-            $('#relayModal').modal('hide');
-            hideLoadingScreen();
-            // displayPackagesForLauncher()
+            if(!courierPubKey){
+                alert('Package has no courier');
+                return;
+            }
+
+            // Get courier private key
+            let courierPrivateKey;
+            for(let index = 0; index < courierData.length; index++){
+                let courier = courierData[index];
+                if(courier.publicKey === courierPubKey){
+                    courierPrivateKey = courier.privateKey;
+                    break;
+                }
+            }
+
+            requests.router.changedLocation(courierPrivateKey, courierPubKey, {
+                escrow_pubkey: packageIdForRelay,
+                location: location,
+                photo: photoForRelayModal,
+                vehicle: vehicle,
+                cost: cost,
+            }).done(function(response){
+                console.log(response);
+                let courierId = $('#relayCourier').val();
+                let courierPrivateKey = courierData[courierId].privateKey;
+                let courierPubKey = courierData[courierId].publicKey;
+                requests.router.acceptPackage(courierPrivateKey, courierPubKey, {
+                    escrow_pubkey: packageIdForRelay,
+                    location: location
+                }).done(function(response){
+                    $('#relayModal').modal('hide');
+                    hideLoadingScreen();
+                }).catch(function(error){
+                    console.error(error);
+                    alert('An error occurred while accepting package');
+                    hideLoadingScreen();
+                });
+            }).catch(function(error){
+                console.error(error);
+                alert('An error occurred while changing location');
+                hideLoadingScreen();
+            });
         }).catch(function(error){
             console.error(error);
-            alert('An error occurred while confirm couriering');
+            alert('An error occurred while get package');
             hideLoadingScreen();
         });
     });
