@@ -1896,6 +1896,13 @@ function FillAllPackages(){
             const packages = [];
             let index;
             for(index = 0; index < events.length; index++){
+
+                let opacity = 1;
+                if(events[index].event_type == 'location changed'){
+                   opacity = 0.5;
+                }
+                heat.addLatLng(events[index].location.split(',').concat(opacity));
+
                 if(
                     packages.hasOwnProperty(events[index].escrow_pubkey) ||
                     !events[index].hasOwnProperty('escrow_pubkey')
@@ -1904,8 +1911,6 @@ function FillAllPackages(){
                 if(window.location.hash.substring(1) === events[index].escrow_pubkey){
                     showPackageDetails(events[index].escrow_pubkey);
                 }
-
-                heat.addLatLng(events[index].location.split(',').concat(.8));
 
                 packages[events[index].escrow_pubkey] = true;
                 $.ajax({
