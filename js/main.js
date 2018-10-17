@@ -258,8 +258,6 @@ $(document).ready(function(){
     // Refresh DataTable
     dataTablePackage = $('#tablePackages').DataTable({
         paging: false,
-        // pageLength: 50,
-        // pagingType: "simple",
         scrollY: '700px',
         scrollCollapse: true,
         columnDefs: [
