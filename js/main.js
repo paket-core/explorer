@@ -253,59 +253,19 @@ $(document).ready(function(){
 
         // Display courier
         const courierSelect = $('#relayModal #courier');
+        $('#relayCourier').empty();
         courierSelect.empty();
 
         for(let index = 0; index < courierData.length; index++){
             const element = courierData[index];
             courierSelect.append('<option value="' + index + '">' + element.name + '</option>');
+            $('#relayCourier').append('<option value="' + index + '">' + element.name + '</option>');
         }
 
         // Show modal window
         $('#relayModal').modal({
             show: true,
         });
-    });
-
-    $('#relayModal #relayPackage').click(function(){
-        showLoadingScreen('Starting');
-
-        // Get val from Recipient address field
-        let addressVal = $('#relayModal #address').val();
-
-        // Get place
-        let place = courierAddressAutocompleteOnRelayModal.getPlace();
-        if(!addressVal || !place){
-            alert('Data is not valid. Please enter the recipient address.');
-            hideLoadingScreen();
-            return;
-        }
-
-        // Get courier
-        const courierId = $('#relayModal #courier').val();
-        // const newCourier = courierData[courierId];
-
-        // Get location
-        // const location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7);
-
-        // Get vehicle
-        let vehicle = $('#relayModal #vehicle').val();
-        if(!vehicle){
-            alert('Data is not valid. Please enter the vehicle.');
-            hideLoadingScreen();
-            return;
-        }
-
-        // Get cost
-        let cost = $('#relayModal #cost').val();
-        if(!cost){
-            alert('Data is not valid. Please enter the cost.');
-            hideLoadingScreen();
-            return;
-        }
-
-        $('#relayModal').modal('hide');
-        hideLoadingScreen();
-        // displayPackagesForLauncher()
     });
 
     // Show modal window for package receive
@@ -510,6 +470,63 @@ $(document).ready(function(){
         });
     });
 
+    $('#relayModal #relayPackage').click(function(){
+        showLoadingScreen('Starting');
+
+        // Get val from Recipient address field
+        let addressVal = $('#relayModal #address').val();
+
+        // Get place
+        let place = courierAddressAutocompleteOnRelayModal.getPlace();
+        if(!addressVal || !place){
+            alert('Data is not valid. Please enter the recipient address.');
+            hideLoadingScreen();
+            return;
+        }
+
+        // Get location
+        const location = place.geometry.location.lat().toFixed(7) + ',' + place.geometry.location.lng().toFixed(7);
+
+        // Get vehicle
+        let vehicle = $('#relayModal #vehicle').val();
+        if(!vehicle){
+            alert('Data is not valid. Please enter the vehicle.');
+            hideLoadingScreen();
+            return;
+        }
+
+        // Get cost
+        let cost = $('#relayModal #cost').val();
+        if(!cost){
+            alert('Data is not valid. Please enter the cost.');
+            hideLoadingScreen();
+            return;
+        }
+
+        let courierId = $('#relayCourier').val();
+        let courierPrivateKey = courierData[courierId].privateKey;
+        let courierPubKey = courierData[courierId].publicKey;
+
+        requests.router.changedLocation(courierPrivateKey, courierPubKey, {
+            escrow_pubkey: packageIdForRelay,
+            location: location,
+            photo: photoForRelayModal,
+            vehicle: vehicle,
+            cost: cost,
+        }).done(function(response){
+            console.log(response);
+
+            // Hide modal window
+            $('#relayModal').modal('hide');
+            hideLoadingScreen();
+            // displayPackagesForLauncher()
+        }).catch(function(error){
+            console.error(error);
+            alert('An error occurred while confirm couriering');
+            hideLoadingScreen();
+        });
+    });
+
     $('#changeLocationModal #changeLocationPackage').click(function(){
         showLoadingScreen('Starting');
 
@@ -572,7 +589,7 @@ $(document).ready(function(){
             }
 
             requests.router.changedLocation(courierPrivateKey, courierPubKey, {
-                escrow_pubkey: packageIdForChangeLocation,
+                escrow_pubkey: packageIdForRelay,
                 location: location,
                 photo: photoForChangeLocationModal,
                 vehicle: vehicle,
@@ -610,7 +627,7 @@ $(document).ready(function(){
             element.attr('name', $(this).attr('name'));
             element.change(function(e){
                 element.next(element).find('input').val(
-                    element.val().split('\\').pop(),
+                    element.val().split('\\').pop()
                 );
 
                 const fileReader = new FileReader();
@@ -618,6 +635,38 @@ $(document).ready(function(){
                     try{
                         const json = progressEvent.target.result;
                         jsonData = JSON.parse(json);
+
+                        for(let index = 0; index < jsonData.length; index++){
+                            let item = jsonData[index];
+                            jsonData[index].keypairStellar = generateKeypairStellar(item);
+
+                            if(item.type === 'LAUNCHER'){
+                                launcherData.push(item);
+                            }else if(item.type === 'RECIPIENT'){
+                                recipientData.push(item);
+                            }else if(item.type === 'COURIER'){
+                                courierData.push(item);
+                            }
+                        }
+
+                        for(let index = 0; index < launcherData.length; index++){
+                            let item = launcherData[index];
+
+                            $('#dropdownUsers').append('<li><a href="#" id="' + index + '">' + item.name + '</a></li>');
+
+                            $('#dropdownUsers li a:eq(' + index + ')').click(item, function(event){
+                                changeSelectedLauncher(event.data);
+                                displayPackagesForLauncher();
+                            });
+                        }
+
+                        // the first user is selected by default
+                        changeSelectedLauncher(launcherData[0]);
+                        displayPackagesForLauncher();
+
+                        $('.dropdown-toggle').dropdown();
+                        $('#panelCustomerData').hide();
+                        $('#panelRequests').show();
                     }catch(error){
                         alert('Problems reading the JSON file. Details in console.');
                         console.error(error);
@@ -627,10 +676,6 @@ $(document).ready(function(){
             });
             $(this).find('button.btn-choose').click(function(){
                 element.click();
-            });
-            $(this).find('button.btn-reset').click(function(){
-                element.val(null);
-                $(this).parents('.input-file').find('input').val('');
             });
             $(this).find('button.btn-guest').click(function(){
                 FillAllPackages();
@@ -777,7 +822,7 @@ $(document).ready(function(){
             element.attr('name', $(this).attr('name'));
             element.change(function(e){
                 element.next(element).find('input').val(
-                    element.val().split('\\').pop(),
+                    element.val().split('\\').pop()
                 );
 
                 photoForChangeLocationModal = e.target.files[0];
@@ -796,40 +841,6 @@ $(document).ready(function(){
 
             return element;
         }
-    });
-
-    $('#applyCustomerData').click(function(){
-        for(var index = 0; index < jsonData.length; index++){
-            let item = jsonData[index];
-            jsonData[index].keypairStellar = generateKeypairStellar(item);
-
-            if(item.type === 'LAUNCHER'){
-                launcherData.push(item);
-            }else if(item.type === 'RECIPIENT'){
-                recipientData.push(item);
-            }else if(item.type === 'COURIER'){
-                courierData.push(item);
-            }
-        }
-
-        for(var index = 0; index < launcherData.length; index++){
-            let item = launcherData[index];
-
-            $('#dropdownUsers').append('<li><a href="#" id="' + index + '">' + item.name + '</a></li>');
-
-            $('#dropdownUsers li a:eq(' + index + ')').click(item, function(event){
-                changeSelectedLauncher(event.data);
-                displayPackagesForLauncher();
-            });
-        }
-
-        // the first user is selected by default
-        changeSelectedLauncher(launcherData[0]);
-        displayPackagesForLauncher();
-
-        $('.dropdown-toggle').dropdown();
-        $('#panelCustomerData').hide();
-        $('#panelRequests').show();
     });
 
     $('#addEvent #tryItOut').click(function(){
@@ -1037,10 +1048,12 @@ $(document).ready(function(){
         }
 
         // Courier in modal window
+        $('#relayCourier').empty();
         const courierSelect = $('#createPackageModal #courier').empty();
         for(var index = 0; index < courierData.length; index++){
             var element = courierData[index];
             courierSelect.append('<option value="' + index + '">' + element.name + '</option>');
+            $('#relayCourier').append('<option value="' + index + '">' + element.name + '</option>');
         }
 
         // Set new description to autocomplete
@@ -1885,10 +1898,10 @@ function showPackageDetails(escrow_pubkey){
         popupAnchor: [1, -34],
         shadowSize: [41, 41],
     });
-    const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        minZoom: 4,
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        minZoom: 2,
+        attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
     });
 
     showLoadingScreen();
