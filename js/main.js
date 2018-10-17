@@ -39,15 +39,21 @@ $(document).ready(function(){
     // Reset first form (Select file with Customer Data)
     $('#firstForm')[0].reset();
 
-
-    heatmap = L.map('heatmap').setView([0, 0], 1).addLayer(
+    heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             maxZoom: 19, minZoom: 1,
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        })
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        }),
     );
+    heat = L.heatLayer([], {
+        radius: 50,
+        maxZoom: 17,
+        max: 1,
+        minOpacity: .3,
+        blur: 40,
+        gradient: {0.2: 'gold', 0.4: 'orange', 1: 'OrangeRed'},
+    }).addTo(heatmap);
     L.control.scale({imperial: false}).addTo(heatmap);
-    heat = L.heatLayer([], {radius: 25, maxZoom: 10}).addTo(heatmap);
 
     // Configuration Stellar Network
     // StellarBase.Network.useTestNetwork()
@@ -556,7 +562,7 @@ $(document).ready(function(){
                 let courierPubKey = courierData[courierId].publicKey;
                 requests.router.acceptPackage(courierPrivateKey, courierPubKey, {
                     escrow_pubkey: packageIdForRelay,
-                    location: location
+                    location: location,
                 }).done(function(response){
                     $('#relayModal').modal('hide');
                     hideLoadingScreen();
@@ -677,7 +683,7 @@ $(document).ready(function(){
             element.attr('name', $(this).attr('name'));
             element.change(function(e){
                 element.next(element).find('input').val(
-                    element.val().split('\\').pop()
+                    element.val().split('\\').pop(),
                 );
 
                 const fileReader = new FileReader();
@@ -872,7 +878,7 @@ $(document).ready(function(){
             element.attr('name', $(this).attr('name'));
             element.change(function(e){
                 element.next(element).find('input').val(
-                    element.val().split('\\').pop()
+                    element.val().split('\\').pop(),
                 );
 
                 photoForChangeLocationModal = e.target.files[0];
@@ -1492,7 +1498,7 @@ function addRowPackagesToDataTable(pckg){
     let last_event_time = new Date(Date.parse(pckg.events.last().timestamp));
     dataTablePackage.row.add([
         pckg.escrow_pubkey, pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
-        dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp)
+        dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp),
     ]).draw(true);
 }
 
@@ -1905,7 +1911,7 @@ function FillAllPackages(){
                     showPackageDetails(events[index].escrow_pubkey);
                 }
 
-                heat.addLatLng(events[index].location.split(',').concat(1));
+                heat.addLatLng(events[index].location.split(',').concat(.8));
 
                 packages[events[index].escrow_pubkey] = true;
                 $.ajax({
@@ -1974,7 +1980,7 @@ function showPackageDetails(escrow_pubkey){
         // Get photo
         requests.router.getPackagePhoto({escrow_pubkey: pckg.escrow_pubkey}).done(function(data){
             $('#packageDetailsModal #img').attr(
-                'src', 'data:image/png;base64,' + (data.package_photo ? data.package_photo.photo : imgSrcBase64)
+                'src', 'data:image/png;base64,' + (data.package_photo ? data.package_photo.photo : imgSrcBase64),
             );
         });
 
