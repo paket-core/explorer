@@ -33,9 +33,24 @@ let courierAddressAutocompleteOnRelayModal = null;
 let courierAddressAutocompleteOnReceiveModal = null;
 let courierAddressAutocompleteOnChangeLocationModal = null;
 
+let heatmap, heat;
+
 $(document).ready(function(){
     // Reset first form (Select file with Customer Data)
     $('#firstForm')[0].reset();
+
+
+    heatmap = L.map('heatmap').setView([0, 0], 1).addLayer(
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, minZoom: 1,
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        })
+    );
+    L.control.scale({imperial: false}).addTo(heatmap);
+    heat = L.heatLayer([
+            [50.5, 30.5, 0.2], // lat, lng, intensity
+            [50.6, 30.4, 0.5],
+    ], {radius: 25}).addTo(heatmap);
 
     // Configuration Stellar Network
     // StellarBase.Network.useTestNetwork()
@@ -1892,6 +1907,8 @@ function FillAllPackages(){
                 if(window.location.hash.substring(1) === events[index].escrow_pubkey){
                     showPackageDetails(events[index].escrow_pubkey);
                 }
+
+                heat.addLatLng(events[index].location.split(','));
 
                 packages[events[index].escrow_pubkey] = true;
                 $.ajax({
