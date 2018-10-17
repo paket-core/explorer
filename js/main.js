@@ -1,3 +1,6 @@
+const TILE_PROVIDER = 'http://{s}.tile.osm.org';
+const TILE_ATTRIBUTION = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+
 const imgSrcBase64 =
     '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';
 
@@ -214,11 +217,10 @@ let requests = {
 $(document).ready(function(){
     // Reset first form (Select file with Customer Data)
     $('#firstForm')[0].reset();
-
     heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        L.tileLayer(TILE_PROVIDER + '/{z}/{x}/{y}.png', {
             maxZoom: 19, minZoom: 1,
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            attribution: TILE_ATTRIBUTION,
         }),
     );
     heat = L.heatLayer([], {
@@ -312,7 +314,8 @@ $(document).ready(function(){
                             '<button type="button" class="changeLocation btn btn-success" id="' + $row[0] +
                             '">Change location</button>';
                     }
-                    return '<div class=escrow_pubkey data-escrow_pubkey=' + $row[0] + '></div><div class="btn-group">' + buttonsHtml + '</div>';
+                    return '<div class=escrow_pubkey data-escrow_pubkey=' + $row[0] + '></div><div class="btn-group">' +
+                        buttonsHtml + '<button type="button" class="details btn btn-info" id="' + $row[0] + '">Details</button></div>';
                 },
             },
         ],
@@ -846,6 +849,10 @@ $(document).ready(function(){
 
     // Show modal window for package details
     $('#tablePackages').click(function(e){
+        if(e.target.tagName === 'BUTTON'){
+            showPackageDetails(e.target.attributes.id.value);
+            return true;
+        }
         let td = e.target;
         if(td.cellIndex > 5){return true;}
         showPackageDetails($(td.parentNode).find('div.escrow_pubkey').attr('data-escrow_pubkey'));
@@ -860,7 +867,7 @@ $(document).ready(function(){
             element.attr('name', $(this).attr('name'));
             element.change(function(e){
                 element.next(element).find('input').val(
-                    element.val().split('\\').pop(),
+                    element.val().split('\\').pop()
                 );
 
                 const fileReader = new FileReader();
@@ -1958,10 +1965,10 @@ function showPackageDetails(escrow_pubkey){
         popupAnchor: [1, -34],
         shadowSize: [41, 41],
     });
-    const tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer(TILE_PROVIDER + '/{z}/{x}/{y}.png', {
         maxZoom: 19,
         minZoom: 2,
-        attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+        attribution: TILE_ATTRIBUTION,
     });
 
     showLoadingScreen();
