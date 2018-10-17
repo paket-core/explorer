@@ -1479,7 +1479,7 @@ function addRowPackagesToDataTable(pckg){
     launch_time = launch_time.getFullYear() + '-' + launch_time.getMonth() + '-' + launch_time.getDay();
     let last_event_time = new Date(Date.parse(pckg.events.last().timestamp));
     dataTablePackage.row.add([
-        '', pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
+        pckg.escrow_pubkey, pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
         dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp)
     ]).draw(true);
 }
