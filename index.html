@@ -52,7 +52,7 @@
     <link
             rel="stylesheet"
             type="text/css"
-            href="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.css"
+            href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"
     />
 
     <!--
@@ -98,10 +98,6 @@
                                     />
                                     <span class="input-group-btn">
                                             <button
-                                                    class="btn btn-warning btn-reset"
-                                                    type="button"
-                                            >Reset</button>
-                                            <button
                                                     class="btn btn-guest"
                                                     type="button"
                                             >Login as guest</button>
@@ -113,11 +109,6 @@
                     <!-- /.panel-body -->
                     <!-- .panel-footer -->
                     <div class="panel-footer text-right">
-                        <div
-                                id="applyCustomerData"
-                                class="btn btn-success"
-                        >Apply
-                        </div>
                     </div>
                     <!-- /.panel-footer -->
                 </div>
@@ -229,13 +220,13 @@
                                         >
                                             <thead>
                                             <tr>
-                                                <th>EscrowPubkey</th>
-                                                <th>Status</th>
+                                                <th>Why is this here?</th>
                                                 <th>Name</th>
-                                                <th>User role</th>
+                                                <th>Status</th>
+                                                <th>Description</th>
+                                                <th>Destination</th>
                                                 <th>Datetime of creation</th>
-                                                <th>Recipient's location</th>
-                                                <th>Current custodian of the package</th>
+                                                <th>Datetime of last event</th>
                                                 <th>Action</th>
                                             </tr>
                                             </thead>
@@ -1643,7 +1634,7 @@
                     <div class="form-group">
                         <label for="courier">Selection of courier</label>
                         <select
-                                id="courier"
+                                id="relayCourier"
                                 class="form-control"
                         >
                             <option>1</option>
