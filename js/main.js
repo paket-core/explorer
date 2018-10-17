@@ -305,12 +305,8 @@ $(document).ready(function(){
                             $row[0] + '">Receive</button>' +
                             '<button type="button" class="changeLocation btn btn-success" id="' + $row[0] +
                             '">Change location</button>';
-                    }else if(statusPackage === 'delivered'){
                     }
-
-                    return '<div class="btn-group">' + buttonsHtml +
-                        '<button type="button" class="details btn btn-info" id="' + $row[0] + '">Details</button>' +
-                        '</div>';
+                    return '<div class=escrow_pubkey data-escrow_pubkey=' + $row[0] + '></div><div class="btn-group">' + buttonsHtml + '</div>';
                 },
             },
         ],
@@ -327,7 +323,7 @@ $(document).ready(function(){
         $('#launchModal form')[0].reset();
 
         // Get short package id
-        let packageDetail = undefined;
+        let packageDetail;
         for(let index = 0; index < allPackagesForLauncher.length; index++){
             const pckg = allPackagesForLauncher[index];
             if(pckg.escrow_pubkey === packageIdForLaunch){
@@ -843,8 +839,10 @@ $(document).ready(function(){
     });
 
     // Show modal window for package details
-    $('#tablePackages tbody').on('click', 'button.details', function(){
-        showPackageDetails(this.attributes.id.value);
+    $('#tablePackages').click(function(e){
+        let td = e.target;
+        if(td.cellIndex > 5){return true;}
+        showPackageDetails($(td.parentNode).find('div.escrow_pubkey').attr('data-escrow_pubkey'));
     });
 
     $('#panelCustomerData .input-file').before(function(){
@@ -856,7 +854,7 @@ $(document).ready(function(){
             element.attr('name', $(this).attr('name'));
             element.change(function(e){
                 element.next(element).find('input').val(
-                    element.val().split('\\').pop(),
+                    element.val().split('\\').pop()
                 );
 
                 const fileReader = new FileReader();
