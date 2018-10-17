@@ -33,6 +33,181 @@ let courierAddressAutocompleteOnRelayModal = null;
 let courierAddressAutocompleteOnReceiveModal = null;
 let courierAddressAutocompleteOnChangeLocationModal = null;
 
+let requests = {
+    router: {
+        baseUrl: baseUrlRouter,
+        getMyPackages: function(){
+            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+                url: this.baseUrl + '/my_packages',
+            });
+        },
+        getPackage: function({escrow_pubkey}){
+            return anon_requestToServer({
+                url: this.baseUrl + '/package',
+                data: {
+                    escrow_pubkey,
+                },
+            });
+        },
+        getPackagePhoto: function({escrow_pubkey}){
+            return anon_requestToServer({
+                url: this.baseUrl + '/package_photo',
+                data: {
+                    escrow_pubkey,
+                },
+            });
+        },
+        createPackage: function({escrow_pubkey, recipient_pubkey, launcher_phone_number, recipient_phone_number, payment_buls, collateral_buls, deadline_timestamp, description, from_location, to_location, from_address, to_address, event_location, photo}){
+            const data = {
+                escrow_pubkey,
+                recipient_pubkey,
+                launcher_phone_number,
+                recipient_phone_number,
+                payment_buls,
+                collateral_buls,
+                deadline_timestamp,
+                description,
+                from_location,
+                to_location,
+                from_address,
+                to_address,
+                event_location,
+            };
+            if(photo){
+                data.photo = photo;
+            }
+
+            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+                url: this.baseUrl + '/create_package',
+                data: data,
+            });
+        },
+        confirmCouriering: function(userSecret, userPubkey, {escrow_pubkey, location}){
+            return new_requestToServer(userSecret, userPubkey, {
+                url: this.baseUrl + '/confirm_couriering',
+                data: {
+                    escrow_pubkey, // escrow pubkey (the package ID)
+                    location, // location of place where user choose package to be courier in
+                },
+            });
+        },
+        assignXdrs: function(userSecret, userPubkey, {escrow_pubkey, location, kwargs}){
+            return new_requestToServer(userSecret, userPubkey, {
+                url: this.baseUrl + '/assign_xdrs',
+                data: {
+                    escrow_pubkey, // escrow pubkey (the package ID)
+                    location, // location of place where user accepted package
+                    kwargs, // XDRs transaction in JSON format
+                },
+            });
+        },
+        acceptPackage: function(userSecret, userPubkey, {escrow_pubkey, location, leg_price, vehicle, cost, photo}){
+            const data = {
+                escrow_pubkey, // escrow pubkey (the package ID)
+                location, // location of place where user accepted package
+            };
+
+            if(leg_price || vehicle || cost){
+                const kwargsObj = {};
+                if(leg_price){
+                    kwargsObj.leg_price = leg_price;
+                }
+                if(vehicle){
+                    kwargsObj.vehicle = vehicle;
+                }
+                if(cost){
+                    kwargsObj.cost = cost;
+                }
+
+                data.kwargs = JSON.stringify(kwargsObj);
+            }
+
+            if(photo){
+                data.photo = photo;
+            }
+
+            return new_requestToServer(userSecret, userPubkey, {
+                url: this.baseUrl + '/accept_package',
+                data: data,
+            });
+        },
+        changedLocation: function(userSecret, userPubkey, {escrow_pubkey, location, photo, vehicle, cost}){
+            const data = {
+                escrow_pubkey, // pubkey of package escrow
+                location, // GPS coordinates where user is at this moment
+                kwargs: JSON.stringify({vehicle, cost}),
+            };
+
+            if(photo){
+                data.photo = photo;
+            }
+
+            return new_requestToServer(userSecret, userPubkey, {
+                url: this.baseUrl + '/changed_location',
+                data: data,
+            });
+        },
+    },
+    bridge: {
+        baseUrl: baseUrlBridge,
+        submitTransaction: function({signedTransaction}){
+            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+                url: this.baseUrl + '/submit_transaction',
+                data: {
+                    transaction: signedTransaction,
+                },
+            });
+        },
+        prepareAccount: function({from_pubkey, new_pubkey}){
+            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+                url: this.baseUrl + '/prepare_account',
+                data: {
+                    from_pubkey,
+                    new_pubkey,
+                },
+            });
+        },
+        prepareTrust: function({from_pubkey}){
+            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+                url: this.baseUrl + '/prepare_trust',
+                data: {
+                    from_pubkey,
+                },
+            });
+        },
+        prepareEscrow: function(
+            userSecret, userPubkey,
+            {launcher_pubkey, courier_pubkey, recipient_pubkey, payment_buls, collateral_buls, deadline_timestamp}){
+            return new_requestToServer(userSecret, userPubkey, {
+                url: this.baseUrl + '/prepare_escrow',
+                data: {
+                    launcher_pubkey,
+                    courier_pubkey,
+                    recipient_pubkey,
+                    payment_buls,
+                    collateral_buls,
+                    deadline_timestamp,
+                },
+            });
+        },
+        prepareSendBuls: function({from_pubkey, to_pubkey, amount_buls}){
+            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
+                url: this.baseUrl + '/prepare_send_buls',
+                data: {
+                    from_pubkey,
+                    to_pubkey,
+                    amount_buls,
+                },
+            });
+        },
+    },
+    fund: {
+        baseUrl: baseUrlFund,
+        prepareAccount: function(){
+            console.log(this.baseUrl);
+        },
+    },
+};
 $(document).ready(function(){
     // Reset first form (Select file with Customer Data)
     $('#firstForm')[0].reset();
@@ -82,6 +257,11 @@ $(document).ready(function(){
 
     // Refresh DataTable
     dataTablePackage = $('#tablePackages').DataTable({
+        paging: false,
+        // pageLength: 50,
+        // pagingType: "simple",
+        scrollY: '700px',
+        scrollCollapse: true,
         columnDefs: [
             {
                 targets: 0,
@@ -351,7 +531,7 @@ $(document).ready(function(){
             // Get courier pub key
             let courierPubKey = undefined;
             for(let index = 0; index < response.package.events.length; index++){
-                var event = response.package.events[index];
+                let event = response.package.events[index];
                 if(event.event_type === 'courier confirmed'){
                     courierPubKey = event.user_pubkey;
                     break;
@@ -544,7 +724,7 @@ $(document).ready(function(){
                 let courierPubKey = courierData[courierId].publicKey;
                 requests.router.acceptPackage(courierPrivateKey, courierPubKey, {
                     escrow_pubkey: packageIdForRelay,
-                    location: location
+                    location: location,
                 }).done(function(response){
                     $('#relayModal').modal('hide');
                     hideLoadingScreen();
@@ -665,7 +845,7 @@ $(document).ready(function(){
             element.attr('name', $(this).attr('name'));
             element.change(function(e){
                 element.next(element).find('input').val(
-                    element.val().split('\\').pop()
+                    element.val().split('\\').pop(),
                 );
 
                 const fileReader = new FileReader();
@@ -860,7 +1040,7 @@ $(document).ready(function(){
             element.attr('name', $(this).attr('name'));
             element.change(function(e){
                 element.next(element).find('input').val(
-                    element.val().split('\\').pop()
+                    element.val().split('\\').pop(),
                 );
 
                 photoForChangeLocationModal = e.target.files[0];
@@ -1074,24 +1254,24 @@ $(document).ready(function(){
     });
 
     $('#info #openCreatePackageModal').click(function(){
-        // Reset form
+        let index;
+// Reset form
         $('#createPackageModal form')[0].reset();
         changesCheckBoxEnterDescription($('#createPackageModal #enterMessageCheckBox'));
 
         // Recipient in modal window
         const recipientSelect = $('#createPackageModal #recipient').empty();
-        for(var index = 0; index < recipientData.length; index++){
-            var element = recipientData[index];
-            recipientSelect.append('<option value="' + index + '">' + element.name + '</option>');
+        for(index = 0; index < recipientData.length; index++){
+            recipientSelect.append('<option value="' + index + '">' + recipientData[index].name + '</option>');
         }
 
         // Courier in modal window
         $('#relayCourier').empty();
         const courierSelect = $('#createPackageModal #courier').empty();
-        for(var index = 0; index < courierData.length; index++){
-            var element = courierData[index];
-            courierSelect.append('<option value="' + index + '">' + element.name + '</option>');
-            $('#relayCourier').append('<option value="' + index + '">' + element.name + '</option>');
+        for(index = 0; index < courierData.length; index++){
+            const element_name = courierData[index].name;
+            courierSelect.append('<option value="' + index + '">' + element_name + '</option>');
+            $('#relayCourier').append('<option value="' + index + '">' + element_name + '</option>');
         }
 
         // Set new description to autocomplete
@@ -1463,31 +1643,30 @@ function twodigitize(number){
 }
 
 function dateFromRFC1123(rfc){
-    var datetime = new Date(Date.parse(rfc));
-    var year = ('' + datetime.getFullYear()).substr(2);
-    var month = twodigitize(datetime.getMonth());
-    var day = twodigitize(datetime.getDay());
-    var hours = twodigitize(datetime.getHours());
-    var minutes = twodigitize(datetime.getMinutes());
-    var seconds = twodigitize(datetime.getSeconds());
+    let datetime = new Date(Date.parse(rfc));
+    let year = ('' + datetime.getFullYear()).substr(2);
+    let month = twodigitize(datetime.getMonth());
+    let day = twodigitize(datetime.getDay());
+    let hours = twodigitize(datetime.getHours());
+    let minutes = twodigitize(datetime.getMinutes());
+    let seconds = twodigitize(datetime.getSeconds());
     return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ':' + seconds;
 }
 
 function addRowPackagesToDataTable(pckg){
     const packageId = pckg.escrow_pubkey;
-    let launch_time = new Date(Date.parse(pckg.launch_date));
-    launch_time = launch_time.getFullYear() + '-' + launch_time.getMonth() + '-' + launch_time.getDay();
+    // let launch_time = new Date(Date.parse(pckg.launch_date));  TODO ok to remove? (unused)
+    // launch_time = launch_time.getFullYear() + '-' + launch_time.getMonth() + '-' + launch_time.getDay();
     let last_event_time = new Date(Date.parse(pckg.events.last().timestamp));
     dataTablePackage.row.add([
         pckg.escrow_pubkey, pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
-        dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp)
+        dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp),
     ]).draw(true);
 }
 
 function generateKeypairStellar(user){
     try{
-        const keypair = StellarBase.Keypair.fromSecret(user.privateKey);
-        return keypair;
+        return StellarBase.Keypair.fromSecret(user.privateKey);
     }catch(error){
         console.error(error);
         alert('User with name "' + user.name + '" contains not corect private key');
@@ -1495,182 +1674,6 @@ function generateKeypairStellar(user){
         return null;
     }
 }
-
-var requests = {
-    router: {
-        baseUrl: baseUrlRouter,
-        getMyPackages: function(){
-            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
-                url: this.baseUrl + '/my_packages',
-            });
-        },
-        getPackage: function({escrow_pubkey}){
-            return anon_requestToServer({
-                url: this.baseUrl + '/package',
-                data: {
-                    escrow_pubkey,
-                },
-            });
-        },
-        getPackagePhoto: function({escrow_pubkey}){
-            return anon_requestToServer({
-                url: this.baseUrl + '/package_photo',
-                data: {
-                    escrow_pubkey,
-                },
-            });
-        },
-        createPackage: function({escrow_pubkey, recipient_pubkey, launcher_phone_number, recipient_phone_number, payment_buls, collateral_buls, deadline_timestamp, description, from_location, to_location, from_address, to_address, event_location, photo}){
-            const data = {
-                escrow_pubkey,
-                recipient_pubkey,
-                launcher_phone_number,
-                recipient_phone_number,
-                payment_buls,
-                collateral_buls,
-                deadline_timestamp,
-                description,
-                from_location,
-                to_location,
-                from_address,
-                to_address,
-                event_location,
-            };
-            if(photo){
-                data.photo = photo;
-            }
-
-            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
-                url: this.baseUrl + '/create_package',
-                data: data,
-            });
-        },
-        confirmCouriering: function(userSecret, userPubkey, {escrow_pubkey, location}){
-            return new_requestToServer(userSecret, userPubkey, {
-                url: this.baseUrl + '/confirm_couriering',
-                data: {
-                    escrow_pubkey, // escrow pubkey (the package ID)
-                    location, // location of place where user choose package to be courier in
-                },
-            });
-        },
-        assignXdrs: function(userSecret, userPubkey, {escrow_pubkey, location, kwargs}){
-            return new_requestToServer(userSecret, userPubkey, {
-                url: this.baseUrl + '/assign_xdrs',
-                data: {
-                    escrow_pubkey, // escrow pubkey (the package ID)
-                    location, // location of place where user accepted package
-                    kwargs, // XDRs transaction in JSON format
-                },
-            });
-        },
-        acceptPackage: function(userSecret, userPubkey, {escrow_pubkey, location, leg_price, vehicle, cost, photo}){
-            const data = {
-                escrow_pubkey, // escrow pubkey (the package ID)
-                location, // location of place where user accepted package
-            };
-
-            if(leg_price || vehicle || cost){
-                const kwargsObj = {};
-                if(leg_price){
-                    kwargsObj.leg_price = leg_price;
-                }
-                if(vehicle){
-                    kwargsObj.vehicle = vehicle;
-                }
-                if(cost){
-                    kwargsObj.cost = cost;
-                }
-
-                data.kwargs = JSON.stringify(kwargsObj);
-            }
-
-            if(photo){
-                data.photo = photo;
-            }
-
-            return new_requestToServer(userSecret, userPubkey, {
-                url: this.baseUrl + '/accept_package',
-                data: data,
-            });
-        },
-        changedLocation: function(userSecret, userPubkey, {escrow_pubkey, location, photo, vehicle, cost}){
-            const data = {
-                escrow_pubkey, // pubkey of package escrow
-                location, // GPS coordinates where user is at this moment
-                kwargs: JSON.stringify({vehicle, cost}),
-            };
-
-            if(photo){
-                data.photo = photo;
-            }
-
-            return new_requestToServer(userSecret, userPubkey, {
-                url: this.baseUrl + '/changed_location',
-                data: data,
-            });
-        },
-    },
-    bridge: {
-        baseUrl: baseUrlBridge,
-        submitTransaction: function({signedTransaction}){
-            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
-                url: this.baseUrl + '/submit_transaction',
-                data: {
-                    transaction: signedTransaction,
-                },
-            });
-        },
-        prepareAccount: function({from_pubkey, new_pubkey}){
-            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
-                url: this.baseUrl + '/prepare_account',
-                data: {
-                    from_pubkey,
-                    new_pubkey,
-                },
-            });
-        },
-        prepareTrust: function({from_pubkey}){
-            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
-                url: this.baseUrl + '/prepare_trust',
-                data: {
-                    from_pubkey,
-                },
-            });
-        },
-        prepareEscrow: function(
-            userSecret, userPubkey,
-            {launcher_pubkey, courier_pubkey, recipient_pubkey, payment_buls, collateral_buls, deadline_timestamp}){
-            return new_requestToServer(userSecret, userPubkey, {
-                url: this.baseUrl + '/prepare_escrow',
-                data: {
-                    launcher_pubkey,
-                    courier_pubkey,
-                    recipient_pubkey,
-                    payment_buls,
-                    collateral_buls,
-                    deadline_timestamp,
-                },
-            });
-        },
-        prepareSendBuls: function({from_pubkey, to_pubkey, amount_buls}){
-            return new_requestToServer(launcher.keypairStellar.secret(), launcher.keypairStellar.publicKey(), {
-                url: this.baseUrl + '/prepare_send_buls',
-                data: {
-                    from_pubkey,
-                    to_pubkey,
-                    amount_buls,
-                },
-            });
-        },
-    },
-    fund: {
-        baseUrl: baseUrlFund,
-        prepareAccount: function(){
-            console.log(this.baseUrl);
-        },
-    },
-};
 
 function anon_requestToServer({url, data}){
     try{
@@ -1765,9 +1768,7 @@ function objectToFormData(data = null){
 
     if(!data) return formData;
 
-    for(let key in data){
-        formData.append(key, data[key]);
-    }
+    for(let key in data) formData.append(key, data[key]);
 
     return formData;
 }
@@ -1777,9 +1778,7 @@ function generateFingerprint(uri, kwargs = null){
         kwargstring = '';
     }else{
         const ert = [''];
-        for(let key in kwargs){
-            ert.push(`${key}=${kwargs[key]}`);
-        }
+        for(let key in kwargs) ert.push(`${key}=${kwargs[key]}`);
         kwargstring = ert.join(',');
     }
     return `${uri}${kwargstring},${Date.now() * 1000}`;
@@ -1795,8 +1794,7 @@ function signTransaction(transaction, keypairStellar){
     const transactionStellar = new StellarBase.Transaction(transaction);
     transactionStellar.sign(keypairStellar);
     const transactionEnvelope = transactionStellar.toEnvelope();
-    const resultXDR = arrayBufferToBase64(transactionEnvelope.toXDR());
-    return resultXDR;
+    return arrayBufferToBase64(transactionEnvelope.toXDR());
 }
 
 function stringToArrayBuffer(str){
@@ -1830,8 +1828,7 @@ function saveDescriptionForCreatePackage(description){
 }
 
 function getDescriptionForCreatePackage(){
-    const descriptions = JSON.parse(localStorage.getItem('descriptionAutofill')) || [];
-    return descriptions;
+    return JSON.parse(localStorage.getItem('descriptionAutofill')) || [];
 }
 
 // Property for array
@@ -1960,7 +1957,7 @@ function showPackageDetails(escrow_pubkey){
         // Get photo
         requests.router.getPackagePhoto({escrow_pubkey: pckg.escrow_pubkey}).done(function(data){
             $('#packageDetailsModal #img').attr(
-                'src', 'data:image/png;base64,' + (data.package_photo ? data.package_photo.photo : imgSrcBase64)
+                'src', 'data:image/png;base64,' + (data.package_photo ? data.package_photo.photo : imgSrcBase64),
             );
         });
 
@@ -1971,7 +1968,8 @@ function showPackageDetails(escrow_pubkey){
 
         $('#packageDetailsModal').on('shown.bs.modal', function(){
 
-            // Reset map.
+            let marker;
+// Reset map.
             if(mapOnPackageDetailsModal){
                 mapOnPackageDetailsModal.remove();
             }
@@ -1989,7 +1987,7 @@ function showPackageDetails(escrow_pubkey){
 
                 // Display marker on map
                 const location = event.location.split(',');
-                var marker = L.marker([location[0], location[1]], {icon: redIcon});  //TODO should be red for source and ornage for dest, for example...
+                marker = L.marker([location[0], location[1]], {icon: redIcon});  //TODO should be red for source and ornage for dest, for example...
                 marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.');
                 marker.addTo(mapOnPackageDetailsModal);
                 locationsOnPackageDetailsModal.push([location[0], location[1]]);
@@ -2003,7 +2001,7 @@ function showPackageDetails(escrow_pubkey){
             }
             // Add destination.
             const eventLocation = pckg.to_location.split(',');
-            var marker = L.marker(eventLocation, {icon: greenIcon});
+            marker = L.marker(eventLocation, {icon: greenIcon});
             locationsOnPackageDetailsModal.push(eventLocation);
             marker.bindPopup('<b>final destination</b>');
             marker.addTo(mapOnPackageDetailsModal);
