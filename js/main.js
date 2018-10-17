@@ -47,10 +47,7 @@ $(document).ready(function(){
         })
     );
     L.control.scale({imperial: false}).addTo(heatmap);
-    heat = L.heatLayer([
-            [50.5, 30.5, 0.2], // lat, lng, intensity
-            [50.6, 30.4, 0.5],
-    ], {radius: 25}).addTo(heatmap);
+    heat = L.heatLayer([], {radius: 25, maxZoom: 10}).addTo(heatmap);
 
     // Configuration Stellar Network
     // StellarBase.Network.useTestNetwork()
@@ -1908,7 +1905,7 @@ function FillAllPackages(){
                     showPackageDetails(events[index].escrow_pubkey);
                 }
 
-                heat.addLatLng(events[index].location.split(','));
+                heat.addLatLng(events[index].location.split(',').concat(1));
 
                 packages[events[index].escrow_pubkey] = true;
                 $.ajax({
