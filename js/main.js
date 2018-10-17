@@ -1455,30 +1455,33 @@ function displayPackagesForLauncher(){
     });
 }
 
+function twodigitize(number){
+    if(number < 10){
+        number = '0' + number;
+    }
+    return number;
+}
+
+function dateFromRFC1123(rfc){
+    var datetime = new Date(Date.parse(rfc));
+    var year = ('' + datetime.getFullYear()).substr(2);
+    var month = twodigitize(datetime.getMonth());
+    var day = twodigitize(datetime.getDay());
+    var hours = twodigitize(datetime.getHours());
+    var minutes = twodigitize(datetime.getMinutes());
+    var seconds = twodigitize(datetime.getSeconds());
+    return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+}
+
 function addRowPackagesToDataTable(pckg){
     const packageId = pckg.escrow_pubkey;
-
-    const shortPackageId = pckg.short_package_id;
-
-    const userRole = pckg.user_role || 'launcher';
-
-    const statusRole = pckg.status;
-
-    const launchDate = pckg.launch_date;
-
-    const recipientsLocation = pckg.from_location;
-
-    const courieredEvent = pckg.events.filter(event => event.event_type === 'couriered').last();
-
-    const receivedEvent = pckg.events.filter(event => event.event_type === 'received').last();
-
-    const launchedEvent = pckg.events.filter(event => event.event_type === 'launched').last();
-
-    const currentCustodianPackage = (courieredEvent || receivedEvent || launchedEvent).user_pubkey;
-
-    dataTablePackage.row.add(
-        [packageId, shortPackageId, statusRole, userRole, launchDate, recipientsLocation, currentCustodianPackage]).
-        draw(true);
+    let launch_time = new Date(Date.parse(pckg.launch_date));
+    launch_time = launch_time.getFullYear() + '-' + launch_time.getMonth() + '-' + launch_time.getDay();
+    let last_event_time = new Date(Date.parse(pckg.events.last().timestamp));
+    dataTablePackage.row.add([
+        '', pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
+        dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp)
+    ]).draw(true);
 }
 
 function generateKeypairStellar(user){
@@ -1850,7 +1853,7 @@ function hideLoadingScreen(){
     $('#loadingScreen').hide();
 }
 
-// Conwert date time
+// Convert date time
 function dateToYMD(date){
     const strArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const d = date.getDate();
