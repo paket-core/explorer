@@ -219,17 +219,17 @@ $(document).ready(function(){
     $('#firstForm')[0].reset();
     heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(
         L.tileLayer(TILE_PROVIDER + '/{z}/{x}/{y}.png', {
-            maxZoom: 19, minZoom: 1,
+            maxZoom: 15, minZoom: 1,
             attribution: TILE_ATTRIBUTION,
         }),
     );
     heat = L.heatLayer([], {
         radius: 50,
-        maxZoom: 17,
+        maxZoom: 16,
         max: 1,
-        minOpacity: .3,
-        blur: 40,
-        gradient: {0.2: 'gold', 0.4: 'orange', 1: 'OrangeRed'},
+        minOpacity: .4,
+        blur: 60,
+        gradient: {0.3: '#ffcc00', 0.9: '#FF4400'},
     }).addTo(heatmap);
     L.control.scale({imperial: false}).addTo(heatmap);
 
@@ -1790,12 +1790,13 @@ function objectToFormData(data = null){
 
     if(!data) return formData;
 
-    for(let key in data) formData.append(key, data[key]);
+    for(let key in data){formData.append(key, data[key]);}
 
     return formData;
 }
 
 function generateFingerprint(uri, kwargs = null){
+    let kwargstring;
     if(kwargs == null){
         kwargstring = '';
     }else{
@@ -1854,6 +1855,7 @@ function getDescriptionForCreatePackage(){
 }
 
 // Property for array
+// noinspection JSUnusedGlobalSymbols
 Array.prototype.last = function(){
     return this[this.length - 1];
 };
@@ -1905,8 +1907,8 @@ function FillAllPackages(){
             for(index = 0; index < events.length; index++){
 
                 let opacity = 1;
-                if(events[index].event_type == 'location changed'){
-                   opacity = 0.5;
+                if(events[index].event_type === 'location changed'){
+                   opacity = 0.8;
                 }
                 heat.addLatLng(events[index].location.split(',').concat(opacity));
 
