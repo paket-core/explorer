@@ -1,5 +1,124 @@
-const TILE_PROVIDER = 'http://{s}.tile.osm.org';
-const TILE_ATTRIBUTION = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+(function(){
+    'use strict';
+    const ROUTER = 'https://route.paket.global/v3/';
+    const TILE_PROVIDER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+    const TILE_ATTRIBUTION = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+    let heatmap, heat;
+    window.paket = {};
+
+    function initHeatmap(){
+        try{heatmap.remove();}catch(error){}
+        heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(
+            L.tileLayer(TILE_PROVIDER, {
+                maxZoom: 19, minZoom: 1,
+                attribution: TILE_ATTRIBUTION,
+            })
+        );
+        heat = L.heatLayer([], {
+            radius: 50,
+            maxZoom: 17,
+            max: 1,
+            minOpacity: 0.3,
+            blur: 40,
+            gradient: {0.2: 'gold', 0.4: 'orange', 1: 'OrangeRed'},
+        }).addTo(heatmap);
+        L.control.scale({imperial: false}).addTo(heatmap);
+    }
+
+    function callRouter(endpoint, data, callback, fail){
+        let formData = new FormData();
+        $.each(data, function(key, value){
+            formData.append(key, value);
+        });
+        $.ajax({
+            type: 'POST',
+            url: ROUTER + endpoint,
+            dataType: 'json',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(result){
+                if(callback){
+                    callback(result);
+                }
+            },
+            error: function(result){
+                console.error(result);
+                if(fail){
+                    fail(result);
+                }
+            }
+        });
+    }
+
+    function getEvents(callback){
+        callRouter('events', {max_events_num: 10000}, function(result){
+            callback(result.events, result.package_event_types);
+        });
+    }
+
+    function getPackage(escrow_pubkey, callback){
+        callRouter('package', {escrow_pubkey: escrow_pubkey}, function(result){
+            callback(result.package);
+        });
+    }
+
+    function addEventToHeatmap(event){
+        let opacity = 1;
+        if(event.event_type == 'location changed'){
+            opacity = 0.5;
+        }
+        heat.addLatLng(event.location.split(',').concat(opacity));
+    }
+
+    $(document).ready(function(){
+        initHeatmap();
+        // Get events and packages and calculate stats.
+        getEvents(function(events, package_event_types){
+            $('#totalEvents').text(events.length);
+            $('#totalPackages').text(Object.keys(package_event_types).length);
+
+            let packages = [];
+            let enroute = 0;
+            let received = 0;
+            $.each(package_event_types, function(package_id, event_types){
+                packages[package_id] = true;
+                getPackage(package_id, function(pckg){
+                    packages[package_id] = pckg;
+                });
+
+                if('received' in event_types){
+                    received++;
+                    return true;
+                }
+                if('expired' in event_types){
+                    return true;
+                }
+                enroute++;
+            });
+            $('#enroutePackages').text(enroute);
+            $('#receivedPackages').text(received);
+
+            let activeUsers = [];
+            let now = new Date();
+            $.each(events, function(eventIndex, event){
+                addEventToHeatmap(event);
+                if(
+                    !(event.user_pubkey in activeUsers) &&
+                    now - new Date(Date.parse(event.timestamp)) < 24 * 60 * 60 * 1000
+                ){
+                    activeUsers.push(event.user_pubkey);
+                }
+            });
+            $('#activeUsers').text(activeUsers.length);
+
+            window.paket.packages = packages;
+            window.TILE_PROVIDER = TILE_PROVIDER
+            window.TILE_ATTRIBUTION = TILE_ATTRIBUTION
+        });
+    });
+}());
+
 
 const imgSrcBase64 =
     'iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAMAAAD8CC+4AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURY6Ojo+Pj5GRkZOTk5WVlZeXl5mZmZubm52dnZ+fn6CgoKOjo6SkpKWlpaampqmpqaqqqqurq6ysrK+vr7CwsLKysrOzs7S0tLa2tri4uLm5ubq6ury8vL29vb6+vsDAwMLCwsPDw8TExMbGxsjIyMnJycvLy8zMzM7OztDQ0NLS0tTU1NbW1tjY2Nra2tzc3N3d3d7e3uDg4OLi4uPj4+Tk5Obm5ujo6Onp6erq6uzs7O7u7gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO92gtIAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAtuSURBVHhe7dt/UxNHHIDxJDZAVbSoKaCmNWBEJKiICCHv/311v3ub3BF0hrR/9G6e5zNju7ek4PDc3q+kvYVwjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwO1Pro59OT2byMK1+nHy7K8CHOh73+uIyVtT36m14ybEb+kSYGZfwQf6bX98tYWdujP4rovZ3bsplcxkQZP8Row9cDtP3XEcWSo7KZbBr9r/Ty7TJW1pHow/q0vmn0+fH45EcZK+tC9N/Tn7/K9ubRdU8Xop+mP4+uy4TR/7suRF/EUn9dJoz+33Uieiz1wVWZuR999tf+6OBo9qsT99n04/JLn6af4l8/Jvujt6fLy4Tz16PXH7+VjeL6dDwaHbz7uPZA4Pb8+HA0evdpltXXGd/fp+nDySaPD/5PnYiel/qfZWY9+ukwJsLO5zJ1x3n6SvlvYzhb3BwM8suH05j7tps3ek8b+8zZH9Vc8mq5r4XT7TJbGZXpb3tloves+er26kb0WOr9shjvRr/Zj82i/3fjfn5plr5Q8sRwdrGVXxvSjeD7agdIdlbr9GWZyQazMru4rXeFyh/V/Id+2U6Gq1e3WTeiL2I5vqxm7kS/3ImtwdPDF9V6Lx2a1qIfpxf2n1QvH3ybxD//2M3ln1Uvyq/qbb98M95/HKPHZXrxLm30R5P3b/LP3Nra+pCnp7G1/efxZD++Z78L1TsSPQ7MvS955k70WJSD6pf//Wl84SyPm9aip2X5ONZ05O5FvoN0X3D7IrbKUk+v2ivpTmJvyGeBxeJr+i+H+QQyj6PLaZ5Mh5pI/TYfYW7ib/N7nm23jkRfxGmzWorN6J/TcHheNuZR7v7vfC16OmJUF2D5qX6vP8kbt0/S+CAPF/NxtXeFeJxXjjDjNCz95+ncvlUu42J69bwwTgAnZdxiXYl+ESfOvP6a0eOof1zGaaU11mVtPfqLct7/kY/pVfO0ptP4aRk3zNP0k2qYdqlHy0uG12n6ax5dPWq+M/AlzXdgqXclen7fJP/6G9HzQq9vnBZx2H1Vxitr0X9fvf552tov41x3q4ybfks/oRqlU0HJny7/0qs/5lGcJRr7WXrRJu8A/k86E/0qFmacSBvRP6TRYTXM4sy/CrO0Fr0Mk9iN6l6p7s9+F3GpX43SIX31vY/TbHXaP0ijas1nsSO1/0F/Z6LnQ+p2OpA2or9No+bh/CZtl3VZ+2X0xkk6qeveUU+nno+q0WJxmGarts/S6Kx6VhMi+vIao726E/063lpPl0yN6HG1fOdyPY4GjcN99q+i30wPX+5u5bP+cjrW9PtqGCfy36phdad4R/tv2roTffF3GqYzeCN63EffefQZ5S7LeOlfRD8fldyVavJ7mvst36hdxs+tPoEVx5Z1a090W6hD0eexqibN6PF0tr69SqLc+il18+jH1SO2wfbubn5sU6bj/NJ7vH+Y555UV+zXadgf3dH4vEdbdSh6fvY1nF/VU3Hznt9BWUrb9y6eN45+Fs13P1Q7Tz39PS71lh4vjye/uP5rt7b/jeM3XIaL23i/Y9KYiuupOlvqkrbv3SZvHD12pdWtXD29m773uPrI3rCc25N4qLN+Qmm9LkXP77sM4466TB2l0SpPEl/fK+OVjaOnsKunMPV0HMjPFjfnJ9NZ8620V2m6/ZfrazoVPa+r/NC82szvs99U4xAP6N6W8cqm0eOpWv2+zWo6ftZPlnTcNTYfFXRCt6JHtXyTVG3OI8nyQWr1bKb/vWysbBo9vsvzPEouVhdy8Zx2f3UAWIlXrz7f0RXdip6feDWm4tKuXz0PXSw+x+6w/KhFbdPo83QdNyi3AF/rPew6Lu8Gr8bj8WR68qU+vMTB51njjuHi/o7ROh2LHsfe5lTctPXezG4Wt18nsSi3Vp+fXNk0er77fx6L9/oovuVyelLdyBW7y0cwn2N6eFbtBV/e7fgu238Xv+AyzOJ/UmpMzcp9VHl4Vn/6pbZx9Fle089H+SMU8Y57NZ1f3/CyLOl4Dp8Md3e387V9/S1bq2vRr/MBt74Zv1oe8MN+46JuZePo5Z320D+KE0g1O0v71XD8djQa7e3kRb/8fO6HaocrHv1kv2ubtkdPje8+brmItde8RD+KXOHxzw+scUYoH4+ID7+UYRIff6of7Txt/KBZXuS9wYtvi7PlU/bLtIy3l1dsV/mAszyVXB3G3ykMnk66cFHX9ujzy8v15Xt1uXbivpgejaeffvnb/nG5uqK/vmzedX2/bFyA3d75Qd8+HU1O8/ZVmX6Z1n3jkW98Smf5ialk/uVk/P70Swcu4kLbo7fFj3SQWN3IJfFcqL5Z7BijP0x8SKd5OxhPgNv/HuovGP1h4r29nTJOrtK1Rn/9nfvOMPoDxeXiq+VZfxZXbvUlYdcY/YHiJN4b7I3fTcf7+RP25R31LjL6Q8UdXsNe1x64Nxj9wb4eVO+mh707H9jpGqNvYH4+HSd/f7r/hL9TjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0IKMDGR3I6EBGBzI6kNGBjA5kdCCjAxkdyOhARgcyOpDRgYwOZHQgowMZHcjoQEYHMjqQ0YGMDmR0nMXiHw33jO5Jszk1AAAAAElFTkSuQmCC';
@@ -35,8 +154,6 @@ let courierAddressAutocompleteOnLaunchModal = null;
 let courierAddressAutocompleteOnRelayModal = null;
 let courierAddressAutocompleteOnReceiveModal = null;
 let courierAddressAutocompleteOnChangeLocationModal = null;
-
-let heatmap, heat;
 
 let requests = {
     router: {
@@ -217,21 +334,6 @@ let requests = {
 $(document).ready(function(){
     // Reset first form (Select file with Customer Data)
     $('#firstForm')[0].reset();
-    heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(
-        L.tileLayer(TILE_PROVIDER + '/{z}/{x}/{y}.png', {
-            maxZoom: 19, minZoom: 1,
-            attribution: TILE_ATTRIBUTION,
-        })
-    );
-    heat = L.heatLayer([], {
-        radius: 50,
-        maxZoom: 17,
-        max: 1,
-        minOpacity: .3,
-        blur: 40,
-        gradient: {0.2: 'gold', 0.4: 'orange', 1: 'OrangeRed'},
-    }).addTo(heatmap);
-    L.control.scale({imperial: false}).addTo(heatmap);
 
     // Configuration Stellar Network
     // StellarBase.Network.useTestNetwork()
@@ -1082,197 +1184,6 @@ $(document).ready(function(){
         }
     });
 
-    $('#addEvent #tryItOut').click(function(){
-        const selectorPanel = '#addEvent ';
-
-        const data = {
-            event_type: $(selectorPanel + '#eventType').val(),
-            location: $(selectorPanel + '#location').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/add_event',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#acceptPackage #tryItOut').click(function(){
-        const selectorPanel = '#acceptPackage ';
-
-        const data = {
-            escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-            location: $(selectorPanel + '#location').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/accept_package',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#assignPackage #tryItOut').click(function(){
-        const selectorPanel = '#assignPackage ';
-
-        const data = {
-            escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-            location: $(selectorPanel + '#location').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/assign_package',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#assignXdrs #tryItOut').click(function(){
-        const selectorPanel = '#assignXdrs ';
-
-        const data = {
-            escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-            location: $(selectorPanel + '#location').val(),
-            kwargs: $(selectorPanel + '#kwargs').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/assign_xdrs',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#availablePackages #tryItOut').click(function(){
-        const selectorPanel = '#availablePackages ';
-
-        const data = {
-            escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-            location: $(selectorPanel + '#location').val(),
-            kwargs: $(selectorPanel + '#kwargs').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/available_packages',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#changedLocation #tryItOut').click(function(){
-        const selectorPanel = '#changedLocation ';
-
-        const data = {
-            escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-            location: $(selectorPanel + '#location').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/changed_location',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#createPackage #tryItOut').click(function(){
-        const selectorPanel = '#createPackage ';
-
-        const data = {
-            escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-            recipient_pubkey: $(selectorPanel + '#recipientPubkey').val(),
-            launcher_phone_number: $(selectorPanel + '#launcherPhoneNumber').val(),
-            recipient_phone_number: $(selectorPanel + '#recipientPhoneNumber').val(),
-            payment_buls: $(selectorPanel + '#paymentBuls').val(),
-            collateral_buls: $(selectorPanel + '#collateralBuls').val(),
-            deadline_timestamp: $(selectorPanel + '#deadlineTimestamp').val(),
-            description: $(selectorPanel + '#description').val(),
-            from_location: $(selectorPanel + '#fromLocation').val(),
-            to_location: $(selectorPanel + '#foLocation').val(),
-            from_address: $(selectorPanel + '#fromAddress').val(),
-            to_address: $(selectorPanel + '#toAddress').val(),
-            event_location: $(selectorPanel + '#eventLocation').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/create_package',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#events #tryItOut').click(function(){
-        const selectorPanel = '#events ';
-
-        const data = {};
-
-        requestToServer({
-            uri: '/v3/events',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#myPackages #tryItOut').click(function(){
-        const selectorPanel = '#myPackages ';
-
-        const data = {};
-
-        requestToServer({
-            uri: '/v3/my_packages',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#package #tryItOut').click(function(){
-        const selectorPanel = '#package ';
-
-        const data = {
-            escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/package',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
-
-    $('#packagePhoto #tryItOut').click(function(){
-        const selectorPanel = '#packagePhoto ';
-
-        const data = {
-            escrow_pubkey: $(selectorPanel + '#escrowPubkey').val(),
-        };
-
-        requestToServer({
-            uri: '/v3/package_photo',
-            data: data,
-            response: function(result){
-                printResponse(selectorPanel, result);
-            },
-        });
-    });
 
     $('#info #openCreatePackageModal').click(function(){
         let index;
@@ -1676,8 +1587,6 @@ function dateFromRFC1123(rfc){
 
 function addRowPackagesToDataTable(pckg){
     const packageId = pckg.escrow_pubkey;
-    // let launch_time = new Date(Date.parse(pckg.launch_date));  TODO ok to remove? (unused)
-    // launch_time = launch_time.getFullYear() + '-' + launch_time.getMonth() + '-' + launch_time.getDay();
     let last_event_time = new Date(Date.parse(pckg.events.last().timestamp));
     dataTablePackage.row.add([
         pckg.escrow_pubkey, pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
@@ -1691,7 +1600,6 @@ function generateKeypairStellar(user){
     }catch(error){
         console.error(error);
         alert('User with name "' + user.name + '" contains not corect private key');
-
         return null;
     }
 }
@@ -1741,40 +1649,6 @@ function new_requestToServer(userSecret, userPublic, {url, data}){
         alert('An error has occurred. Details in the Developer Console.');
 
         return null;
-    }
-}
-
-function requestToServer({uri, data, response}){
-    try{
-        const url = baseUrl + uri;
-
-        const fingerprint = generateFingerprint(url, data);
-        const signature = signFingerprint(fingerprint, launcher.keypairStellar.secret());
-
-        const formData = objectToFormData(data);
-
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: formData,
-            dataType: 'json',
-            processData: false,
-            contentType: false,
-            beforeSend: function(xhr){
-                xhr.setRequestHeader('Pubkey', launcher.keypairStellar.publicKey());
-                xhr.setRequestHeader('Fingerprint', fingerprint);
-                xhr.setRequestHeader('Signature', signature);
-            },
-            success: function(result){
-                response(result);
-            },
-            error: function(result){
-                response(result);
-            },
-        });
-    }catch(error){
-        console.error(error);
-        alert('An error has occurred. Details in the Developer Console.');
     }
 }
 
@@ -1895,45 +1769,18 @@ function FillAllPackages(){
         type: 'POST',
         url: baseUrlRouter + '/events',
         dataType: 'json',
+        data: objectToFormData({max_events_num: 10000}),
         processData: false,
         contentType: false,
         success: function(result){
-            const events = result.events.packages_events;
+            const events = result.events;
             const packages = [];
-            let index;
-            for(index = 0; index < events.length; index++){
 
-                let opacity = 1;
-                if(events[index].event_type == 'location changed'){
-                   opacity = 0.5;
+            $.each(result.package_index, function(packageId, eventIndexes){
+                if(window.location.hash.substring(1) === packageId){
+                    showPackageDetails(packageId);
                 }
-                heat.addLatLng(events[index].location.split(',').concat(opacity));
-
-                if(
-                    packages.hasOwnProperty(events[index].escrow_pubkey) ||
-                    !events[index].hasOwnProperty('escrow_pubkey')
-                ){continue;}
-
-                if(window.location.hash.substring(1) === events[index].escrow_pubkey){
-                    showPackageDetails(events[index].escrow_pubkey);
-                }
-
-                packages[events[index].escrow_pubkey] = true;
-                $.ajax({
-                    type: 'POST',
-                    url: baseUrlRouter + '/package',
-                    dataType: 'json',
-                    data: objectToFormData({escrow_pubkey: events[index].escrow_pubkey}),
-                    processData: false,
-                    contentType: false,
-                    success: function(result){
-                        addRowPackagesToDataTable(result.package);
-                    },
-                    error: function(result){
-                        console.error(result);
-                    },
-                });
-            }
+            });
             hideLoadingScreen();
         },
         error: function(result){
@@ -1964,7 +1811,7 @@ function showPackageDetails(escrow_pubkey){
         popupAnchor: [1, -34],
         shadowSize: [41, 41],
     });
-    const tiles = L.tileLayer(TILE_PROVIDER + '/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer(TILE_PROVIDER, {
         maxZoom: 19,
         minZoom: 2,
         attribution: TILE_ATTRIBUTION,
