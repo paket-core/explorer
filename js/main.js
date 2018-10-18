@@ -850,9 +850,7 @@ $(document).ready(function(){
     // Show modal window for package details
     $('#tablePackages').click(function(e){
         if(e.target.tagName === 'TD'){
-            let td = e.target;
-            if(td.cellIndex > 5){return true;}
-            showPackageDetails($(td.parentNode).find('div.escrow_pubkey').attr('data-escrow_pubkey'));
+            showPackageDetails($(e.target.parentNode).find('div.escrow_pubkey').attr('data-escrow_pubkey'));
         }
         else if($(e.target).hasClass('btn-info')){
             showPackageDetails(e.target.attributes.id.value);
