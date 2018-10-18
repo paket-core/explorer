@@ -221,7 +221,7 @@ $(document).ready(function(){
         L.tileLayer(TILE_PROVIDER + '/{z}/{x}/{y}.png', {
             maxZoom: 19, minZoom: 1,
             attribution: TILE_ATTRIBUTION,
-        }),
+        })
     );
     heat = L.heatLayer([], {
         radius: 50,
@@ -849,13 +849,14 @@ $(document).ready(function(){
 
     // Show modal window for package details
     $('#tablePackages').click(function(e){
-        if(e.target.tagName === 'BUTTON'){
-            showPackageDetails(e.target.attributes.id.value);
-            return true;
+        if(e.target.tagName === 'TD'){
+            let td = e.target;
+            if(td.cellIndex > 5){return true;}
+            showPackageDetails($(td.parentNode).find('div.escrow_pubkey').attr('data-escrow_pubkey'));
         }
-        let td = e.target;
-        if(td.cellIndex > 5){return true;}
-        showPackageDetails($(td.parentNode).find('div.escrow_pubkey').attr('data-escrow_pubkey'));
+        else if($(e.target).hasClass('btn-info')){
+            showPackageDetails(e.target.attributes.id.value);
+        }
     });
 
     $('#panelCustomerData .input-file').before(function(){
