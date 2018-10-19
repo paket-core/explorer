@@ -1,28 +1,85 @@
 (function(){
     'use strict';
-    const ROUTER = 'https://route.paket.global/v3/';
+    //const ROUTER = 'https://route.paket.global/v3/';
+    const ROUTER = 'http://localhost:5000/v3/';
     const TILE_PROVIDER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
     const TILE_ATTRIBUTION = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
-    let heatmap, heat;
+    const TILE_SETTINGS = {
+        maxZoom: 19,
+        minZoom: 2,
+        attribution: TILE_ATTRIBUTION,
+    };
+    const HEATMAP_SETTINGS = {
+        radius: 50,
+        maxZoom: 17,
+        max: 1,
+        minOpacity: 0.3,
+        blur: 40,
+        gradient: {0.2: 'gold', 0.4: 'orange', 1: 'OrangeRed'},
+    };
+    const RED_ICON = {
+        iconUrl: 'red_location.png',
+        iconSize: [38, 38],
+        iconAnchor: [22, 37],
+        popupAnchor: [-3, -38],
+    };
+    const ORANGE_ICON = {
+        iconUrl: 'orange_location.png',
+        iconSize: [38, 38],
+        iconAnchor: [22, 37],
+        popupAnchor: [-3, -38],
+    };
+    const GREEN_ICON = {
+        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+    };
+    let heatmap, heat, packageTable, tiles, redIcon, orangeIcon, greenIcon;
     window.paket = {};
 
-    function initHeatmap(){
+    function initMap(){
         try{heatmap.remove();}catch(error){}
-        heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(
-            L.tileLayer(TILE_PROVIDER, {
-                maxZoom: 19, minZoom: 1,
-                attribution: TILE_ATTRIBUTION,
-            })
-        );
-        heat = L.heatLayer([], {
-            radius: 50,
-            maxZoom: 17,
-            max: 1,
-            minOpacity: 0.3,
-            blur: 40,
-            gradient: {0.2: 'gold', 0.4: 'orange', 1: 'OrangeRed'},
-        }).addTo(heatmap);
+        tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
+        redIcon = L.icon(RED_ICON);
+        orangeIcon = L.icon(ORANGE_ICON);
+        greenIcon = new L.Icon(GREEN_ICON);
+        heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(tiles);
+        heat = L.heatLayer([], HEATMAP_SETTINGS).addTo(heatmap);
         L.control.scale({imperial: false}).addTo(heatmap);
+    }
+
+    function twodigitize(number){
+        if(number < 10){
+            number = '0' + number;
+        }
+        return number;
+    }
+
+    function formatDatetime(datetime){
+        return (
+            ('' + datetime.getFullYear()).substr(2) + '/' +
+            twodigitize(datetime.getMonth()) + '/' +
+            twodigitize(datetime.getDay()) + ' ' +
+            twodigitize(datetime.getHours()) + ':' +
+            twodigitize(datetime.getMinutes()) + ':' +
+            twodigitize(datetime.getSeconds())
+        );
+    }
+
+    function dateFromRFC1123(rfc){
+        return formatDatetime(new Date(Date.parse(rfc)));
+    }
+
+    function addPackageRow(pckg){
+        $(packageTable.row.add([
+            pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
+            dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp),
+        ]).draw(true).nodes()[0]).addClass('package-' + pckg.status.replace(' ', '-')).click(function(){
+            showPackageDetails(pckg);
+        });
     }
 
     function callRouter(endpoint, data, callback, fail){
@@ -71,50 +128,136 @@
         heat.addLatLng(event.location.split(',').concat(opacity));
     }
 
+    function fillPackageStats(package_event_types){
+        let enroute = 0;
+        let received = 0;
+        $.each(package_event_types, function(package_id, event_types){
+            if('received' in event_types){
+                received++;
+                return true;
+            }
+            if('expired' in event_types){
+                return true;
+            }
+            enroute++;
+        });
+        $('#enroutePackages').text(enroute);
+        $('#receivedPackages').text(received);
+        $('#totalPackages').text(Object.keys(package_event_types).length);
+    }
+
+    function fillUserStats(events){
+        let activeUsers = [];
+        let now = new Date();
+        $.each(events, function(eventIndex, event){
+            if(
+                !(event.user_pubkey in activeUsers) &&
+                now - new Date(Date.parse(event.timestamp)) < 24 * 60 * 60 * 1000
+            ){
+                activeUsers.push(event.user_pubkey);
+            }
+        });
+        $('#activeUsers').text(activeUsers.length);
+    }
+
+
+
+function showPackageDetails(pckg){
+    $('#name').text(pckg.short_package_id);
+    $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
+    $('#status').text(pckg.status);
+    $('#pckgdesc').text(pckg.description);
+    $('#explorerUrl').attr('href', pckg.blockchain_url);
+    $('#deadline').text(dateToYMD(new Date(pckg.deadline * 1000)));
+    $('#packageDetailsModal #img').attr('src', pckg.photo);
+
+    $('#packageDetailsModal').modal({
+        show: true,
+    });
+
+    $('#packageDetailsModal').on('shown.bs.modal', function(){
+
+        let marker;
+// Reset map.
+        if(mapOnPackageDetailsModal){
+            mapOnPackageDetailsModal.remove();
+        }
+        mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1).addLayer(tiles);
+        L.control.scale({imperial: false}).addTo(mapOnPackageDetailsModal);
+        locationsOnPackageDetailsModal = [];
+        markersOnPackageDetailsModal = [];
+
+        // Display events
+        const tabEvents = $('#packageDetailsModal #tab-events tbody');
+        tabEvents.empty();
+
+        for(let index = 0; index < pckg.events.length; index++){
+            const event = pckg.events[index];
+
+            // Display marker on map
+            const location = event.location.split(',');
+            marker = L.marker([location[0], location[1]], {icon: redIcon});  //TODO should be red for source and ornage for dest, for example...
+            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.');
+            marker.addTo(mapOnPackageDetailsModal);
+            locationsOnPackageDetailsModal.push([location[0], location[1]]);
+            markersOnPackageDetailsModal.push(marker);
+
+            // Add rows
+            tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' +
+                event.location + '</td><td>' + event.timestamp + '</td><td> ***' +
+                event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') +
+                '</td><td>' + (event.kwargs || '') + '</td></tr>');
+        }
+        // Add destination.
+        const eventLocation = pckg.to_location.split(',');
+        marker = L.marker(eventLocation, {icon: greenIcon});
+        locationsOnPackageDetailsModal.push(eventLocation);
+        marker.bindPopup('<b>final destination</b>');
+        marker.addTo(mapOnPackageDetailsModal);
+        markersOnPackageDetailsModal.push(marker);
+
+        // Draw path and fit map.
+        const packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
+        mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
+    });
+}
+
+
+
     $(document).ready(function(){
-        initHeatmap();
+        initMap();
+        packageTable = $('#tablePackages').DataTable({paging: false});
+
         // Get events and packages and calculate stats.
         getEvents(function(events, package_event_types){
             $('#totalEvents').text(events.length);
-            $('#totalPackages').text(Object.keys(package_event_types).length);
+            fillPackageStats(package_event_types);
+            fillUserStats(events);
 
-            let packages = [];
-            let enroute = 0;
-            let received = 0;
-            $.each(package_event_types, function(package_id, event_types){
-                packages[package_id] = true;
-                getPackage(package_id, function(pckg){
-                    packages[package_id] = pckg;
-                });
-
-                if('received' in event_types){
-                    received++;
-                    return true;
-                }
-                if('expired' in event_types){
-                    return true;
-                }
-                enroute++;
-            });
-            $('#enroutePackages').text(enroute);
-            $('#receivedPackages').text(received);
-
-            let activeUsers = [];
-            let now = new Date();
             $.each(events, function(eventIndex, event){
                 addEventToHeatmap(event);
-                if(
-                    !(event.user_pubkey in activeUsers) &&
-                    now - new Date(Date.parse(event.timestamp)) < 24 * 60 * 60 * 1000
-                ){
-                    activeUsers.push(event.user_pubkey);
-                }
             });
-            $('#activeUsers').text(activeUsers.length);
+
+            let packages = [];
+            $.each(package_event_types, function(package_id, event_types){
+                packages[package_id] = {photo: 'empty-photo.jpg'};
+                getPackage(package_id, function(pckg){
+                    packages[package_id] = pckg;
+                    addPackageRow(pckg);
+                });
+                callRouter('package_photo', {escrow_pubkey: package_id}, function(result){
+                    if(result.package_photo !== null){
+                        packages[package_id].photo = 'data:image/png;base64,' + result.package_photo.photo;
+                    }
+                    else{
+                        packages[package_id].photo = 'no-photo.jpg';
+                    }
+                });
+            });
 
             window.paket.packages = packages;
-            window.TILE_PROVIDER = TILE_PROVIDER
-            window.TILE_ATTRIBUTION = TILE_ATTRIBUTION
+            window.TILE_PROVIDER = TILE_PROVIDER;
+            window.TILE_ATTRIBUTION = TILE_ATTRIBUTION;
         });
     });
 }());
@@ -137,7 +280,6 @@ const protocol = location.protocol === 'file:' ? 'https:' : location.protocol;
 const baseUrlRouter = protocol + '//route.paket.global/v3';
 const baseUrlBridge = protocol + '//bridge.paket.global/v3';
 const baseUrlFund = protocol + '//fund.paket.global/v2';
-let dataTablePackage = null;
 
 let mapOnPackageDetailsModal;
 let locationsOnPackageDetailsModal = [];
@@ -379,51 +521,8 @@ $(document).ready(function(){
     });
 
     // Refresh DataTable
-    dataTablePackage = $('#tablePackages').DataTable({
-        paging: false,
-        scrollY: '700px',
-        scrollCollapse: true,
-        columnDefs: [
-            {
-                targets: 0,
-                visible: false,
-            },
-            {
-                targets: -1,
-                visible: true,
-                searchable: false,
-                orderable: false,
-                render: function($data, $type, $row){
-                    // Get status package
-                    let statusPackage = undefined;
-                    for(let index = 0; index < allPackagesForLauncher.length; index++){
-                        const pckg = allPackagesForLauncher[index];
-                        if(pckg.escrow_pubkey === $row[0]){
-                            statusPackage = pckg.status;
-                            break;
-                        }
-                    }
 
-                    let buttonsHtml = '';
-
-                    if(statusPackage === 'waiting pickup'){
-                        buttonsHtml += '<button type="button" class="launch btn btn-success" id="' + $row[0] +
-                            '">Launch</button>';
-                    }else if(statusPackage === 'in transit'){
-                        buttonsHtml += '<button type="button" class="relay btn btn-success" id="' + $row[0] +
-                            '">Relay</button>' + '<button type="button" class="receive btn btn-success" id="' +
-                            $row[0] + '">Receive</button>' +
-                            '<button type="button" class="changeLocation btn btn-success" id="' + $row[0] +
-                            '">Change location</button>';
-                    }
-                    return '<div class=escrow_pubkey data-escrow_pubkey=' + $row[0] + '></div><div class="btn-group">' +
-                        buttonsHtml + '<button type="button" class="details btn btn-info" id="' + $row[0] + '">Details</button></div>';
-                },
-            },
-        ],
-    });
-
-    dataTablePackage.clear().draw();
+    //dataTablePackage.clear().draw();
 
     // Show modal window for package launch
     let packageIdForLaunch = null;
@@ -949,16 +1048,6 @@ $(document).ready(function(){
         });
     });
 
-    // Show modal window for package details
-    $('#tablePackages').click(function(e){
-        if(e.target.tagName === 'TD'){
-            showPackageDetails($(e.target.parentNode).find('div.escrow_pubkey').attr('data-escrow_pubkey'));
-        }
-        else if($(e.target).hasClass('btn-info')){
-            showPackageDetails(e.target.attributes.id.value);
-        }
-    });
-
     $('#panelCustomerData .input-file').before(function(){
         if(
             !$(this).prev().hasClass('input-ghost')
@@ -1019,7 +1108,7 @@ $(document).ready(function(){
                 element.click();
             });
             $(this).find('button.btn-guest').click(function(){
-                FillAllPackages();
+                //FillAllPackages();
                 $('#panelCustomerData').hide();
                 $('.panel-heading').hide();
                 $('.panel-body .highlight').hide();
@@ -1546,7 +1635,7 @@ function changeSelectedLauncher(user){
 function displayPackagesForLauncher(){
     showLoadingScreen();
 
-    dataTablePackage.clear().draw();
+    //dataTablePackage.clear().draw();
 
     // Get all packages for this user
     requests.router.getMyPackages().done(function(data){
@@ -1565,33 +1654,6 @@ function displayPackagesForLauncher(){
 
         hideLoadingScreen();
     });
-}
-
-function twodigitize(number){
-    if(number < 10){
-        number = '0' + number;
-    }
-    return number;
-}
-
-function dateFromRFC1123(rfc){
-    let datetime = new Date(Date.parse(rfc));
-    let year = ('' + datetime.getFullYear()).substr(2);
-    let month = twodigitize(datetime.getMonth());
-    let day = twodigitize(datetime.getDay());
-    let hours = twodigitize(datetime.getHours());
-    let minutes = twodigitize(datetime.getMinutes());
-    let seconds = twodigitize(datetime.getSeconds());
-    return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ':' + seconds;
-}
-
-function addRowPackagesToDataTable(pckg){
-    const packageId = pckg.escrow_pubkey;
-    let last_event_time = new Date(Date.parse(pckg.events.last().timestamp));
-    dataTablePackage.row.add([
-        pckg.escrow_pubkey, pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
-        dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp),
-    ]).draw(true);
 }
 
 function generateKeypairStellar(user){
@@ -1760,135 +1822,4 @@ function changesCheckBoxEnterDescription(checkBox){
     }else{
         $('#createPackageModal #description').hide();
     }
-}
-
-function FillAllPackages(){
-    showLoadingScreen();
-    dataTablePackage.clear().draw();
-    $.ajax({
-        type: 'POST',
-        url: baseUrlRouter + '/events',
-        dataType: 'json',
-        data: objectToFormData({max_events_num: 10000}),
-        processData: false,
-        contentType: false,
-        success: function(result){
-            const events = result.events;
-            const packages = [];
-
-            $.each(result.package_index, function(packageId, eventIndexes){
-                if(window.location.hash.substring(1) === packageId){
-                    showPackageDetails(packageId);
-                }
-            });
-            hideLoadingScreen();
-        },
-        error: function(result){
-            hideLoadingScreen();
-            console.error(result);
-        },
-    });
-}
-
-function showPackageDetails(escrow_pubkey){
-    const redIcon = L.icon({
-        iconUrl: 'red_location.png',
-        iconSize: [38, 38],
-        iconAnchor: [22, 37],
-        popupAnchor: [-3, -38],
-    });
-    const orangeIcon = L.icon({
-        iconUrl: 'orange_location.png',
-        iconSize: [38, 38],
-        iconAnchor: [22, 37],
-        popupAnchor: [-3, -38],
-    });
-    const greenIcon = new L.Icon({
-        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-    });
-    const tiles = L.tileLayer(TILE_PROVIDER, {
-        maxZoom: 19,
-        minZoom: 2,
-        attribution: TILE_ATTRIBUTION,
-    });
-
-    showLoadingScreen();
-
-    requests.router.getPackage({escrow_pubkey}).done(function(response){
-        const pckg = response.package;
-        $('#name').text(pckg.short_package_id);
-        $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
-        $('#status').empty().append(pckg.status);
-        $('#description').empty().append(pckg.description);
-        $('#explorerUrl').attr('href', pckg.blockchain_url);
-        $('#deadline').empty().append(dateToYMD(new Date(pckg.deadline * 1000)));
-        $('#packageDetailsModal #img').attr('src', '');
-
-        // Get photo
-        requests.router.getPackagePhoto({escrow_pubkey: pckg.escrow_pubkey}).done(function(data){
-            $('#packageDetailsModal #img').attr(
-                'src', 'data:image/png;base64,' + (data.package_photo ? data.package_photo.photo : imgSrcBase64),
-            );
-        });
-
-        $('#packageDetailsModal').modal({
-            show: true,
-        });
-        hideLoadingScreen();
-
-        $('#packageDetailsModal').on('shown.bs.modal', function(){
-
-            let marker;
-// Reset map.
-            if(mapOnPackageDetailsModal){
-                mapOnPackageDetailsModal.remove();
-            }
-            mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1).addLayer(tiles);
-            L.control.scale({imperial: false}).addTo(mapOnPackageDetailsModal);
-            locationsOnPackageDetailsModal = [];
-            markersOnPackageDetailsModal = [];
-
-            // Display events
-            const tabEvents = $('#packageDetailsModal #tab-events tbody');
-            tabEvents.empty();
-
-            for(let index = 0; index < pckg.events.length; index++){
-                const event = pckg.events[index];
-
-                // Display marker on map
-                const location = event.location.split(',');
-                marker = L.marker([location[0], location[1]], {icon: redIcon});  //TODO should be red for source and ornage for dest, for example...
-                marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.');
-                marker.addTo(mapOnPackageDetailsModal);
-                locationsOnPackageDetailsModal.push([location[0], location[1]]);
-                markersOnPackageDetailsModal.push(marker);
-
-                // Add rows
-                tabEvents.append('<tr><th scope="row">' + index + '</th><td>' + event.event_type + '</td><td>' +
-                    event.location + '</td><td>' + event.timestamp + '</td><td> ***' +
-                    event.user_pubkey.substring(event.user_pubkey.length - 3) + '</td><td>' + (event.photo_id || '') +
-                    '</td><td>' + (event.kwargs || '') + '</td></tr>');
-            }
-            // Add destination.
-            const eventLocation = pckg.to_location.split(',');
-            marker = L.marker(eventLocation, {icon: greenIcon});
-            locationsOnPackageDetailsModal.push(eventLocation);
-            marker.bindPopup('<b>final destination</b>');
-            marker.addTo(mapOnPackageDetailsModal);
-            markersOnPackageDetailsModal.push(marker);
-
-            // Draw path and fit map.
-            const packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
-            mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
-        });
-    }).catch(function(error){
-        alert('Error getting Packages info');
-        console.error(error);
-        hideLoadingScreen();
-    });
 }
