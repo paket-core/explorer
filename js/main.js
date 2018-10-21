@@ -158,7 +158,7 @@
             eventTable.append('<tr>' +
                 '<th scope="row">' + eventIndex + '</th>' +
                 '<td>' + event.event_type + '</td>' +
-                '<td>' + event.location + '</td>' +
+                '<td style="font-family: monospace; font-size: 75%">' + event.location + '</td>' +
                 '<td>' + formatRFC1123(event.timestamp) + '</td>' +
                 '<td title="' + event.user_pubkey + '">' + event.user_pubkey.substring(0, 3) + '...' + event.user_pubkey.substring(event.user_pubkey.length - 4, event.user_pubkey.length - 1) + '</td>' +
                 '<td>' + JSON.stringify(JSON.parse(event.kwargs), undefined, 2) + '</td>' +
