@@ -55,8 +55,8 @@
     function formatDatetime(datetime){
         return (
             datetime.getFullYear() + '/' +
-            twodigitize(datetime.getMonth()) + '/' +
-            twodigitize(datetime.getDay()) + ' ' +
+            twodigitize(datetime.getMonth() + 1) + '/' +
+            twodigitize(datetime.getDate()) + ' ' +
             twodigitize(datetime.getHours()) + ':' +
             twodigitize(datetime.getMinutes()) + ':' +
             twodigitize(datetime.getSeconds())
