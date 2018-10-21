@@ -223,7 +223,7 @@
 
             $.each(events, function(eventIndex, event){
                 let opacity = 1;
-                if(event.event_type == 'location changed'){
+                if(event.event_type === 'location changed'){
                     opacity = 0.5;
                 }
                 heat.addLatLng(event.location.split(',').concat(opacity));
