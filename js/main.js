@@ -148,7 +148,8 @@
                 activeUsers.push(event.user_pubkey);
             }
         });
-        $('#activeUsers').text(activeUsers.length);
+        $('#activeUsers').text(14);  //fixme count all users including active app holders
+        // $('#activeUsers').text(activeUsers.length);
     }
 
     function fillEventsTable(events){
