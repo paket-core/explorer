@@ -157,7 +157,7 @@
             eventTable.append('<tr>' +
                 '<th scope="row">' + eventIndex + '</th>' +
                 '<td>' + event.event_type + '</td>' +
-                '<td>' + event.location + '</td>' +
+                '<td style="font-family: monospace; font-size: 75%">' + event.location + '</td>' +
                 '<td>' + event.timestamp + '</td>' +
                 '<td>' + event.user_pubkey + '</td>' +
                 '<td>' + JSON.stringify(JSON.parse(event.kwargs), undefined, 2) + '</td>' +
