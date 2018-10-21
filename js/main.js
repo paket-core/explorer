@@ -37,17 +37,11 @@
         popupAnchor: [1, -34],
         shadowSize: [41, 41],
     };
-    let tiles, redIcon, orangeIcon, greenIcon;
-    window.paket = {};
 
     function initMap(){
-        let heatmap, heat;
-        tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
-        redIcon = L.icon(RED_ICON);
-        orangeIcon = L.icon(ORANGE_ICON);
-        greenIcon = new L.Icon(GREEN_ICON);
-        heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(tiles);
-        heat = L.heatLayer([], HEATMAP_SETTINGS).addTo(heatmap);
+        let tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
+        let heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(tiles);
+        let heat = L.heatLayer([], HEATMAP_SETTINGS).addTo(heatmap);
         L.control.scale({imperial: false}).addTo(heatmap);
         return heat;
     }
@@ -70,14 +64,18 @@
         );
     }
 
-    function dateFromRFC1123(rfc){
+    function formatTimestamp(timestamp){
+        return formatDatetime(new Date(timestamp));
+    }
+
+    function formatRFC1123(rfc){
         return formatDatetime(new Date(Date.parse(rfc)));
     }
 
     function addPackageRow(pckg, packageTable){
         $(packageTable.row.add([
             pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
-            dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events[pckg.events.length - 1].timestamp),
+            formatRFC1123(pckg.launch_date), formatRFC1123(pckg.events[pckg.events.length - 1].timestamp),
         ]).draw(true).nodes()[0]).addClass('package-' + pckg.status.replace(' ', '-')).click(function(){
             showPackageDetails(pckg);
         });
@@ -157,7 +155,6 @@
         let eventTable = $('#packageDetails tbody');
         eventTable.find('tr').remove();
         $.each(events, function(eventIndex, event){
-            console.log(event);
             eventTable.append('<tr>' +
                 '<th scope="row">' + eventIndex + '</th>' +
                 '<td>' + event.event_type + '</td>' +
@@ -170,49 +167,40 @@
     }
 
     function showPackageDetails(pckg){
-        $('#name').text(pckg.short_package_id);
+        $('#closeDetails').click(function(){$('#packageDetails').hide();});
         $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
-        $('#status').text(pckg.status);
-        $('#pckgdesc').text(pckg.description);
+        $('#deadline').text(formatTimestamp(pckg.deadline));
         $('#explorerUrl').attr('href', pckg.blockchain_url);
-        $('#deadline').text(formatDatetime(new Date(pckg.deadline * 1000)));
         $('#packageDetails #img').attr('src', pckg.photo);
         fillEventsTable(pckg.events);
         $('#packageDetails').show();
     }
 
+    function initPackageMap(events, pckg){
+        let locations = [];
+        let tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
+        let redIcon = L.icon(RED_ICON);
+        let orangeIcon = L.icon(ORANGE_ICON);
+        let greenIcon = new L.Icon(GREEN_ICON);
+        let map = L.map('map').setView([0, 0], 1).addLayer(tiles);
+        L.control.scale({imperial: false}).addTo(map);
 
-//        let marker;
-//// Reset map.
-//        if(mapOnPackageDetailsModal){
-//            mapOnPackageDetailsModal.remove();
-//        }
-//        mapOnPackageDetailsModal = L.map('map').setView([0, 0], 1).addLayer(tiles);
-//        L.control.scale({imperial: false}).addTo(mapOnPackageDetailsModal);
-//        locationsOnPackageDetailsModal = [];
-//        markersOnPackageDetailsModal = [];
+        $.each(events, function(eventIndex, event){
+            let location = event.location.split(',');
+            let marker = L.marker([location[0], location[1]], {icon: (event.event_type === 'launched') ? redIcon : greenIcon});
+            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + formatTimestamp(event.timestamp));
+            marker.addTo(map);
+            locations.push(location);
+        });
+        let location = pckg.to_location.split(',');
+        let marker = L.marker(location, {icon: orangeIcon});
+        marker.bindPopup('<b>final destination</b>');
+        marker.addTo(map);
+        locations.push(location);
 
-//            // Display marker on map
-//            const location = event.location.split(',');
-//            marker = L.marker([location[0], location[1]], {icon: redIcon});  //TODO should be red for source and ornage for dest, for example...
-//            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + event.timestamp + '.');
-//            marker.addTo(mapOnPackageDetailsModal);
-//            locationsOnPackageDetailsModal.push([location[0], location[1]]);
-//            markersOnPackageDetailsModal.push(marker);
-
-//        // Add destination.
-//        const eventLocation = pckg.to_location.split(',');
-//        marker = L.marker(eventLocation, {icon: greenIcon});
-//        locationsOnPackageDetailsModal.push(eventLocation);
-//        marker.bindPopup('<b>final destination</b>');
-//        marker.addTo(mapOnPackageDetailsModal);
-//        markersOnPackageDetailsModal.push(marker);
-//
-//        // Draw path and fit map.
-//        const packagePath = new L.Polyline(locationsOnPackageDetailsModal).addTo(mapOnPackageDetailsModal);
-//        mapOnPackageDetailsModal.fitBounds(packagePath.getBounds());
-
-
+        let packagePath = new L.Polyline(locations).addTo(map);
+        map.fitBounds(packagePath.getBounds());
+    }
 
     $(document).ready(function(){
         let packageTable = $('#tablePackages').DataTable({paging: false});
