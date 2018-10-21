@@ -148,7 +148,8 @@
                 activeUsers.push(event.user_pubkey);
             }
         });
-        $('#activeUsers').text(activeUsers.length);
+        $('#activeUsers').text(14);  //fixme count all users including active app holders
+        // $('#activeUsers').text(activeUsers.length);
     }
 
     function fillEventsTable(events){
@@ -222,7 +223,7 @@
 
             $.each(events, function(eventIndex, event){
                 let opacity = 1;
-                if(event.event_type == 'location changed'){
+                if(event.event_type === 'location changed'){
                     opacity = 0.5;
                 }
                 heat.addLatLng(event.location.split(',').concat(opacity));
