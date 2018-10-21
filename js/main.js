@@ -1,8 +1,8 @@
 (function(){
     'use strict';
     const ROUTER = 'https://route.paket.global/v3/';
-    const TILE_PROVIDER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-    const TILE_ATTRIBUTION = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+    const TILE_PROVIDER = 'https://{s}.tile.osm.org/{z}/{x}/{y}.png';
+    const TILE_ATTRIBUTION = '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors';
     const TILE_SETTINGS = {
         maxZoom: 19,
         minZoom: 2,
