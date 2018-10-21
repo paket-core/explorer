@@ -54,7 +54,7 @@
 
     function formatDatetime(datetime){
         return (
-            ('' + datetime.getFullYear()).substr(2) + '/' +
+            datetime.getFullYear() + '/' +
             twodigitize(datetime.getMonth()) + '/' +
             twodigitize(datetime.getDay()) + ' ' +
             twodigitize(datetime.getHours()) + ':' +
@@ -72,6 +72,7 @@
     }
 
     function addPackageRow(pckg, packageTable){
+        if(pckg.launcher_pubkey !== 'GAIKK74K2DLWKK6FCDMAHPCF2GSERKBXV5GZJCQ4MQINZOYMXOPQYU4O') return;
         $(packageTable.row.add([
             pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
             formatRFC1123(pckg.launch_date), formatRFC1123(pckg.events[pckg.events.length - 1].timestamp),
@@ -98,7 +99,7 @@
                 }
             },
             error: function(result){
-                console.error(result);
+                console.error(endpoint, data, result);
                 if(fail){
                     fail(result);
                 }
@@ -122,11 +123,11 @@
         let enroute = 0;
         let received = 0;
         $.each(package_event_types, function(package_id, event_types){
-            if('received' in event_types){
+            if(event_types.indexOf('received') > -1){
                 received++;
                 return true;
             }
-            if('expired' in event_types){
+            if(event_types.indexOf('expired') > -1){
                 return true;
             }
             enroute++;
@@ -142,7 +143,7 @@
         $.each(events, function(eventIndex, event){
             if(
                 !(event.user_pubkey in activeUsers) &&
-                now - new Date(Date.parse(event.timestamp)) < 24 * 60 * 60 * 1000
+                now - new Date(Date.parse(event.timestamp)) < 24 * 60 * 60
             ){
                 activeUsers.push(event.user_pubkey);
             }
@@ -158,8 +159,8 @@
                 '<th scope="row">' + eventIndex + '</th>' +
                 '<td>' + event.event_type + '</td>' +
                 '<td>' + event.location + '</td>' +
-                '<td>' + event.timestamp + '</td>' +
-                '<td>' + event.user_pubkey + '</td>' +
+                '<td>' + formatRFC1123(event.timestamp) + '</td>' +
+                '<td title="' + event.user_pubkey + '">' + event.user_pubkey.substring(0, 3) + '...' + event.user_pubkey.substring(event.user_pubkey.length - 4, event.user_pubkey.length - 1) + '</td>' +
                 '<td>' + JSON.stringify(JSON.parse(event.kwargs), undefined, 2) + '</td>' +
             '</tr>');
         });
@@ -168,9 +169,16 @@
     function showPackageDetails(pckg){
         $('#closeDetails').click(function(){$('#packageDetails').hide();});
         $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
-        $('#deadline').text(formatTimestamp(pckg.deadline));
+        $('#escrowUrl').attr('href', pckg.blockchain_url);
+        $('#deadline').text(formatTimestamp(pckg.deadline * 1000));
         $('#explorerUrl').attr('href', pckg.blockchain_url);
-        $('#packageDetails #img').attr('src', pckg.photo);
+
+        if(pckg.photo){
+            $('#packageDetails #img').attr('src', pckg.photo);
+        }
+        else{
+            $('#packageDetails #img').attr('src', 'empty-photo.jpg');
+        }
         fillEventsTable(pckg.events);
         $('#packageDetails').show();
     }
@@ -226,10 +234,7 @@
                     packages[package_id] = pckg;
                     addPackageRow(pckg, packageTable);
                     callRouter('package_photo', {escrow_pubkey: package_id}, function(result){
-                        if(result.package_photo === null){
-                            packages[package_id].photo = 'empty-photo.jpg';
-                        }
-                        else{
+                        if(result.package_photo !== null){
                             packages[package_id].photo = 'data:image/png;base64,' + result.package_photo.photo;
                         }
                     });
