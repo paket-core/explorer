@@ -8,6 +8,8 @@
         minZoom: 2,
         attribution: TILE_ATTRIBUTION,
     };
+    const MAP_DEFAULT_LOCATION = [32.06, 34.77];
+    const MAP_DEFAULT_ZOOM = 8;
     const HEATMAP_SETTINGS = {
         radius: 50,
         maxZoom: 17,
@@ -39,10 +41,10 @@
 
     function initMap(){
         let tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
-        let heatmap = L.map('heatmap').setView([32.06, 34.77], 8).addLayer(tiles);
-        let heat = L.heatLayer([], HEATMAP_SETTINGS).addTo(heatmap);
-        L.control.scale({imperial: false}).addTo(heatmap);
-        return heat;
+        let map = L.map('heatmap').setView(MAP_DEFAULT_LOCATION, MAP_DEFAULT_ZOOM).addLayer(tiles);
+        let heat = L.heatLayer([], HEATMAP_SETTINGS).addTo(map);
+        L.control.scale({imperial: false}).addTo(map);
+        return {map: map, heat: heat};
     }
 
     function twodigitize(number){
@@ -71,13 +73,13 @@
         return formatDatetime(new Date(Date.parse(rfc)));
     }
 
-    function addPackageRow(pckg, packageTable){
+    function addPackageRow(pckg, packageTable, map){
         if(pckg.launcher_pubkey !== 'GAIKK74K2DLWKK6FCDMAHPCF2GSERKBXV5GZJCQ4MQINZOYMXOPQYU4O') return;
         $(packageTable.row.add([
             pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
             formatRFC1123(pckg.launch_date), formatRFC1123(pckg.events[pckg.events.length - 1].timestamp),
         ]).draw(true).nodes()[0]).addClass('package-' + pckg.status.replace(' ', '-')).click(function(){
-            showPackageDetails(pckg);
+            showPackageDetails(pckg, map);
         });
     }
 
@@ -148,8 +150,7 @@
                 activeUsers.push(event.user_pubkey);
             }
         });
-        $('#activeUsers').text(14);  //fixme count all users including active app holders
-        // $('#activeUsers').text(activeUsers.length);
+        $('#activeUsers').text(activeUsers.length);
     }
 
     function fillEventsTable(events){
@@ -167,8 +168,20 @@
         });
     }
 
-    function showPackageDetails(pckg){
-        $('#closeDetails').click(function(){$('#packageDetails').hide();});
+    function removePackageLayers(map){
+        map.eachLayer(function(layer){
+            if(!('_url' in layer) && (!('_heat' in layer))){
+                map.removeLayer(layer);
+            }
+        });
+    }
+
+    function showPackageDetails(pckg, map){
+        $('#closeDetails').click(function(){
+            $('#packageDetails').hide();
+            removePackageLayers(map);
+            map.setView(MAP_DEFAULT_LOCATION, MAP_DEFAULT_ZOOM);
+        });
         $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
         $('#escrowUrl').attr('href', pckg.blockchain_url);
         $('#deadline').text(formatTimestamp(pckg.deadline * 1000));
@@ -182,61 +195,58 @@
         }
         fillEventsTable(pckg.events);
         $('#packageDetails').show();
+
+        removePackageLayers(map);
+        map.addLayer(pckg.mapLayers.markerLayer);
+        map.addLayer(pckg.mapLayers.pathLayer);
+        map.fitBounds(pckg.mapLayers.pathLayer.getBounds());
     }
 
-    function initPackageMap(events, pckg){
+    function initPackageLayer(pckg, map){
         let locations = [];
-        let tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
-        let redIcon = L.icon(RED_ICON);
-        let orangeIcon = L.icon(ORANGE_ICON);
-        let greenIcon = new L.Icon(GREEN_ICON);
-        let map = L.map('map').setView([0, 0], 1).addLayer(tiles);
-        L.control.scale({imperial: false}).addTo(map);
+        let markers = [];
 
-        $.each(events, function(eventIndex, event){
+        $.each(pckg.events, function(eventIndex, event){
             let location = event.location.split(',');
-            let marker = L.marker([location[0], location[1]], {icon: (event.event_type === 'launched') ? redIcon : greenIcon});
-            marker.bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + formatTimestamp(event.timestamp));
-            marker.addTo(map);
+            let marker = L.marker([location[0], location[1]], {
+                icon: new L.icon((event.event_type === 'launched') ? RED_ICON : GREEN_ICON)
+            }).bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + formatTimestamp(event.timestamp));
             locations.push(location);
+            markers.push(marker);
         });
         let location = pckg.to_location.split(',');
-        let marker = L.marker(location, {icon: orangeIcon});
-        marker.bindPopup('<b>final destination</b>');
-        marker.addTo(map);
+        let marker = L.marker(location, {icon: new L.icon(ORANGE_ICON)}).bindPopup('<b>final destination</b>');
         locations.push(location);
+        markers.push(marker);
 
-        let packagePath = new L.Polyline(locations).addTo(map);
-        map.fitBounds(packagePath.getBounds());
+        return {markerLayer: L.layerGroup(markers), pathLayer: new L.Polyline(locations)};
     }
 
     $(document).ready(function(){
         let packageTable = $('#tablePackages').DataTable({paging: false});
-        let heat = initMap();
+        let heatmap = initMap();
 
-        // Get events and packages and calculate stats.
         getEvents(function(events, package_event_types){
             $('#totalEvents').text(events.length);
             fillPackageStats(package_event_types);
             fillUserStats(events);
-
 
             $.each(events, function(eventIndex, event){
                 let opacity = 1;
                 if(event.event_type === 'location changed'){
                     opacity = 0.5;
                 }
-                heat.addLatLng(event.location.split(',').concat(opacity));
+                heatmap.heat.addLatLng(event.location.split(',').concat(opacity));
             });
 
             let packages = [];
             $.each(package_event_types, function(package_id, event_types){
                 getPackage(package_id, function(pckg){
-                    packages[package_id] = pckg;
-                    addPackageRow(pckg, packageTable);
+                    pckg.mapLayers = initPackageLayer(pckg, heatmap.map);
+                    addPackageRow(pckg, packageTable, heatmap.map);
                     callRouter('package_photo', {escrow_pubkey: package_id}, function(result){
                         if(result.package_photo !== null){
-                            packages[package_id].photo = 'data:image/png;base64,' + result.package_photo.photo;
+                            pckg.photo = 'data:image/png;base64,' + result.package_photo.photo;
                         }
                     });
                 });
