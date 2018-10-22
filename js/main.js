@@ -145,7 +145,7 @@
         $.each(events, function(eventIndex, event){
             if(
                 !(event.user_pubkey in activeUsers) &&
-                now - new Date(Date.parse(event.timestamp)) < 24 * 60 * 60
+                now - new Date(Date.parse(event.timestamp)) < 24 * 60 * 60 * 1000
             ){
                 activeUsers.push(event.user_pubkey);
             }
@@ -183,6 +183,9 @@
             map.setView(MAP_DEFAULT_LOCATION, MAP_DEFAULT_ZOOM);
         });
         $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
+        $('#fromTo').html('From: ' + pckg.from_address + '<br>To: ' + pckg.to_address);
+        $('#payment').text(pckg.payment + ' BUL (€' + pckg.payment * 0.12 + ')');
+        $('#collateral').text(pckg.collateral + ' BUL (€' + pckg.collateral * 0.12 + ')');
         $('#escrowUrl').attr('href', pckg.blockchain_url);
         $('#deadline').text(formatTimestamp(pckg.deadline * 1000));
         $('#explorerUrl').attr('href', pckg.blockchain_url);
