@@ -248,7 +248,6 @@
                 addPackageRow(pckg, packageTable, map);
                 doneRows++;
                 if(doneRows === Object.keys(package_event_types).length){
-                    console.log(new Date(), 'got all rows');
                     done();
                 }
             });
@@ -260,7 +259,6 @@
         $.each(events, function(eventIndex, event){
             heat.addLatLng(event.location.split(',').concat(event.event_type === 'location changed' ? 0.5 : 1));
         });
-        console.log(new Date(), 'refresh heatmap');
     }
 
     function refreshData(packageTable, heatmap){
