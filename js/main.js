@@ -39,14 +39,6 @@
         shadowSize: [41, 41],
     };
 
-    function initMap(){
-        let tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
-        let map = L.map('heatmap').setView(MAP_DEFAULT_LOCATION, MAP_DEFAULT_ZOOM).addLayer(tiles);
-        let heat = L.heatLayer([], HEATMAP_SETTINGS).addTo(map);
-        L.control.scale({imperial: false}).addTo(map);
-        return {map: map, heat: heat};
-    }
-
     function twodigitize(number){
         if(number < 10){
             number = '0' + number;
@@ -73,14 +65,32 @@
         return formatDatetime(new Date(Date.parse(rfc)));
     }
 
-    function addPackageRow(pckg, packageTable, map){
-        if(pckg.launcher_pubkey !== 'GAIKK74K2DLWKK6FCDMAHPCF2GSERKBXV5GZJCQ4MQINZOYMXOPQYU4O') return;
-        $(packageTable.row.add([
-            pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
-            formatRFC1123(pckg.launch_date), formatRFC1123(pckg.events[pckg.events.length - 1].timestamp),
-        ]).draw(true).nodes()[0]).addClass('package-' + pckg.status.replace(' ', '-')).click(function(){
-            showPackageDetails(pckg, map);
+    function initMap(){
+        let tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
+        let map = L.map('heatmap').setView(MAP_DEFAULT_LOCATION, MAP_DEFAULT_ZOOM).addLayer(tiles);
+        let heat = L.heatLayer([], HEATMAP_SETTINGS).addTo(map);
+        L.control.scale({imperial: false}).addTo(map);
+        return {map: map, heat: heat};
+    }
+
+    function initPackageMapLayer(pckg){
+        let locations = [];
+        let markers = [];
+
+        $.each(pckg.events, function(eventIndex, event){
+            let location = event.location.split(',');
+            let marker = L.marker([location[0], location[1]], {
+                icon: new L.icon((event.event_type === 'launched') ? RED_ICON : GREEN_ICON)
+            }).bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + formatTimestamp(event.timestamp));
+            locations.push(location);
+            markers.push(marker);
         });
+        let location = pckg.to_location.split(',');
+        let marker = L.marker(location, {icon: new L.icon(ORANGE_ICON)}).bindPopup('<b>final destination</b>');
+        locations.push(location);
+        markers.push(marker);
+
+        return L.layerGroup([new L.Polyline(locations)].concat(markers));
     }
 
     function callRouter(endpoint, data, callback, fail){
@@ -176,20 +186,28 @@
         });
     }
 
+    function resetMap(map){
+        $('#packageDetails').hide();
+        removePackageLayers(map);
+        map.setView(MAP_DEFAULT_LOCATION, MAP_DEFAULT_ZOOM);
+    }
+
+    function viewLayer(map, layer){
+        removePackageLayers(map);
+        map.addLayer(layer);
+        map.fitBounds(layer.getLayers()[0].getBounds());
+    }
+
     function showPackageDetails(pckg, map){
-        $('#closeDetails').click(function(){
-            $('#packageDetails').hide();
-            removePackageLayers(map);
-            map.setView(MAP_DEFAULT_LOCATION, MAP_DEFAULT_ZOOM);
-        });
+        $('#closeDetails').click(function(){resetMap(map);});
         $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
-        $('#fromTo').html('From: ' + pckg.from_address + '<br>To: ' + pckg.to_address);
+        $('#fromAddress').text(pckg.from_address);
+        $('#toAddress').text(pckg.to_address);
         $('#payment').text(pckg.payment + ' BUL (€' + pckg.payment * 0.12 + ')');
         $('#collateral').text(pckg.collateral + ' BUL (€' + pckg.collateral * 0.12 + ')');
-        $('#escrowUrl').attr('href', pckg.blockchain_url);
         $('#deadline').text(formatTimestamp(pckg.deadline * 1000));
+        $('#escrowUrl').attr('href', pckg.blockchain_url); // This is silly
         $('#explorerUrl').attr('href', pckg.blockchain_url);
-
         if(pckg.photo){
             $('#packageDetails #img').attr('src', pckg.photo);
         }
@@ -198,31 +216,26 @@
         }
         fillEventsTable(pckg.events);
         $('#packageDetails').show();
-
-        removePackageLayers(map);
-        map.addLayer(pckg.mapLayers.markerLayer);
-        map.addLayer(pckg.mapLayers.pathLayer);
-        map.fitBounds(pckg.mapLayers.pathLayer.getBounds());
+        viewLayer(map, pckg.mapLayer);
     }
 
-    function initPackageLayer(pckg, map){
-        let locations = [];
-        let markers = [];
+    function addPackageRow(pckg, packageTable, map){
+        if(pckg.launcher_pubkey !== 'GAIKK74K2DLWKK6FCDMAHPCF2GSERKBXV5GZJCQ4MQINZOYMXOPQYU4O') return;
 
-        $.each(pckg.events, function(eventIndex, event){
-            let location = event.location.split(',');
-            let marker = L.marker([location[0], location[1]], {
-                icon: new L.icon((event.event_type === 'launched') ? RED_ICON : GREEN_ICON)
-            }).bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + formatTimestamp(event.timestamp));
-            locations.push(location);
-            markers.push(marker);
+        callRouter('package_photo', {escrow_pubkey: pckg.escrow_pubkey}, function(result){
+            if(result.package_photo !== null){
+                pckg.photo = 'data:image/png;base64,' + result.package_photo.photo;
+            }
         });
-        let location = pckg.to_location.split(',');
-        let marker = L.marker(location, {icon: new L.icon(ORANGE_ICON)}).bindPopup('<b>final destination</b>');
-        locations.push(location);
-        markers.push(marker);
 
-        return {markerLayer: L.layerGroup(markers), pathLayer: new L.Polyline(locations)};
+        $(packageTable.row.add([
+            pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
+            formatRFC1123(pckg.launch_date), formatRFC1123(pckg.events[pckg.events.length - 1].timestamp),
+        ]).draw(true).nodes()[0]).addClass('package-' + pckg.status.replace(' ', '-')).click(function(){
+            showPackageDetails(pckg, map);
+        });
+
+        pckg.mapLayer = initPackageMapLayer(pckg);
     }
 
     $(document).ready(function(){
@@ -235,23 +248,12 @@
             fillUserStats(events);
 
             $.each(events, function(eventIndex, event){
-                let opacity = 1;
-                if(event.event_type === 'location changed'){
-                    opacity = 0.5;
-                }
-                heatmap.heat.addLatLng(event.location.split(',').concat(opacity));
+                heatmap.heat.addLatLng(event.location.split(',').concat(event.event_type === 'location changed' ? 0.5 : 1));
             });
 
-            let packages = [];
-            $.each(package_event_types, function(package_id, event_types){
-                getPackage(package_id, function(pckg){
-                    pckg.mapLayers = initPackageLayer(pckg, heatmap.map);
+            $.each(package_event_types, function(escrow_pubkey, event_types){
+                getPackage(escrow_pubkey, function(pckg){
                     addPackageRow(pckg, packageTable, heatmap.map);
-                    callRouter('package_photo', {escrow_pubkey: package_id}, function(result){
-                        if(result.package_photo !== null){
-                            pckg.photo = 'data:image/png;base64,' + result.package_photo.photo;
-                        }
-                    });
                 });
             });
         });

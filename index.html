@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>PAKET Network Explorer</title>
-    <meta name=description content='global decentralized package explorer'>
-    <link rel='shortcut icon' type=image/x-icon href=images/favicon.ico>
+    <meta name=description content="global decentralized package explorer">
+    <link rel="shortcut icon" type=image/x-icon href=images/favicon.ico>
     <link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css
-          integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u' crossorigin=anonymous>
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin=anonymous>
     <link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css
-          integrity='sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp' crossorigin=anonymous>
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin=anonymous>
     <link rel=stylesheet href=https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css>
     <link rel=stylesheet href=https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css>
     <link rel=stylesheet href=https://unpkg.com/leaflet@1.0.1/dist/leaflet.css>
     <link rel=stylesheet type=text/css media=all href=css/style.css>
     <script src=https://code.jquery.com/jquery-3.3.1.slim.min.js
-            integrity='sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=' crossorigin=anonymous></script>
+            integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin=anonymous></script>
     <script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js
-            integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa'
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin=anonymous></script>
     <script src=https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/datatables.min.js></script>
     <script src=js/bootstrap3-typeahead.min.js></script>
@@ -70,20 +70,21 @@
     <span style="float: right"><a id=closeDetails>[close]</a></span>
     <h2>Delivery Details</h2>
     <h4 id="packageDetailsLabel">
-        <a id="escrowUrl" href="" target='_blank'><span id="fullEscrowPubkey" class="text-muted"></span></a>
+        <a id="escrowUrl" href="" target="_blank"><span id="fullEscrowPubkey" class="text-muted">xxx</span></a>
     </h4>
     <div class="row">
         <div class="col-sm-6">
-            <p>Description: <span id="Description" style="color: #777;"></span></p>
-            <p>Route: <span id="fromTo">From:.... To ....</span></p>
+            <p>Route: <span id="fromTo"></span></p>
             <p>Deadline: <span id="deadline" style="color: #777;"></span></p>
-            <p>Payment: <span id="payment" style="color: #777;">20 BULs (23$)</span></p>
-            <p>collateral: <span id="collateral" style="color: #777;">85 BULs (78$)</span></p>
-            <p>Explore package keys, signatures and transaction <a id="explorerUrl" href="" target='_blank'>
-                in stellar ledger Explorer
+            <p>Payment: <span id="payment" style="color: #777;"></span></p>
+            <p>collateral: <span id="collateral" style="color: #777;"></span></p>
+            <p>Explore package keys, signatures and transaction in <a id="explorerUrl" href="" target="_blank">
+                external stellar ledger Explorer
             </a></p>
         </div>
-        <img class="featurette-image img-fluid col-sm-6" id="img" alt="package image" style="max-width:300px">
+        <img class="featurette-image img-fluid col-sm-6" id="img" alt="package image" style="max-width:300px"
+            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+            <!--Because an img tag must have a source attribute to be valid.-->
     </div>
     <div class="row featurette col-md-12">
         <div style="overflow-x:auto;">
@@ -105,6 +106,7 @@
         </div>
     </div>
 </div>
+
 <script src=js/main.js></script>
 </body>
 </html>
