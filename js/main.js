@@ -222,40 +222,61 @@
     function addPackageRow(pckg, packageTable, map){
         if(pckg.launcher_pubkey !== 'GAIKK74K2DLWKK6FCDMAHPCF2GSERKBXV5GZJCQ4MQINZOYMXOPQYU4O') return;
 
-        callRouter('package_photo', {escrow_pubkey: pckg.escrow_pubkey}, function(result){
-            if(result.package_photo !== null){
-                pckg.photo = 'data:image/png;base64,' + result.package_photo.photo;
-            }
-        });
-
         $(packageTable.row.add([
             pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
             formatRFC1123(pckg.launch_date), formatRFC1123(pckg.events[pckg.events.length - 1].timestamp),
-        ]).draw(true).nodes()[0]).addClass('package-' + pckg.status.replace(' ', '-')).click(function(){
+        ]).nodes()[0]).addClass('package-' + pckg.status.replace(' ', '-')).click(function(){
             showPackageDetails(pckg, map);
         });
 
         pckg.mapLayer = initPackageMapLayer(pckg);
+
+        if(!('photo' in pckg && pckg.photo)){
+            callRouter('package_photo', {escrow_pubkey: pckg.escrow_pubkey}, function(result){
+                if(result.package_photo !== null){
+                    pckg.photo = 'data:image/png;base64,' + result.package_photo.photo;
+                }
+            });
+        }
     }
 
-    $(document).ready(function(){
-        let packageTable = $('#tablePackages').DataTable({paging: false});
-        let heatmap = initMap();
+    function refreshPackageRows(package_event_types, packageTable, map, done){
+        let doneRows = 0;
+        packageTable.clear();
+        $.each(package_event_types, function(escrow_pubkey, event_types){
+            getPackage(escrow_pubkey, function(pckg){
+                addPackageRow(pckg, packageTable, map);
+                doneRows++;
+                if(doneRows === Object.keys(package_event_types).length){
+                    console.log(new Date(), 'got all rows');
+                    done();
+                }
+            });
+        });
+    }
 
+    function refreshHeatmap(events, heat){
+        heat.setLatLngs([]);
+        $.each(events, function(eventIndex, event){
+            heat.addLatLng(event.location.split(',').concat(event.event_type === 'location changed' ? 0.5 : 1));
+        });
+        console.log(new Date(), 'refresh heatmap');
+    }
+
+    function refreshData(packageTable, heatmap){
         getEvents(function(events, package_event_types){
             $('#totalEvents').text(events.length);
             fillPackageStats(package_event_types);
             fillUserStats(events);
-
-            $.each(events, function(eventIndex, event){
-                heatmap.heat.addLatLng(event.location.split(',').concat(event.event_type === 'location changed' ? 0.5 : 1));
-            });
-
-            $.each(package_event_types, function(escrow_pubkey, event_types){
-                getPackage(escrow_pubkey, function(pckg){
-                    addPackageRow(pckg, packageTable, heatmap.map);
-                });
+            refreshHeatmap(events, heatmap.heat);
+            refreshPackageRows(package_event_types, packageTable, heatmap.map, function(){
+                packageTable.draw(true);
+                setTimeout(function(){refreshData(packageTable, heatmap);}, 60 * 1000);
             });
         });
+    }
+
+    $(document).ready(function(){
+        refreshData($('#tablePackages').DataTable({paging: false}), initMap());
     });
 }());
