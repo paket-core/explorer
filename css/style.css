@@ -94,3 +94,7 @@ input:focus, select:focus, textarea:focus, input:active, select:active, textarea
     position: relative;
     overflow: hidden;
 }
+
+.package-delivered{
+    color: #004dff;
+}
