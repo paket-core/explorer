@@ -80,7 +80,7 @@
         $.each(pckg.events, function(eventIndex, event){
             let location = event.location.split(',');
             let marker = L.marker([location[0], location[1]], {
-                icon: new L.icon((event.event_type === 'launched') ? RED_ICON : GREEN_ICON)
+                icon: new L.icon((event.event_type === 'launched') ? RED_ICON : GREEN_ICON),
             }).bindPopup('<b>Event type: ' + event.event_type + '</b><br>Time: ' + formatTimestamp(event.timestamp));
             locations.push(location);
             markers.push(marker);
@@ -115,7 +115,7 @@
                 if(fail){
                     fail(result);
                 }
-            }
+            },
         });
     }
 
@@ -167,14 +167,17 @@
         let eventTable = $('#packageDetails tbody');
         eventTable.find('tr').remove();
         $.each(events, function(eventIndex, event){
+            let location = event.location.split(',');
             eventTable.append('<tr>' +
                 '<th scope="row">' + eventIndex + '</th>' +
                 '<td>' + event.event_type + '</td>' +
-                '<td style="font-family: monospace; font-size: 75%">' + event.location + '</td>' +
+                '<td style="font-family: monospace; font-size: 75%">' + location[0] + '<br>' + location[1] + '</td>' +
                 '<td>' + formatRFC1123(event.timestamp) + '</td>' +
-                '<td title="' + event.user_pubkey + '">' + event.user_pubkey.substring(0, 3) + '...' + event.user_pubkey.substring(event.user_pubkey.length - 4, event.user_pubkey.length - 1) + '</td>' +
-                '<td>' + JSON.stringify(JSON.parse(event.kwargs), undefined, 2) + '</td>' +
-            '</tr>');
+                '<td title="' + event.user_pubkey + '">' + event.user_pubkey.substring(0, 3) + '...' +
+                event.user_pubkey.substring(event.user_pubkey.length - 4, event.user_pubkey.length - 1) + '</td>' +
+                '<td style="font-family: monospace; font-size: 75%; max-width: 200px;">' +
+                JSON.stringify(JSON.parse(event.kwargs), undefined, 2) + '</td>' +
+                '</tr>');
         });
     }
 
