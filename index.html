@@ -24,88 +24,89 @@
     <script src=https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js></script>
 </head>
 <body>
-
-<div id="hdr" class="panel panel-default col-md-5">
-    <div class="panel-body">
-        <h1><a href="https://paket.global">PAKET</a> EXPLORER</h1>
-        <div>A (very) basic view of the current state of the <a href="https://paket.global">PAKET</a> platform.</div>
+<div class="container-fluid">
+    <div id="hdr" class="panel panel-default col-md-5">
         <div class="panel-body">
-            <ul>
-                <li><b>Total packages:</b> <span id=totalPackages></span></li>
-                <li><b>En Route:</b> <span id=enroutePackages></span></li>
-                <li><b>Received:</b> <span id=receivedPackages></span></li>
-                <li><b>Active users (24H):</b> <span id=activeUsers></span></li>
-                <li><b>Total events:</b> <span id=totalEvents></span></li>
-            </ul>
+            <h1><a href="https://paket.global">PAKET</a> EXPLORER</h1>
+            <div>A (very) basic view of the current state of the <a href="https://paket.global">PAKET</a> platform.</div>
+            <div class="panel-body">
+                <ul>
+                    <li><b>Total packages:</b> <span id=totalPackages></span></li>
+                    <li><b>En Route:</b> <span id=enroutePackages></span></li>
+                    <li><b>Received:</b> <span id=receivedPackages></span></li>
+                    <li><b>Active users (24H):</b> <span id=activeUsers></span></li>
+                    <li><b>Total events:</b> <span id=totalEvents></span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="globalmap" class="panel col-md-7">
+        <div class="panel-body">
+            <h2 id="globalmap-title">Live Global Map</h2>
+            <div id=heatmap></div>
         </div>
     </div>
 </div>
-
-<div id="globalmap" class="panel col-md-7">
-    <div class="panel-body">
-        <h2>Live Global Map</h2>
-        <div id=heatmap></div>
+<div class="container-fluid"">
+    <div class="panel col-md-7">
+        <h2>Packages</h2>
+        <table id="tablePackages" class="table table-striped table-bordered table-condensed table-hover">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Destination</th>
+                <th>Datetime of creation</th>
+                <th>Datetime of last event</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
-</div>
 
-<div class="panel col-md-7">
-    <h2>Packages</h2>
-    <table id="tablePackages" class="table table-striped table-bordered table-condensed table-hover">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Description</th>
-            <th>Destination</th>
-            <th>Datetime of creation</th>
-            <th>Datetime of last event</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
-
-<div id="packageDetails" class="panel col-md-5" style="margin-top:5em; display: none;">
-    <span style="float: right"><a id=closeDetails>[close]</a></span>
-    <h2>Delivery Details</h2>
-    <h4 id="packageDetailsLabel">
-        <a id="escrowUrl" href="" target="_blank"><span id="fullEscrowPubkey" class="text-muted">xxx</span></a>
-    </h4>
-    <div class="row">
-        <div class="col-sm-6">
-            <p>Route: <span id="fromTo"></span></p>
-            <p>Deadline: <span id="deadline" style="color: #777;"></span></p>
-            <p>Payment: <span id="payment" style="color: #777;"></span></p>
-            <p>collateral: <span id="collateral" style="color: #777;"></span></p>
-            <p>Explore package keys, signatures and transaction in <a id="explorerUrl" href="" target="_blank">
-                external stellar ledger Explorer
-            </a></p>
-        </div>
-        <img class="featurette-image img-fluid col-sm-6" id="img" alt="package image" style="max-width:300px"
-            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+    <div id="packageDetails" class="panel col-md-5" style="margin-top:5em; display: none;">
+        <span style="float: right"><a id=closeDetails>[close]</a></span>
+        <h2>Delivery Details</h2>
+        <h4 id="packageDetailsLabel">
+            <a id="escrowUrl" href="" target="_blank"><span id="fullEscrowPubkey" class="text-muted">xxx</span></a>
+        </h4>
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Route: <span id="fromTo"></span></p>
+                <p>Deadline: <span id="deadline" style="color: #777;"></span></p>
+                <p>Payment: <span id="payment" style="color: #777;"></span></p>
+                <p>collateral: <span id="collateral" style="color: #777;"></span></p>
+                <p>Explore package keys, signatures and transaction in <a id="explorerUrl" href="" target="_blank">
+                    external stellar ledger Explorer
+                </a></p>
+            </div>
+            <img class="featurette-image img-fluid col-sm-6" id="img" alt="package image" style="max-width:300px"
+                 src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
             <!--Because an img tag must have a source attribute to be valid.-->
-    </div>
-    <div class="row featurette col-md-12">
-        <div style="overflow-x:auto;">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Type</th>
-                    <th>GPS Location</th>
-                    <th>Timestamp</th>
-                    <th>User pubkey</th>
-                    <th>Kwargs</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+        </div>
+        <div class="row featurette col-md-12">
+            <div style="overflow-x:auto;">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Type</th>
+                        <th>GPS Location</th>
+                        <th>Timestamp</th>
+                        <th>User pubkey</th>
+                        <th>Kwargs</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-
 <script src=js/main.js></script>
 </body>
 </html>
