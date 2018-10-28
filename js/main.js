@@ -206,8 +206,8 @@
         $('#fullEscrowPubkey').text(pckg.escrow_pubkey);
         $('#fromAddress').text(pckg.from_address);
         $('#toAddress').text(pckg.to_address);
-        $('#payment').text(pckg.payment + ' BUL (€' + pckg.payment * 0.12 + ')');
-        $('#collateral').text(pckg.collateral + ' BUL (€' + pckg.collateral * 0.12 + ')');
+        $('#payment').text(pckg.payment + ' BUL (€' + pckg.payment * 0.1 + ')');
+        $('#collateral').text(pckg.collateral + ' BUL (€' + pckg.collateral * 0.1 + ')');
         $('#deadline').text(formatTimestamp(pckg.deadline * 1000));
         $('#escrowUrl').attr('href', pckg.blockchain_url); // This is silly
         $('#explorerUrl').attr('href', pckg.blockchain_url);
