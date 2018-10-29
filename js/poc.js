@@ -1666,7 +1666,7 @@ function formatDatetime(datetime){
 }
 
 function formatTimestamp(timestamp){
-    return formatDatetime(new Date(timestamp));
+    return formatDatetime(new Date(timestamp * 1000));
 }
 
 function addRowPackagesToDataTable(pckg){

@@ -58,7 +58,7 @@
     }
 
     function formatTimestamp(timestamp){
-        return formatDatetime(new Date(timestamp));
+        return formatDatetime(new Date(timestamp * 1000));
     }
 
     function initMap(){
@@ -204,7 +204,7 @@
         $('#toAddress').text(pckg.to_address);
         $('#payment').text(pckg.payment + ' BUL (€' + pckg.payment * 0.1 + ')');
         $('#collateral').text(pckg.collateral + ' BUL (€' + pckg.collateral * 0.1 + ')');
-        $('#deadline').text(formatTimestamp(pckg.deadline * 1000));
+        $('#deadline').text(formatTimestamp(pckg.deadline));
         $('#escrowUrl').attr('href', pckg.blockchain_url); // This is silly
         $('#explorerUrl').attr('href', pckg.blockchain_url);
         if(pckg.photo){
