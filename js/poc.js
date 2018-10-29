@@ -1647,22 +1647,26 @@ function displayPackagesForLauncher(){
     });
 }
 
-function twodigitize(number){
-    if(number < 10){
-        number = '0' + number;
+    function twodigitize(number){
+        if(number < 10){
+            number = '0' + number;
+        }
+        return number;
     }
-    return number;
+
+function formatDatetime(datetime){
+    return (
+        datetime.getFullYear() + '/' +
+        twodigitize(datetime.getMonth() + 1) + '/' +
+        twodigitize(datetime.getDate()) + ' ' +
+        twodigitize(datetime.getHours()) + ':' +
+        twodigitize(datetime.getMinutes()) + ':' +
+        twodigitize(datetime.getSeconds())
+    );
 }
 
-function dateFromRFC1123(rfc){
-    let datetime = new Date(Date.parse(rfc));
-    let year = ('' + datetime.getFullYear()).substr(2);
-    let month = twodigitize(datetime.getMonth());
-    let day = twodigitize(datetime.getDay());
-    let hours = twodigitize(datetime.getHours());
-    let minutes = twodigitize(datetime.getMinutes());
-    let seconds = twodigitize(datetime.getSeconds());
-    return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+function formatTimestamp(timestamp){
+    return formatDatetime(new Date(timestamp));
 }
 
 function addRowPackagesToDataTable(pckg){
@@ -1672,7 +1676,7 @@ function addRowPackagesToDataTable(pckg){
     let last_event_time = new Date(Date.parse(pckg.events.last().timestamp));
     dataTablePackage.row.add([
         pckg.escrow_pubkey, pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
-        dateFromRFC1123(pckg.launch_date), dateFromRFC1123(pckg.events.last().timestamp),
+        formatTimestamp(pckg.launch_date), formatTimestamp(pckg.events.last().timestamp),
     ]).draw(true);
 }
 
