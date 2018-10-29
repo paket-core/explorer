@@ -61,10 +61,6 @@
         return formatDatetime(new Date(timestamp));
     }
 
-    function formatRFC1123(rfc){
-        return formatDatetime(new Date(Date.parse(rfc)));
-    }
-
     function initMap(){
         let tiles = L.tileLayer(TILE_PROVIDER, TILE_SETTINGS);
         let map = L.map('heatmap').setView(MAP_DEFAULT_LOCATION, MAP_DEFAULT_ZOOM).addLayer(tiles);
@@ -172,7 +168,7 @@
                 '<th scope="row">' + eventIndex + '</th>' +
                 '<td>' + event.event_type + '</td>' +
                 '<td style="font-family: monospace; font-size: 75%">' + location[0] + '<br>' + location[1] + '</td>' +
-                '<td>' + formatRFC1123(event.timestamp) + '</td>' +
+                '<td>' + formatTimestamp(event.timestamp) + '</td>' +
                 '<td title="' + event.user_pubkey + '">' + event.user_pubkey.substring(0, 3) + '...' +
                 event.user_pubkey.substring(event.user_pubkey.length - 4, event.user_pubkey.length - 1) + '</td>' +
                 '<td style="font-family: monospace; font-size: 75%; max-width: 200px;">' +
@@ -227,7 +223,7 @@
 
         $(packageTable.row.add([
             pckg.short_package_id, pckg.status, pckg.description, pckg.to_address,
-            formatRFC1123(pckg.launch_date), formatRFC1123(pckg.events[pckg.events.length - 1].timestamp),
+            formatTimestamp(pckg.launch_date), formatTimestamp(pckg.events[pckg.events.length - 1].timestamp),
         ]).nodes()[0]).addClass('package-' + pckg.status.replace(' ', '-')).click(function(){
             showPackageDetails(pckg, map);
         });
