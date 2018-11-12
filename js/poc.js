@@ -824,7 +824,7 @@ $(document).ready(function(){
             }
 
             requests.router.changedLocation(courierPrivateKey, courierPubKey, {
-                escrow_pubkey: packageIdForRelay,
+                escrow_pubkey: packageIdForChangeLocation,
                 location: location,
                 photo: photoForChangeLocationModal,
                 vehicle: vehicle,
