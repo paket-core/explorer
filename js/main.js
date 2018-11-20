@@ -39,6 +39,11 @@
         shadowSize: [41, 41],
     };
 
+    // Global data stores.
+    var EVENTS = [];
+    var EVENT_INDEXES_BY_PACKAGE = {};
+    var EVENT_TYPES_BY_PACKAGE = {};
+
     function twodigitize(number){
         if(number < 10){
             number = '0' + number;
@@ -115,9 +120,15 @@
         });
     }
 
-    function getEvents(callback){
-        callRouter('events', {max_events_num: 10000}, function(result){
-            callback(result.events, result.package_event_types);
+    function getEvents(from_timestamp, callback){
+        callRouter('events', {from_timestamp: from_timestamp}, function(result){
+            $.each(result.events, function(_, event){
+                if(event.idx in EVENTS) return true;
+                EVENTS[event.idx] = event;
+                EVENT_INDEXES_BY_PACKAGE = result.event_indexes_by_package;
+                EVENT_TYPES_BY_PACKAGE = result.event_types_by_package;
+            });
+            callback();
         });
     }
 
@@ -149,6 +160,7 @@
         let activeUsers = [];
         let now = new Date();
         $.each(events, function(eventIndex, event){
+            if(! event) return true;
             if(
                 !(event.user_pubkey in activeUsers) &&
                 now - new Date(Date.parse(event.timestamp)) < 24 * 60 * 60 * 1000
@@ -256,19 +268,22 @@
     function refreshHeatmap(events, heat){
         heat.setLatLngs([]);
         $.each(events, function(eventIndex, event){
+            if(! event) return true;
             heat.addLatLng(event.location.split(',').concat(event.event_type === 'location changed' ? 0.5 : 1));
         });
     }
 
     function refreshData(packageTable, heatmap){
-        getEvents(function(events, package_event_types){
-            $('#totalEvents').text(events.length);
-            fillPackageStats(package_event_types);
-            fillUserStats(events);
-            refreshHeatmap(events, heatmap.heat);
-            refreshPackageRows(package_event_types, packageTable, heatmap.map, function(){
+        getEvents(EVENTS.length === 0 ? parseInt((new Date().getTime() / 1000) - (60 * 60 * 24 * 7), 10) : 0, function(){
+            $('#totalEvents').text(EVENTS.length);
+            fillPackageStats(EVENT_TYPES_BY_PACKAGE);
+            fillUserStats(EVENTS);
+            refreshHeatmap(EVENTS, heatmap.heat);
+            refreshPackageRows(EVENT_TYPES_BY_PACKAGE, packageTable, heatmap.map, function(){
                 packageTable.draw(true);
-                setTimeout(function(){refreshData(packageTable, heatmap);}, 60 * 1000);
+                let complete = packageTable.rows().count() > 10;
+                if(complete) $('#tableLoading').hide();
+                setTimeout(function(){refreshData(packageTable, heatmap);}, complete ? 60 * 1000 : 100);
             });
         });
     }
