@@ -289,6 +289,6 @@
     }
 
     $(document).ready(function(){
-        refreshData($('#tablePackages').DataTable({paging: false}), initMap());
+        refreshData($('#tablePackages').DataTable({"paging": false, "language": {"emptyTable": "Loading..."}}), initMap());
     });
 }());
