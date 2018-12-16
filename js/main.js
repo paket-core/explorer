@@ -121,7 +121,11 @@
     }
 
     function getEvents(from_timestamp, callback){
-        callRouter('events', {from_timestamp: from_timestamp}, function(result){
+        let args = {till_timestamp: parseInt((new Date().getTime() / 1000), 10)};
+        if(from_timestamp !== null){
+            args.from_timestamp = from_timestamp;
+        }
+        callRouter('events', args, function(result){
             $.each(result.events, function(_, event){
                 if(event.idx in EVENTS) return true;
                 EVENTS[event.idx] = event;
@@ -274,7 +278,7 @@
     }
 
     function refreshData(packageTable, heatmap){
-        getEvents(EVENTS.length === 0 ? parseInt((new Date().getTime() / 1000) - (60 * 60 * 24 * 7), 10) : 0, function(){
+        getEvents(EVENTS.length === 0 ? null : 0, function(){
             $('#totalEvents').text(EVENTS.length);
             fillPackageStats(EVENT_TYPES_BY_PACKAGE);
             fillUserStats(EVENTS);
